@@ -32,14 +32,22 @@ public class FieldBuildType {
 		SHARED_LIBRARY
 	}
 	
-	Type type;
+	private Type type;
+	private boolean valid;
 	
 	public FieldBuildType() {
 		type = Type.EXECUTABLE;
+		valid = false;
 	}
 	
+	public FieldBuildType(Type buildType) {
+		type = buildType;
+		valid = true;
+	}
+
 	public void set(FieldBuildType.Type type){
 		this.type = type;
+		valid = true;
 	}
 	
 	public void set(String value){
@@ -47,16 +55,27 @@ public class FieldBuildType {
 		String string = field.getString();
 		if("static".equals(string)){
 			type = Type.STATIC_LIBRARY;
+			valid = true;
 		}
 		else if ("shared".equals(string)){
 			type = Type.SHARED_LIBRARY;
+			valid = true;
+		}
+		else if ("executable".equals(string)){
+			type = Type.EXECUTABLE;
+			valid = true;
 		}
 		else{
 			type = Type.EXECUTABLE;
+			valid = false;
 		}
 	}
 	
 	public Type get() {
 		return type;
+	}
+	
+	public boolean isValid() {
+		return valid;
 	}
 }
