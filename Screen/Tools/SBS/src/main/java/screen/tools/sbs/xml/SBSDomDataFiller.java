@@ -63,6 +63,7 @@ public class SBSDomDataFiller {
 	private String propertyName;
 	private String propertyVersion;
 	private String propertyBuildType;
+	private boolean isRelease;
 	
 	public SBSDomDataFiller(Pack pack, Pack testPack, FieldPath sbsXmlPath) {
 		this.sbsXmlPath = sbsXmlPath;
@@ -72,6 +73,12 @@ public class SBSDomDataFiller {
 	
 	public void fill(Document doc, boolean isTest){
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
+		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+
+		isRelease = true;
+		if(!variables.contains("_COMPILE_MODE")){
+			isRelease = "Debug".equals(variables.getValue("_COMPILE_MODE"));
+		}
 		
 		Element root = doc.getDocumentElement();
 		XPathFactory xFactory = XPathFactory.newInstance();
@@ -130,6 +137,7 @@ public class SBSDomDataFiller {
 		NodeList main = root.getElementsByTagName("main");
 		if(main.getLength() == 1){
 			processDependencies((Element) main.item(0),pack,xmlPath);
+			processFlags((Element) main.item(0),pack,xmlPath);
 		}
 		
 		//descriptions
@@ -142,10 +150,6 @@ public class SBSDomDataFiller {
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
-		boolean isRelease = true;
-		if(!variables.contains("_COMPILE_MODE")){
-			isRelease = "Debug".equals(variables.getValue("_COMPILE_MODE"));
-		}
 		if(!variables.contains("REPOSITORY_ROOT")){
 			err.addError("undefined variable : REPOSITORY_ROOT");
 		}
@@ -295,7 +299,9 @@ public class SBSDomDataFiller {
 				pack.addDependency(newDep);
 			}
 		}
-		
+	}
+
+	private void processFlags(Element root, Pack pack, FieldPath xmlPath) {
 		//flags
 		Logger.debug("flags");
 		NodeList optsRoot = root.getElementsByTagName("flags");
