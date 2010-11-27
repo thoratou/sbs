@@ -36,5 +36,5 @@ public interface CMakeSegmentWriter {
 	 * @param cmakePack
 	 * @param cmakeListsWriter
 	 */
-	void write(SBSCMakePack cmakePack, Writer cmakeListsWriter) throws IOException;
+	void write(CMakePack cmakePack, Writer cmakeListsWriter) throws IOException;
 }

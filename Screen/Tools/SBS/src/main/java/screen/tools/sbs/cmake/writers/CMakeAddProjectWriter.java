@@ -27,7 +27,7 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePackWriter;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.cmake.SBSCMakePack;
+import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldBuildType;
@@ -49,9 +49,9 @@ import screen.tools.sbs.utils.FieldBuildType.Type;
  */
 public class CMakeAddProjectWriter implements CMakeSegmentWriter{	
 	/**
-	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.SBSCMakePack, java.io.Writer)
+	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
-	public void write(SBSCMakePack cmakePack, Writer cmakeListsWriter)
+	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 

@@ -35,7 +35,7 @@ import screen.tools.sbs.utils.FieldBuildType;
  *
  */
 public class CMakePackWriter {
-	private SBSCMakePack cmakePack;
+	private CMakePack cmakePack;
 	private Writer cmakeListsWriter;
 	private List<CMakeSegmentWriter> writers;
 	
@@ -54,7 +54,7 @@ public class CMakePackWriter {
 	/**
 	 * 
 	 */
-	public CMakePackWriter(SBSCMakePack pack, Writer writer) {
+	public CMakePackWriter(CMakePack pack, Writer writer) {
 		cmakePack = pack;
 		cmakeListsWriter = writer;
 		writers = new ArrayList<CMakeSegmentWriter>();
