@@ -144,7 +144,7 @@ public class SBSCMakeFileGenerator {
 	public void generate() {
 		retrieveContext();
 		generateCMakeLists();
-		
+		generateComponentFiles();
 	}
 	
 	public void generateCMakeLists(){
