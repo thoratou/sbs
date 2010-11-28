@@ -69,7 +69,7 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 				cmakeListsWriter.write("\")\n");
 			}
 			else{
-				err.addError("invalid flag");
+				err.addError("invalid definition");
 			}
 		}		
 	}

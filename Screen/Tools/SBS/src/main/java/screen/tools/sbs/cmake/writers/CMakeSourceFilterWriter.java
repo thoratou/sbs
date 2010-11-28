@@ -48,20 +48,37 @@ import screen.tools.sbs.cmake.CMakePack;
  *
  */
 public class CMakeSourceFilterWriter implements CMakeSegmentWriter{
+
 	/**
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		cmakeListsWriter.write("FILE(\n");
-		cmakeListsWriter.write("    GLOB_RECURSE\n");
-		cmakeListsWriter.write("    SRC_FILES\n");
-		cmakeListsWriter.write("    src/*.cpp\n");
-		cmakeListsWriter.write("    src/*.c\n");
-		cmakeListsWriter.write("    src/*.hpp\n");
-		cmakeListsWriter.write("    src/*.h\n");
-		cmakeListsWriter.write("    src/*.inl\n");
-		cmakeListsWriter.write("    src/*.tpp\n");
-		cmakeListsWriter.write("    src/*.i\n");
-		cmakeListsWriter.write(")\n");	}
+		if(!cmakePack.isTest()){
+			cmakeListsWriter.write("FILE(\n");
+			cmakeListsWriter.write("    GLOB_RECURSE\n");
+			cmakeListsWriter.write("    SRC_FILES\n");
+			cmakeListsWriter.write("    src/*.cpp\n");
+			cmakeListsWriter.write("    src/*.c\n");
+			cmakeListsWriter.write("    src/*.hpp\n");
+			cmakeListsWriter.write("    src/*.h\n");
+			cmakeListsWriter.write("    src/*.inl\n");
+			cmakeListsWriter.write("    src/*.tpp\n");
+			cmakeListsWriter.write("    src/*.i\n");
+			cmakeListsWriter.write(")\n");
+		}
+		else{
+			cmakeListsWriter.write("FILE(\n");
+			cmakeListsWriter.write("    GLOB_RECURSE\n");
+			cmakeListsWriter.write("    SRC_FILES\n");
+			cmakeListsWriter.write("    *.cpp\n");
+			cmakeListsWriter.write("    *.c\n");
+			cmakeListsWriter.write("    *.hpp\n");
+			cmakeListsWriter.write("    *.h\n");
+			cmakeListsWriter.write("    *.inl\n");
+			cmakeListsWriter.write("    *.tpp\n");
+			cmakeListsWriter.write("    *.i\n");
+			cmakeListsWriter.write(")\n");
+		}
+	}
 }

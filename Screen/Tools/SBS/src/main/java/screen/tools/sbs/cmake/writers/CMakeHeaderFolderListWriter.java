@@ -60,8 +60,6 @@ public class CMakeHeaderFolderListWriter implements CMakeSegmentWriter{
 		List<FieldString> includeDirectories = cmakePack.getIncludeDirectories();
 		Iterator<FieldString> iterator = includeDirectories.iterator();
 		cmakeListsWriter.write("INCLUDE_DIRECTORIES(\n");
-		cmakeListsWriter.write("    src\n");
-		cmakeListsWriter.write("    include\n");
 		while(iterator.hasNext()){
 			FieldString next = iterator.next();
 			if(next.isValid()){

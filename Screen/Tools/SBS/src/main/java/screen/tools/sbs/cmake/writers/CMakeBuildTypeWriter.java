@@ -54,11 +54,11 @@ public class CMakeBuildTypeWriter implements CMakeSegmentWriter{
 			FieldBuildType.Type type = typeInst.get();
 			if(type != Type.EXECUTABLE){
 				String on = (type == Type.SHARED_LIBRARY ? "ON" : "OFF");
-				cmakeListsWriter.write("SET(BUILD_SHARED_LIBS "+on+"))\n");
+				cmakeListsWriter.write("SET(BUILD_SHARED_LIBS "+on+")\n");
 			}
 		}
 		else{
-			err.addError("invalid build mode");
+			err.addError("invalid build type");
 		}
 	}
 }

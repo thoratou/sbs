@@ -52,6 +52,7 @@ public class CMakePack {
 	private List<FieldString> linkDirectories;
 	private List<FieldString> linkLibraries;
 	private FieldString outputPath;
+	private boolean isTest;
 	
 	public CMakePack() {
 		projectName = new FieldString();
@@ -65,6 +66,7 @@ public class CMakePack {
 		linkDirectories = new ArrayList<FieldString>();
 		linkLibraries = new ArrayList<FieldString>();
 		outputPath = new FieldString();
+		isTest = false;
 	}
 	
 	public void setVersion(FieldString cmakeVersion) {
@@ -283,5 +285,13 @@ public class CMakePack {
 
 	public FieldString getOutputPath() {
 		return outputPath;
+	}
+	
+	public void setTest(boolean isTest){
+		this.isTest = isTest;
+	}
+
+	public boolean isTest() {
+		return isTest;
 	}
 }

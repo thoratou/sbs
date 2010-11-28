@@ -30,11 +30,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import screen.tools.sbs.cmake.writers.CMakeAddProjectWriter;
+import screen.tools.sbs.cmake.writers.CMakeBuildFolderWriter;
+import screen.tools.sbs.cmake.writers.CMakeBuildModeWriter;
+import screen.tools.sbs.cmake.writers.CMakeBuildTypeWriter;
+import screen.tools.sbs.cmake.writers.CMakeDefinitionListWriter;
+import screen.tools.sbs.cmake.writers.CMakeFolderCleanWriter;
+import screen.tools.sbs.cmake.writers.CMakeHeaderFilterWriter;
+import screen.tools.sbs.cmake.writers.CMakeHeaderFolderListWriter;
+import screen.tools.sbs.cmake.writers.CMakeLibraryListWriter;
+import screen.tools.sbs.cmake.writers.CMakeLinkFolderListWriter;
+import screen.tools.sbs.cmake.writers.CMakeProjectNameWriter;
+import screen.tools.sbs.cmake.writers.CMakeProjectVersionWriter;
+import screen.tools.sbs.cmake.writers.CMakeSourceFilterWriter;
+import screen.tools.sbs.cmake.writers.CMakeVersionWriter;
 import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Flag;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
@@ -51,9 +63,22 @@ import screen.tools.sbs.utils.Utilities;
  * 
  */
 public class SBSCMakeFileGenerator {
+	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
+	
 	private Pack pack;
 	private String sbsXmlPath;
 	private boolean isTest;
+	
+	//context variables
+	private String repoRoot;
+	private String compileMode;
+	private String envName;
+	private String[] flags;
+	private String defaultIncludePath;
+	private String defaultLibPath;
+	private String packName;
+	private String packPath;
+	private String packVersion;
 	
 	/**
 	 * Constructor for SBSCMakeFileGenerator class
@@ -68,9 +93,61 @@ public class SBSCMakeFileGenerator {
 		this.isTest = isTest;
 	}
 	
-	public void generate() {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
+	private void retrieveContext(){
+		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
 		
+		//repoRoot
+		if(!variables.contains("REPOSITORY_ROOT")){
+			err.addError("undefined variable : REPOSITORY_ROOT");
+		}
+		repoRoot = variables.getValue("REPOSITORY_ROOT");
+		
+		//compile mode
+		if(!variables.contains("_COMPILE_MODE")){
+			err.addError("Internal error : undefined variable : _COMPILE_MODE");
+		}
+		compileMode = variables.getValue("_COMPILE_MODE");
+		
+		//envName
+		if(!variables.contains("ENV_NAME")){
+			err.addError("undefined variable : ENV_NAME");
+		}
+		envName = variables.getValue("ENV_NAME");
+		
+		//compile flags
+		String flagVar = compileMode.toUpperCase()+"_FLAGS";
+		if(!variables.contains(flagVar)){
+			err.addError("undefined variable : "+flagVar);
+		}
+		String flagString = variables.getValue(flagVar);
+		flags = flagString.split(" ");
+		
+		//default paths
+		if(Utilities.isLinux()){
+			if(!variables.contains("DEFAULT_INCLUDE_PATH")){
+				err.addError("undefined variable : DEFAULT_INCLUDE_PATH");
+			}
+			defaultIncludePath = variables.getValue("DEFAULT_INCLUDE_PATH");
+			
+			if(!variables.contains("DEFAULT_LIB_PATH")){
+				err.addError("undefined variable : DEFAULT_LIB_PATH");
+			}
+			defaultLibPath = variables.getValue("DEFAULT_LIB_PATH");
+		}
+		
+		//pack properties		
+		packName = pack.getProperties().getName().getString().replaceAll("/", "");
+		packPath = pack.getProperties().getName().getString();
+		packVersion = pack.getProperties().getVersion().getString();
+	}
+	
+	public void generate() {
+		retrieveContext();
+		generateCMakeLists();
+		
+	}
+	
+	public void generateCMakeLists(){
 		try {
 			//handler to write CMakeLists.txt file
 			File cmakeListFile = new File(sbsXmlPath + "CMakeLists.txt");
@@ -82,207 +159,64 @@ public class SBSCMakeFileGenerator {
 				return;
 			}
 			
-			//retrieves pack properties
-			String packName = pack.getProperties().getName().getString().replaceAll("/", "");
-			String packPath = pack.getProperties().getName().getString();
-			String packVersion = pack.getProperties().getVersion().getString();
+			CMakePack cmakePack = new CMakePack();
+			CMakePackGenerator generator = new CMakePackGenerator(pack, cmakePack);
+			generator.generate();
+						
+			cmakePack.setVersion("2.6");
+			cmakePack.setBuildMode(compileMode);
+			cmakePack.setTest(isTest);
 			
-			EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
-			
-			//compile mode
-			String compileMode = variables.getValue("_COMPILE_MODE");
-			boolean isDebugMode = "Debug".equals(compileMode);
-			
-			//compile flags
-			String flagVar = compileMode.toUpperCase()+"_FLAGS";
-			if(!variables.contains(flagVar)){
-				err.addError("undefined variable : "+flagVar);
-			}
-			String flagString = variables.getValue(flagVar);
-			String[] flags = flagString.split(" ");
-			
-			//build type
-			String packBuildType = pack.getProperties().getBuildType().getString();
-			boolean hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
-			String sharedLibBuild = "shared".equals(packBuildType) ? "ON" : "OFF";
-			boolean hasSharedLibBuild = "shared".equals(packBuildType); 
-			
-			List<Dependency> deps = pack.getDependencyList();
-			
-			if(!variables.contains("REPOSITORY_ROOT")){
-				err.addError("undefined variable : REPOSITORY_ROOT");
-			}
-			String repoRoot = variables.getValue("REPOSITORY_ROOT");
-			
-			if(!variables.contains("ENV_NAME")){
-				err.addError("undefined variable : ENV_NAME");
-			}
-			String envName = variables.getValue("ENV_NAME");
-			
-			if(err.hasErrors())
-				return;
-			
-			//CMake headers
-			cmakeListWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION 2.6)\n");
-			cmakeListWriter.write("\n");
-			cmakeListWriter.write("PROJECT("+ packName +")\n");
-			cmakeListWriter.write("\n");
-			cmakeListWriter.write("SET(${PROJECT_NAME}_VERSION \""+ pack.getProperties().getVersion().getString() +"\")\n");
-			cmakeListWriter.write("\n");
-			cmakeListWriter.write("SET(CMAKE_BUILD_TYPE \""+ compileMode +"\")\n");
-			cmakeListWriter.write("\n");
-			
-			//library build type 
-			if(hasLibBuild){
-				cmakeListWriter.write("OPTION(BUILD_SHARED_LIBS "+ sharedLibBuild +")\n");
-				cmakeListWriter.write("\n");
-			}
-			
-			//sbs.xml compilation flags
 			for(int i=0; i<flags.length; i++){
-				if(!"".equals(flags[i])){
-					cmakeListWriter.write("ADD_DEFINITIONS(\"-D"+ flags[i] +"\")\n");
-				}
+				cmakePack.addCompileFlag(flags[i], (String)null);
 			}
 			
-			//*.config compilation flags
-			List<Flag> flagList = pack.getFlagList();
-			for(int i=0; i<flagList.size(); i++){
-				if(flagList.get(i).getBuildMode().isSameMode(!isDebugMode)){
-					String flag = flagList.get(i).getFlag().getString();
-					String value = flagList.get(i).getValue().getString();
-					if(value == null || "".equals(value)){
-						cmakeListWriter.write("ADD_DEFINITIONS(\"-D"+ flag +"\")\n");
-					}
-					else{
-						cmakeListWriter.write("ADD_DEFINITIONS(\"-D"+ flag + "=" + value +"\")\n");
-					}
-				}
-			}
-			
-			//remove generated files by CMake, in order to not compile them
-			cmakeListWriter.write("FILE(REMOVE_RECURSE CMakeFiles/CompilerIdCXX/)\n");
-			cmakeListWriter.write("FILE(REMOVE_RECURSE CMakeFiles/CompilerIdC/)\n");
-			
-			//component include and source files
 			if(!isTest){
-				cmakeListWriter.write("FILE(\n");
-				cmakeListWriter.write("    GLOB_RECURSE\n");
-				cmakeListWriter.write("    SRC_FILES\n");
-				cmakeListWriter.write("    src/*.cpp\n");
-				cmakeListWriter.write("    src/*.c\n");
-				cmakeListWriter.write("    src/*.hpp\n");
-				cmakeListWriter.write("    src/*.h\n");
-				cmakeListWriter.write("    src/*.inl\n");
-				cmakeListWriter.write("    src/*.tpp\n");
-				cmakeListWriter.write("    src/*.i\n");
-				cmakeListWriter.write(")\n");
-				cmakeListWriter.write("\n");
-				cmakeListWriter.write("FILE(\n");
-				cmakeListWriter.write("    GLOB_RECURSE\n");
-				cmakeListWriter.write("    INC_FILES\n");
-				cmakeListWriter.write("    include/*.hpp\n");	
-				cmakeListWriter.write("    include/*.h\n");
-				cmakeListWriter.write("    include/*.inl\n");
-				cmakeListWriter.write("    include/*.tpp\n");
-				cmakeListWriter.write("    include/*.i\n");
-				cmakeListWriter.write(")\n");
-			} else {
-				cmakeListWriter.write("FILE(\n");
-				cmakeListWriter.write("    GLOB_RECURSE\n");
-				cmakeListWriter.write("    SRC_FILES\n");
-				cmakeListWriter.write("    *.cpp\n");
-				cmakeListWriter.write("    *.c\n");
-				cmakeListWriter.write("    *.hpp\n");
-				cmakeListWriter.write("    *.h\n");
-				cmakeListWriter.write("    *.inl\n");
-				cmakeListWriter.write("    *.tpp\n");
-				cmakeListWriter.write("    *.i\n");
-				cmakeListWriter.write(")\n");
-			}
-			cmakeListWriter.write("\n");
-			cmakeListWriter.write("INCLUDE_DIRECTORIES(\n");
-			if(!isTest){
-				cmakeListWriter.write("    src\n");
-				cmakeListWriter.write("    include\n");
+				cmakePack.addIncludeDirectory("src");
+				cmakePack.addIncludeDirectory("include");
 			}
 			else{
-				cmakeListWriter.write("    .\n");
+				cmakePack.addIncludeDirectory(".");
 			}
 			
-			//external include paths
-			for(int i=0; i<deps.size(); i++){
-				Dependency dep = deps.get(i);
-				List<FieldPath> paths = dep.getIncludePathList();
-				for(int j=0; j<paths.size(); j++){
-					cmakeListWriter.write("    "+ paths.get(j).getString() +"\n");
-				}
-			}
 			if(Utilities.isLinux()){
-				if(!variables.contains("DEFAULT_INCLUDE_PATH")){
-					err.addError("undefined variable : DEFAULT_INCLUDE_PATH");
-				}
-				String defaultInclude = variables.getValue("DEFAULT_INCLUDE_PATH");
-				cmakeListWriter.write("    "+defaultInclude+"\n");
+				cmakePack.addIncludeDirectory(defaultIncludePath);
+				cmakePack.addLinkDirectory(defaultLibPath);				
 			}
-			cmakeListWriter.write(")\n");
-			cmakeListWriter.write("\n");
 			
-			//external library paths
-			cmakeListWriter.write("LINK_DIRECTORIES(\n");
-			for(int i=0; i<deps.size(); i++){
-				Dependency dep = deps.get(i);
-				List<FieldPath> paths = dep.getLibraryPathList();
-				for(int j=0; j<paths.size(); j++){
-					cmakeListWriter.write("    "+ paths.get(j).getString() +"\n");
-				}
-			}
-			if(Utilities.isLinux()){
-				if(!variables.contains("DEFAULT_LIB_PATH")){
-					err.addError("undefined variable : DEFAULT_LIB_PATH");
-				}
-				String defaultInclude = variables.getValue("DEFAULT_LIB_PATH");
-				cmakeListWriter.write("    "+defaultInclude+"\n");
-			}
-			cmakeListWriter.write(")\n");
-			cmakeListWriter.write("\n");
-			
-			//output build path
-			if(hasLibBuild)
-				cmakeListWriter.write("SET(LIBRARY_OUTPUT_PATH "+ repoRoot +"/"+packPath+"/"+packVersion+"/lib/"+envName+"/"+ compileMode +")\n");
-			else
-				cmakeListWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+ repoRoot +"/"+packPath+"/"+packVersion+"/exe/"+envName+"/"+ compileMode +")\n");
-			cmakeListWriter.write("\n");
-			
-			//CMake project name
-			if(hasLibBuild)
-				cmakeListWriter.write("ADD_LIBRARY(\n");
-			else
-				cmakeListWriter.write("ADD_EXECUTABLE(\n");
-			cmakeListWriter.write("    ${PROJECT_NAME}\n");
-			if(hasLibBuild)
-				cmakeListWriter.write("    "+packBuildType.toUpperCase()+"\n");
-			cmakeListWriter.write("    ${SRC_FILES}\n");
-			cmakeListWriter.write("    ${INC_FILES}\n");
-			cmakeListWriter.write(")\n");
-			
-			//Dependency library list
-			cmakeListWriter.write("TARGET_LINK_LIBRARIES(\n");
-			cmakeListWriter.write("    ${PROJECT_NAME}\n");
-			for(int i=0; i<deps.size(); i++){
-				Dependency dep = deps.get(i);
-				for(int j=0; j<dep.getLibraryList().size(); j++){
-					String libName = dep.getLibraryList().get(j).getName().getString();
-					Description desc = pack.getDescription(libName);
-					if(desc != null){
-						cmakeListWriter.write("    "+ desc.getCompileName().getString() +"\n");
-					}
-				}
-			}
-			cmakeListWriter.write(")\n");
-			cmakeListWriter.write("\n");
+			String packBuildType = pack.getProperties().getBuildType().getString();
+			boolean hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
+			String typedFolder = hasLibBuild ? "lib" : "exe";
+			cmakePack.setOutputPath(repoRoot+"/"+packPath+"/"+packVersion+"/"+typedFolder+"/"+envName+"/"+ compileMode);
+
+			CMakePackWriter writer = new CMakePackWriter(cmakePack, cmakeListWriter);
+			writer.addSegmentWriter(new CMakeVersionWriter());
+			writer.addSegmentWriter(new CMakeProjectNameWriter());
+			writer.addSegmentWriter(new CMakeProjectVersionWriter());
+			writer.addSegmentWriter(new CMakeBuildModeWriter());
+			writer.addSegmentWriter(new CMakeBuildTypeWriter());
+			writer.addSegmentWriter(new CMakeDefinitionListWriter());
+			writer.addSegmentWriter(new CMakeFolderCleanWriter());
+			writer.addSegmentWriter(new CMakeSourceFilterWriter());
+			writer.addSegmentWriter(new CMakeHeaderFilterWriter());
+			writer.addSegmentWriter(new CMakeHeaderFolderListWriter());
+			writer.addSegmentWriter(new CMakeLinkFolderListWriter());
+			writer.addSegmentWriter(new CMakeBuildFolderWriter());
+			writer.addSegmentWriter(new CMakeAddProjectWriter());
+			writer.addSegmentWriter(new CMakeLibraryListWriter());
+			writer.write();
 			
 			cmakeListWriter.close();
+		} catch (IOException e) {
+			err.addError(e.getMessage());
+		}
+	}
+		
+	void generateComponentFiles(){
+		try{
+			String packBuildType = pack.getProperties().getBuildType().getString();
+			boolean hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
+			boolean hasSharedLibBuild = "shared".equals(packBuildType); 
 			
 			//creation component root folder
 			new File(repoRoot +"/"+packPath+"/"+packVersion).mkdirs();

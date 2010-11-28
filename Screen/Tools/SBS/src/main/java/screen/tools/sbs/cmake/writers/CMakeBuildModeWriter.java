@@ -50,7 +50,7 @@ public class CMakeBuildModeWriter implements CMakeSegmentWriter{
 		
 		FieldString mode = cmakePack.getBuildMode();
 		if(mode.isValid())
-			cmakeListsWriter.write("SET(CMAKE_BUILD_TYPE \""+mode.getString()+"\"))\n");
+			cmakeListsWriter.write("SET(CMAKE_BUILD_TYPE \""+mode.getString()+"\")\n");
 		else
 			err.addError("invalid build mode");
 	}

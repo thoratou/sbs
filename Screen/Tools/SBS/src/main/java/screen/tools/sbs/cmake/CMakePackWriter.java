@@ -60,6 +60,10 @@ public class CMakePackWriter {
 		writers = new ArrayList<CMakeSegmentWriter>();
 	}
 	
+	public void addSegmentWriter(CMakeSegmentWriter writer){
+		writers.add(writer);
+	}
+	
 	/**
 	 * 
 	 */
