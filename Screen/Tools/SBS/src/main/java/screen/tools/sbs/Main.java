@@ -82,7 +82,7 @@ public class Main {
 		//register actions for a given target
 		targetManager.call(parameters.getTargetCall(), parameters);
 		//verify that there is no error to resume the process
-		checkErrors();
+		boolean hasNoError = checkErrors();
 		if(GlobalSettings.getGlobalSettings().isPrintUsage()){
 			//print help
 			targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
@@ -91,7 +91,7 @@ public class Main {
 			//process registered actions
 			actionManager.processActions();
 			//verify that there is no error to resume the process
-			checkErrors();
+			hasNoError = checkErrors();
 			if(GlobalSettings.getGlobalSettings().isPrintUsage())
 				//print help
 				targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
@@ -100,7 +100,10 @@ public class Main {
 		Logger.info("------------- end SBS -------------");
 		Logger.info("");
 		Logger.info("-----------------------------------");
-		Logger.info("        COMMAND SUCCESSFUL         ");
+		if(hasNoError)
+			Logger.info("        COMMAND SUCCESSFUL         ");
+		else
+			Logger.info("          COMMAND FAILED           ");
 		Logger.info("-----------------------------------");
 	}
 }
