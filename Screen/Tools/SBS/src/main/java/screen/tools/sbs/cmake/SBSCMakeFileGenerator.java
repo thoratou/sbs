@@ -22,12 +22,11 @@
 
 package screen.tools.sbs.cmake;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.List;
 
 import screen.tools.sbs.cmake.writers.CMakeAddProjectWriter;
@@ -52,8 +51,6 @@ import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
-import screen.tools.sbs.utils.Logger;
-import screen.tools.sbs.utils.ProcessLauncher;
 import screen.tools.sbs.utils.Utilities;
 
 /**
@@ -79,6 +76,17 @@ public class SBSCMakeFileGenerator {
 	private String packName;
 	private String packPath;
 	private String packVersion;
+	private String packBuildType;
+	private boolean hasLibBuild;
+	private boolean hasSharedLibBuild;
+	private String typedFolder;
+	private String outputPath;
+
+	private String componentPath;
+
+	private String compileName;
+
+	private String fullName;
 	
 	/**
 	 * Constructor for SBSCMakeFileGenerator class
@@ -139,15 +147,44 @@ public class SBSCMakeFileGenerator {
 		packName = pack.getProperties().getName().getString().replaceAll("/", "");
 		packPath = pack.getProperties().getName().getString();
 		packVersion = pack.getProperties().getVersion().getString();
+
+		packBuildType = pack.getProperties().getBuildType().getString();
+		hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
+		typedFolder = hasLibBuild ? "lib" : "exe";
+		hasSharedLibBuild = "shared".equals(packBuildType); 
+		
+		outputPath = repoRoot+"/"+packPath+"/"+packVersion+"/"+typedFolder+"/"+envName+"/"+ compileMode;
+		componentPath = repoRoot +"/"+packPath+"/"+packVersion;
+		
+		EnvironmentVariables additionalVars = new EnvironmentVariables();
+		additionalVars.put("LIB_NAME", packName);
+		additionalVars.put("EXE_NAME", packName);
+		compileName = new FieldString(
+				hasLibBuild ? (
+					hasSharedLibBuild ?
+						"${DEFAULT_SHARED_LIB_COMPILE_NAME}" :
+						"${DEFAULT_STATIC_LIB_COMPILE_NAME}"
+						) :
+					""
+				).getString(additionalVars);
+		fullName = new FieldString(
+				hasLibBuild ? (
+					hasSharedLibBuild ?
+						"${DEFAULT_SHARED_LIB_FULL_NAME}" :
+						"${DEFAULT_STATIC_LIB_FULL_NAME}"
+						) :
+					"${DEFAULT_EXE_FULL_NAME}"
+				).getString(additionalVars);
 	}
 	
 	public void generate() {
 		retrieveContext();
 		generateCMakeLists();
 		generateComponentFiles();
+		generateSymbolicLinks();
 	}
 	
-	public void generateCMakeLists(){
+	private void generateCMakeLists(){
 		try {
 			//handler to write CMakeLists.txt file
 			File cmakeListFile = new File(sbsXmlPath + "CMakeLists.txt");
@@ -183,11 +220,7 @@ public class SBSCMakeFileGenerator {
 				cmakePack.addIncludeDirectory(defaultIncludePath);
 				cmakePack.addLinkDirectory(defaultLibPath);				
 			}
-			
-			String packBuildType = pack.getProperties().getBuildType().getString();
-			boolean hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
-			String typedFolder = hasLibBuild ? "lib" : "exe";
-			cmakePack.setOutputPath(repoRoot+"/"+packPath+"/"+packVersion+"/"+typedFolder+"/"+envName+"/"+ compileMode);
+			cmakePack.setOutputPath(outputPath);
 
 			CMakePackWriter writer = new CMakePackWriter(cmakePack, cmakeListWriter);
 			writer.addSegmentWriter(new CMakeVersionWriter());
@@ -212,18 +245,14 @@ public class SBSCMakeFileGenerator {
 		}
 	}
 		
-	void generateComponentFiles(){
+	private void generateComponentFiles(){
 		try{
-			String packBuildType = pack.getProperties().getBuildType().getString();
-			boolean hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
-			boolean hasSharedLibBuild = "shared".equals(packBuildType); 
-			
 			//creation component root folder
-			new File(repoRoot +"/"+packPath+"/"+packVersion).mkdirs();
+			new File(outputPath).mkdirs();
 			
 			//self component description file writing
 			if(hasLibBuild){
-				File sbsComponentFile = new File(repoRoot +"/"+packPath+"/"+packVersion+"/component.xml");
+				File sbsComponentFile = new File(componentPath+"/component.xml");
 				FileWriter sbsComponentWriter = null;
 				try {
 					sbsComponentWriter = new FileWriter(sbsComponentFile,false);
@@ -306,9 +335,7 @@ public class SBSCMakeFileGenerator {
 				sbsComponentWriter.write("</pack>\n");
 				sbsComponentWriter.close();
 				
-				new File(repoRoot +"/"+packPath+"/"+packVersion+"/lib/"+envName+"/"+compileMode+"/").mkdirs();
-				
-				File sbsLibraryFile = new File(repoRoot +"/"+packPath+"/"+packVersion+"/lib/"+envName+"/"+compileMode+"/library-description.xml");
+				File sbsLibraryFile = new File(outputPath+"/library-description.xml");
 				FileWriter sbsLibraryWriter = null;
 				try {
 					sbsLibraryWriter = new FileWriter(sbsLibraryFile,false);
@@ -316,11 +343,6 @@ public class SBSCMakeFileGenerator {
 					err.addError("Can't create file component.xml");
 					return;
 				}
-				
-				EnvironmentVariables additionalVars = new EnvironmentVariables();
-				additionalVars.put("LIB_NAME", packName);
-				FieldString compileName = new FieldString(hasSharedLibBuild ? "${DEFAULT_SHARED_LIB_COMPILE_NAME}" : "${DEFAULT_STATIC_LIB_COMPILE_NAME}");
-				FieldString fullName = new FieldString(hasSharedLibBuild ? "${DEFAULT_SHARED_LIB_FULL_NAME}" : "${DEFAULT_STATIC_LIB_FULL_NAME}");
 				
 				sbsLibraryWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 				sbsLibraryWriter.write("<pack>\n");
@@ -334,13 +356,56 @@ public class SBSCMakeFileGenerator {
 				sbsLibraryWriter.write("\t\t</dependencies>\n");
 				sbsLibraryWriter.write("\t</main>\n");
 				sbsLibraryWriter.write("\t<descriptions>\n");
-				sbsLibraryWriter.write("\t\t<library name=\""+packPath+"\" path=\".\" full-name=\""+fullName.getString(additionalVars)+"\" compile-name=\""+compileName.getString(additionalVars)+"\" type=\""+packBuildType+"\" />\n");
+				sbsLibraryWriter.write("\t\t<library name=\""+packPath+"\" path=\".\" full-name=\""+fullName+"\" compile-name=\""+compileName+"\" type=\""+packBuildType+"\" />\n");
 				sbsLibraryWriter.write("\t</descriptions>\n");
 				sbsLibraryWriter.write("</pack>\n");
 				sbsLibraryWriter.close();
 			}
+		} catch (IOException e) {
+			err.addError(e.getMessage());
+		}
+	}
+	
+	private void generateSymbolicLinks(){
+		if(hasSharedLibBuild || !hasLibBuild){
+			String deployPath = repoRoot+"/"+envName+"/"+compileMode;
+			new File(deployPath).mkdirs();
+			File target = new File(outputPath+"/"+fullName);
+			File link = new File(deployPath+"/"+fullName+"."+packVersion);
+			File finalLink = new File(deployPath+"/"+fullName);
+			Path targetPath = target.toPath();
+			Path linkPath = link.toPath();
+			Path finalLinkPath = finalLink.toPath();
 			
+			if(Utilities.isWindows()){
+				try {
+					linkPath.createLink(targetPath);
+				} catch (IOException e) {
+					err.addWarning("Unable to create hard link :\n"+e.getMessage());
+				}
+		
+				try {
+					finalLinkPath.createLink(linkPath);
+				} catch (IOException e) {
+					err.addWarning("Unable to create hard link :\n"+e.getMessage());
+				}
+			}
 			
+			if(Utilities.isLinux()){
+				try {
+					linkPath.createSymbolicLink(targetPath);
+				} catch (IOException e) {
+					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
+				}
+		
+				try {
+					finalLinkPath.createSymbolicLink(linkPath);
+				} catch (IOException e) {
+					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
+				}
+			}
+		}
+		/*try{
 			//Symbolic link generation
 			if(Utilities.isLinux()){
 				//On Linux, generate symbolic links to dynamic libraries and executables
@@ -352,7 +417,7 @@ public class SBSCMakeFileGenerator {
 							root+"/"+"generate-lib-sym-links.sh",
 							packName,
 							packVersion,
-							repoRoot +"/"+packPath+"/"+packVersion+"/lib/"+envName+"/"+compileMode+"/",
+							outputPath+"/",
 							repoRoot+"/"+envName+"/"+compileMode+"/" };
 				}
 				else if(!hasLibBuild){
@@ -361,7 +426,7 @@ public class SBSCMakeFileGenerator {
 							root+"/"+"generate-exe-sym-links.sh",
 							packName,
 							packVersion,
-							repoRoot +"/"+packPath+"/"+packVersion+"/exe/"+envName+"/"+compileMode+"/",
+							outputPath+"/",
 							repoRoot+"/"+envName+"/"+compileMode+"/" };
 				}
 				if(cmd!=null){
@@ -385,8 +450,11 @@ public class SBSCMakeFileGenerator {
 		            }
 				}
 			}
-		} catch (IOException e) {
+			else if(Utilities.isWindows()){
+				
+			}
+		}catch (IOException e) {
 			err.addError(e.getMessage());
-		}
+		}*/
 	}
 }
