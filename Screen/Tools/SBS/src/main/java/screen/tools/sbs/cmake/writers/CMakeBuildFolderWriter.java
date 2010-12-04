@@ -30,6 +30,7 @@ import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.utils.FieldBuildType.Type;
 
 /**
  * set LIBRARY_OUTPUT_PATH or EXECUTABLE_OUTPUT_PATH 
@@ -49,8 +50,16 @@ public class CMakeBuildFolderWriter implements CMakeSegmentWriter{
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
 		FieldString output = cmakePack.getOutputPath();
-		if(output.isValid())
-			cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getString()+")\n");
+		if(output.isValid()){
+			if(cmakePack.getBuildType().isValid()){
+				if(cmakePack.getBuildType().get() != Type.EXECUTABLE)
+					cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getString()+")\n");
+				else
+					cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getString()+")\n");
+			}
+			else
+				err.addError("invalid build type");
+		}
 		else
 			err.addError("invalid output path");
 	}
