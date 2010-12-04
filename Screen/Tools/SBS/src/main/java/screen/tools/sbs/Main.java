@@ -88,13 +88,16 @@ public class Main {
 			targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
 		}
 		else{
-			//process registered actions
-			actionManager.processActions();
-			//verify that there is no error to resume the process
-			hasNoError = checkErrors();
-			if(GlobalSettings.getGlobalSettings().isPrintUsage())
-				//print help
-				targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
+			//don't process actions if there are some errors while target processing
+			if(hasNoError){
+				//process registered actions
+				actionManager.processActions();
+				//verify that there is no error to resume the process
+				hasNoError = checkErrors();
+				if(GlobalSettings.getGlobalSettings().isPrintUsage())
+					//print help
+					targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
+			}
 		}
 		
 		Logger.info("------------- end SBS -------------");
