@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories>
+	<data>
+		<repository id="1" type="local,snapshot,internal" path="${REPOSITORY_ROOT}" comment="main local repository" />
+		<repository id="2" type="local,release,internal"  path="C:/Users/Thanh/Documents/My Dropbox/ScreenFrameWork/SBS-repository" comment="Screen dropbox repository" />
+	</data>
+	<filters>
+		<!-- by default, a component is taken in the main local repository in order to obtain the latest snapshot version of the component.
+		     if it is not into the main local repository, it would be found in another repository
+		-->
+		<filter id="1" component-name=".*" component-version=".*" compiler=".*" repository-id="1" />
+		<filter id="2" component-name=".*" component-version=".*" compiler=".*" repository-id="2" />
+	</filters>
+</repositories>
