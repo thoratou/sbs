@@ -62,7 +62,10 @@ public class TargetHelper {
 				parIt++;
 			}
 			else{
-				err.addError("Unknown parameter / \""+pars.getParameterAt(parIt)+"\" isn't a valid mandatory parameter");
+				if(pars.size() > parIt)
+					err.addError("Unknown parameter / \""+pars.getParameterAt(parIt)+"\" isn't a valid mandatory parameter");
+				else
+					err.addError("Missing mandatory parameter");
 				GlobalSettings.getGlobalSettings().needUsage();
 				return;
 			}
