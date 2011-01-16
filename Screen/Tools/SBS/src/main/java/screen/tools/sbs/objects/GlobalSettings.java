@@ -26,6 +26,8 @@ import java.io.File;
 
 import org.w3c.dom.Document;
 
+import screen.tools.sbs.repositories.RepositoryDataTable;
+import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.targets.TargetCall;
 
 public class GlobalSettings {
@@ -40,6 +42,8 @@ public class GlobalSettings {
 	private boolean isUsage;
 	private TargetCall targetUsage;
 	private Document xmlDocument;
+	private RepositoryFilterTable repositoryFilterTable;
+	private RepositoryDataTable repositoryDataTable;
 	
 	private GlobalSettings() {
 		envVar = new EnvironmentVariables();
@@ -52,6 +56,8 @@ public class GlobalSettings {
 		isUsage = false;
 		targetUsage = null;
 		xmlDocument = null;
+		repositoryFilterTable = new RepositoryFilterTable();
+		repositoryDataTable = new RepositoryDataTable();
 	}
 	
 	public static GlobalSettings getGlobalSettings() {
@@ -135,5 +141,13 @@ public class GlobalSettings {
 	
 	public Document getXmlDocument(){
 		return xmlDocument;
+	}
+
+	public RepositoryFilterTable getRepositoryFilterTable() {
+		return repositoryFilterTable;
+	}
+
+	public RepositoryDataTable getRepositoryDataTable() {
+		return repositoryDataTable;
 	}
 }
