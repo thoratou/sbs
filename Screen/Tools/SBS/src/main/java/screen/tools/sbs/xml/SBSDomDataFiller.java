@@ -43,6 +43,8 @@ import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.repositories.RepositoryComponent;
+import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.utils.FieldBool;
 import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldBuildType;
@@ -150,10 +152,6 @@ public class SBSDomDataFiller {
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
-		if(!variables.contains("REPOSITORY_ROOT")){
-			err.addError("undefined variable : REPOSITORY_ROOT");
-		}
-		String repoRoot = variables.getValue("REPOSITORY_ROOT");
 		
 		//dependencies
 		Logger.debug("dependencies");
@@ -258,7 +256,25 @@ public class SBSDomDataFiller {
 					//retrieve dependency file in SBS repository
 					String packName = newDep.getName().getString();
 					String packVersion = newDep.getVersion().getString();
-					String fullPath = repoRoot +"/"+packName+"/"+packVersion;
+					
+					if(!variables.contains("ENV_NAME")){
+						err.addError("undefined variable : ENV_NAME");
+					}
+					String compiler = variables.getValue("ENV_NAME");
+					FieldString compilerField = new FieldString(compiler);
+					
+					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), compilerField);
+					RepositoryFilter retrieved = finder.retrieve(GlobalSettings.getGlobalSettings().getRepositoryFilterTable());
+					if(retrieved == null){
+						err.addError("Unable to retrieve component into repositories :\n"+
+									"- component name : "+packName+"\n"+
+									"- component version : "+packVersion+"\n"+
+									"- compiler : "+compiler);
+						return;
+					}
+					String fullPath = retrieved.getData().getPath().getString()+"/"+packName+"/"+packVersion;
+					
+					//String fullPath = repoRoot +"/"+packName+"/"+packVersion;					
 					
 					if(new File(fullPath+"/component.xml").exists()){
 						//if component.xml exists, retrieve contents into pack
