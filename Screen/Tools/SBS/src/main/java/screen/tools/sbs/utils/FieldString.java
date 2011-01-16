@@ -76,6 +76,19 @@ public class FieldString {
 		return getString(null);
 	}
 	
+	@Override
+	public boolean equals(Object arg0) {
+		FieldString fieldString = (FieldString) arg0;
+		if(arg0==null)
+			return false;
+		return getString().equals(fieldString.getString());
+	}
+		
+	@Override
+	public int hashCode() {
+		return getString().hashCode();
+	}
+	
 	private String convertFromOriginalToFinal(String originalString, EnvironmentVariables additionalVars){
 		if(additionalVars == null)
 			additionalVars = new EnvironmentVariables();
