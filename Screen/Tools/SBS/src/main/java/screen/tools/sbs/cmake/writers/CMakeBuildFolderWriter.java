@@ -29,7 +29,7 @@ import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldBuildType.Type;
 
 /**
@@ -49,13 +49,13 @@ public class CMakeBuildFolderWriter implements CMakeSegmentWriter{
 			throws IOException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
-		FieldString output = cmakePack.getOutputPath();
+		FieldPath output = cmakePack.getOutputPath();
 		if(output.isValid()){
 			if(cmakePack.getBuildType().isValid()){
 				if(cmakePack.getBuildType().get() != Type.EXECUTABLE)
-					cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getString()+")\n");
+					cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getCMakeString()+")\n");
 				else
-					cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getString()+")\n");
+					cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getCMakeString()+")\n");
 			}
 			else
 				err.addError("invalid build type");

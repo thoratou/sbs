@@ -31,7 +31,7 @@ import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.utils.FieldPath;
 
 /**
  * write folder list for all header files
@@ -57,13 +57,13 @@ public class CMakeHeaderFolderListWriter implements CMakeSegmentWriter{
 			throws IOException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 
-		List<FieldString> includeDirectories = cmakePack.getIncludeDirectories();
-		Iterator<FieldString> iterator = includeDirectories.iterator();
+		List<FieldPath> includeDirectories = cmakePack.getIncludeDirectories();
+		Iterator<FieldPath> iterator = includeDirectories.iterator();
 		cmakeListsWriter.write("INCLUDE_DIRECTORIES(\n");
 		while(iterator.hasNext()){
-			FieldString next = iterator.next();
+			FieldPath next = iterator.next();
 			if(next.isValid()){
-				cmakeListsWriter.write("    "+next.getString()+"\n");
+				cmakeListsWriter.write("    "+next.getCMakeString()+"\n");
 			}
 			else{
 				err.addError("invalid include directory");

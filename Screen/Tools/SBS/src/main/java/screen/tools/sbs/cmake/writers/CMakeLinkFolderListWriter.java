@@ -27,11 +27,11 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.utils.FieldPath;
 
 /**
  * write folder list for all libraries
@@ -55,13 +55,13 @@ public class CMakeLinkFolderListWriter implements CMakeSegmentWriter{
 			throws IOException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 
-		List<FieldString> linkDirectories = cmakePack.getLinkDirectories();
-		Iterator<FieldString> iterator = linkDirectories.iterator();
+		List<FieldPath> linkDirectories = cmakePack.getLinkDirectories();
+		Iterator<FieldPath> iterator = linkDirectories.iterator();
 		cmakeListsWriter.write("LINK_DIRECTORIES(\n");
 		while(iterator.hasNext()){
-			FieldString next = iterator.next();
+			FieldPath next = iterator.next();
 			if(next.isValid()){
-				cmakeListsWriter.write("    "+next.getString()+"\n");
+				cmakeListsWriter.write("    "+next.getCMakeString()+"\n");
 			}
 			else{
 				err.addError("invalid link directory");

@@ -76,7 +76,7 @@ public class CMakePackGenerator {
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
 			if(fieldPath.isValid())
-				cmakePack.addIncludeDirectory(fieldPath.getString());
+				cmakePack.addIncludeDirectory(fieldPath.getCMakeString());
 			else
 				err.addError("invalid include path into the pack");
 		}
@@ -87,7 +87,7 @@ public class CMakePackGenerator {
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
 			if(fieldPath.isValid())
-				cmakePack.addLinkDirectory(fieldPath.getString());
+				cmakePack.addLinkDirectory(fieldPath.getCMakeString());
 			else
 				err.addError("invalid link path into the pack");
 		}
@@ -103,7 +103,7 @@ public class CMakePackGenerator {
 				String name = fieldName.getString();
 				Description description = descriptionMap.get(name);
 				if(description != null){
-					cmakePack.addLinkLibraries(description.getCompileName());
+					cmakePack.addLinkLibraries(description.getCompileName().getString());
 				}
 				else
 					err.addError("no description for library "+name+" into the pack");

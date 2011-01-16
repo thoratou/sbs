@@ -29,6 +29,7 @@ import java.util.List;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldBuildType;
+import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -48,10 +49,10 @@ public class CMakePack {
 	private Hashtable<FieldString, FieldString> compileFlags;
 	//private List<FieldString> projectSourceFiles;
 	//private List<FieldString> projectIncludeFiles;
-	private List<FieldString> includeDirectories;
-	private List<FieldString> linkDirectories;
+	private List<FieldPath> includeDirectories;
+	private List<FieldPath> linkDirectories;
 	private List<FieldString> linkLibraries;
-	private FieldString outputPath;
+	private FieldPath outputPath;
 	private boolean isTest;
 	
 	public CMakePack() {
@@ -62,10 +63,10 @@ public class CMakePack {
 		compileFlags = new Hashtable<FieldString, FieldString>();
 		//projectSourceFiles = new ArrayList<FieldString>();
 		//projectIncludeFiles = new ArrayList<FieldString>();
-		includeDirectories = new ArrayList<FieldString>();
-		linkDirectories = new ArrayList<FieldString>();
+		includeDirectories = new ArrayList<FieldPath>();
+		linkDirectories = new ArrayList<FieldPath>();
 		linkLibraries = new ArrayList<FieldString>();
-		outputPath = new FieldString();
+		outputPath = new FieldPath();
 		isTest = false;
 	}
 	
@@ -215,11 +216,11 @@ public class CMakePack {
 	}
 	*/
 
-	public void setIncludeDirectories(List<FieldString> includeDirectories) {
+	public void setIncludeDirectories(List<FieldPath> includeDirectories) {
 		this.includeDirectories = includeDirectories;
 	}
 	
-	public void addIncludeDirectory(FieldString file) {
+	public void addIncludeDirectory(FieldPath file) {
 		if(file!=null)
 			includeDirectories.add(file);
 		else
@@ -227,18 +228,18 @@ public class CMakePack {
 	}
 	
 	public void addIncludeDirectory(String file) {
-		addIncludeDirectory(new FieldString(file));
+		addIncludeDirectory(new FieldPath(file));
 	}
 
-	public List<FieldString> getIncludeDirectories() {
+	public List<FieldPath> getIncludeDirectories() {
 		return includeDirectories;
 	}
 
-	public void setLinkDirectories(List<FieldString> linkDirectories) {
+	public void setLinkDirectories(List<FieldPath> linkDirectories) {
 		this.linkDirectories = linkDirectories;
 	}
 	
-	public void addLinkDirectory(FieldString file) {
+	public void addLinkDirectory(FieldPath file) {
 		if(file!=null)
 			linkDirectories.add(file);
 		else
@@ -246,10 +247,10 @@ public class CMakePack {
 	}
 	
 	public void addLinkDirectory(String file) {
-		addLinkDirectory(new FieldString(file));
+		addLinkDirectory(new FieldPath(file));
 	}
 
-	public List<FieldString> getLinkDirectories() {
+	public List<FieldPath> getLinkDirectories() {
 		return linkDirectories;
 	}
 
@@ -272,7 +273,7 @@ public class CMakePack {
 		return linkLibraries;
 	}
 
-	public void setOutputPath(FieldString outputPath) {
+	public void setOutputPath(FieldPath outputPath) {
 		if(outputPath!=null)
 			this.outputPath = outputPath;
 		else
@@ -280,10 +281,10 @@ public class CMakePack {
 	}
 	
 	public void setOutputPath(String outputPath) {
-		setOutputPath(new FieldString(outputPath));
+		setOutputPath(new FieldPath(outputPath));
 	}
 
-	public FieldString getOutputPath() {
+	public FieldPath getOutputPath() {
 		return outputPath;
 	}
 	
