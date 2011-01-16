@@ -30,6 +30,9 @@ import java.io.IOException;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.repositories.RepositoryDataTable;
+import screen.tools.sbs.repositories.RepositoryFilterTable;
+import screen.tools.sbs.repositories.RepositoryParser;
 
 /**
  * Action to load local or global configuration.
@@ -84,6 +87,18 @@ public class ActionConfigurationLoad implements Action {
 			err.addError("Can't read configuration");
 			return;
 		}
+		
+		//load repositories
+		RepositoryDataTable repositoryDataTable = GlobalSettings.getGlobalSettings().getRepositoryDataTable();
+		RepositoryFilterTable repositoryFilterTable = GlobalSettings.getGlobalSettings().getRepositoryFilterTable();
+		
+		String sbsRoot = GlobalSettings.getGlobalSettings().getEnvironmentVariables().getValue("SBS_ROOT");
+		
+		RepositoryParser parser = new RepositoryParser(
+									new File(sbsRoot+"/repositories/repositories.xml"),
+									repositoryDataTable,
+									repositoryFilterTable);
+		parser.fill();
 	}
 
 }
