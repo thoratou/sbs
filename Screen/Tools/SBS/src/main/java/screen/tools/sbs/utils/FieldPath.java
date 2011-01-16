@@ -62,8 +62,8 @@ public class FieldPath {
 		String ret = fieldString.getString(additionalVars);
 		if(ret == null)
 			return null;
+		ret = ret.replaceAll("\\\\ ", " ");
 		ret = ret.replaceAll("\\\\", "/");
-		ret = ret.replaceAll(" ", "\\\\ ");
 		if(!ret.endsWith("/"))
 			ret += "/";
 		return ret;
@@ -72,6 +72,15 @@ public class FieldPath {
 	public String getString(){
 		return getString(null);
 	}
+	
+	public String getCMakeString(EnvironmentVariables additionalVars){
+		return getString(additionalVars).replaceAll(" ", "\\\\ ");
+	}
+	
+	public String getCMakeString(){
+		return getCMakeString(null);
+	}
+
 	
 	public void setBuildMode(FieldBuildMode mode){
 		fieldBuildMode = mode;
