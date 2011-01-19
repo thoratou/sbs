@@ -30,6 +30,8 @@ import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
 public class Dependency {
+	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
+	
 	private FieldString name;
 	private FieldString version;
 	private FieldBool export;
@@ -47,7 +49,14 @@ public class Dependency {
 	}
 	
 	public void setName(FieldString name) {
-		this.name = name;
+		if(name!=null)
+			this.name = name;
+		else
+			err.addWarning("Null FieldString for dependency name");
+	}
+	
+	public void setName(String name) {
+		setName(new FieldString(name));
 	}
 
 	public FieldString getName() {
@@ -55,7 +64,14 @@ public class Dependency {
 	}
 
 	public void setVersion(FieldString version) {
-		this.version = version;
+		if(version!=null)
+			this.version = version;
+		else
+			err.addWarning("Null FieldString for dependency version");
+	}
+
+	public void setVersion(String version) {
+		setVersion(new FieldString(version));
 	}
 
 	public FieldString getVersion() {
@@ -63,9 +79,20 @@ public class Dependency {
 	}
 	
 	public void setExport(FieldBool export) {
-		this.export = export;
+		if(export!=null)
+			this.export = export;
+		else
+			err.addWarning("Null FieldString for dependency export flag");
 	}
 	
+	public void setExport(String export) {
+		setExport(new FieldBool(export));
+	}
+	
+	public void setExport(boolean export) {
+		setExport(new FieldBool(export));
+	}
+
 	public FieldBool getExport() {
 		return export;
 	}
@@ -77,26 +104,56 @@ public class Dependency {
 	}
 	
 	public void addIncludePath(FieldPath include){
-		includePathList.add(include);
+		if(include!=null)
+			includePathList.add(include);
+		else
+			err.addWarning("Null FieldPath for dependency include path");
 	}
 	
-	public void addLibraryPath(FieldPath include){
-		libraryPathList.add(include);
+	public void addIncludePath(String include){
+		addIncludePath(new FieldPath(include));
+	}
+	
+	public void addLibraryPath(FieldPath library){
+		if(library!=null)
+			libraryPathList.add(library);
+		else
+			err.addWarning("Null FieldPath for dependency library path");
+	}
+	
+	public void addLibraryPath(String library){
+		addLibraryPath(new FieldPath(library));
 	}
 	
 	public void addLibrary(FieldString name){
-		Library lib = new Library();
-		lib.setName(name);
-		libraryList.add(lib);
+		if(name!=null){
+			Library lib = new Library();
+			lib.setName(name);
+			libraryList.add(lib);
+		}
+		else
+			err.addWarning("Null FieldString for dependency library name");
 	}
 
 	public void addLibrary(FieldString name, FieldString version){
-		Library lib = new Library();
-		lib.setName(name);
-		lib.setVersion(version);
-		libraryList.add(lib);
+		if(name!=null){
+			Library lib = new Library();
+			lib.setName(name);
+			if(version!=null)
+				lib.setVersion(version);
+			libraryList.add(lib);
+		}
+		else
+			err.addWarning("Null FieldString for dependency library name");
 	}
-
+	
+	public void addLibrary(String name){
+		addLibrary(new FieldString(name));
+	}
+	
+	public void addLibrary(String name, String version){
+		addLibrary(new FieldString(name), new FieldString(version));
+	}
 
 	public void setIncludePathList(List<FieldPath> includePathList) {
 		this.includePathList = includePathList;

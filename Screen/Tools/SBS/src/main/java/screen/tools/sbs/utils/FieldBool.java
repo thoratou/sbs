@@ -33,6 +33,10 @@ public class FieldBool{
 		this.value = value;
 	}
 	
+	public FieldBool(boolean value) {
+		setBool(value);
+	}
+	
 	public boolean isEmpty(){
 		return value == null;
 	}
@@ -47,6 +51,10 @@ public class FieldBool{
 	
 	public void setString(String value){
 		this.value = value;
+	}
+	
+	public void setBool(boolean value){
+		this.value = value ? "true" : "false";
 	}
 	
 	public String getString(){
