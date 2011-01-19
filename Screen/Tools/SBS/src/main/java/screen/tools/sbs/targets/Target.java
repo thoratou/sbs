@@ -25,7 +25,7 @@ package screen.tools.sbs.targets;
 import screen.tools.sbs.actions.ActionManager;
 
 public interface Target {
-	abstract void registerActions(ActionManager actionManager, Parameters parameters);
-	abstract TargetCall getTargetCall();
-	abstract void usage();
+	void registerActions(ActionManager actionManager, Parameters parameters);
+	TargetCall getTargetCall();
+	void usage();
 }

@@ -33,5 +33,5 @@ public interface Action {
 	/**
 	 * Abstract method called to perform an action.
 	 */
-	abstract void perform();
+	void perform();
 }
