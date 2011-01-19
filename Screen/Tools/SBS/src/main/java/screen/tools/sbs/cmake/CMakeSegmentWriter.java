@@ -27,6 +27,11 @@ import java.io.Writer;
 
 
 /**
+ * Interface for CMake segment writer
+ * <pre>
+ * A segment is a subset of the CMakelists.txt content
+ * </pre>
+ * 
  * @author Ratouit Thomas
  *
  */

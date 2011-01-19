@@ -39,6 +39,12 @@ public class CMakePackWriter {
 	private Writer cmakeListsWriter;
 	private List<CMakeSegmentWriter> writers;
 	
+	/**
+	 * Convert and SBS build type into a CMake build type string
+	 * 
+	 * @param type Input SBS build type
+	 * @return Output CMake build type
+	 */
 	public static String getCmakeBuildType(FieldBuildType.Type type){
 		switch(type){
 		case EXECUTABLE:
@@ -52,7 +58,10 @@ public class CMakePackWriter {
 	}
 	
 	/**
+	 * Writer constructor
 	 * 
+	 * @param pack Input CMake pack
+	 * @param writer Writer for output CMakelists.txt
 	 */
 	public CMakePackWriter(CMakePack pack, Writer writer) {
 		cmakePack = pack;
@@ -60,12 +69,17 @@ public class CMakePackWriter {
 		writers = new ArrayList<CMakeSegmentWriter>();
 	}
 	
+	/**
+	 * Registers a CMake segment writer
+	 * 
+	 * @param writer
+	 */
 	public void addSegmentWriter(CMakeSegmentWriter writer){
 		writers.add(writer);
 	}
 	
 	/**
-	 * 
+	 * Performs the writing
 	 */
 	public void write(){
 		try {
