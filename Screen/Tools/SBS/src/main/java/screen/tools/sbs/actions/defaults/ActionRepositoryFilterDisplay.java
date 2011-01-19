@@ -31,7 +31,7 @@ import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 
 /**
- * Action to load an SBS XML file
+ * Action to display repository list into standard output
  * 
  * @author Ratouit Thomas
  *
@@ -41,9 +41,11 @@ public class ActionRepositoryFilterDisplay implements Action {
 	 * Print repository filter list
 	 */
 	public void perform() {
+		//retrieve repository filter list
 		RepositoryFilterTable repositoryFilterTable = GlobalSettings.getGlobalSettings().getRepositoryFilterTable();
 		List<RepositoryFilter> list = repositoryFilterTable.getSortedList();
 		
+		//define output format
 		String format ="";
 		format += "%1$5s";	// id
 		format += "|";		// separator 
@@ -56,11 +58,15 @@ public class ActionRepositoryFilterDisplay implements Action {
 		format += "%5$16s";	// compiler
 		format += "\n";		// end of line
 		
+		//print list
 		System.out.println("Repository filters :");
 		System.out.println();
+		
+		//table header
 		System.out.format(format,"id","repo-id","component","version","compiler");
 		System.out.format(format,"-----","-------","----------------","----------------","----------------");
 		
+		//table content
 		Iterator<RepositoryFilter> iterator = list.iterator();
 		while(iterator.hasNext()){
 			RepositoryFilter next = iterator.next();

@@ -31,7 +31,7 @@ import screen.tools.sbs.repositories.RepositoryData;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 
 /**
- * Action to load an SBS XML file
+ * Action to display repository list into standard output
  * 
  * @author Ratouit Thomas
  *
@@ -41,9 +41,11 @@ public class ActionRepositoryDisplay implements Action {
 	 * Print repository list.
 	 */
 	public void perform() {
+		//retrieve repository list
 		RepositoryDataTable repositoryDataTable = GlobalSettings.getGlobalSettings().getRepositoryDataTable();
 		List<RepositoryData> list = repositoryDataTable.getSorterByIDList();
 		
+		//define output format
 		String format ="";
 		format += "%1$5s";	// id
 		format += "|";		// separator 
@@ -52,11 +54,15 @@ public class ActionRepositoryDisplay implements Action {
 		format += "%3$30s";	// path
 		format += "\n";		// end of line
 		
+		//print list
 		System.out.println("Repository list :");
 		System.out.println();
+		
+		//table header
 		System.out.format(format,"id","type","path");
 		System.out.format(format,"-----","----","------------------------------");
 		
+		//table content
 		Iterator<RepositoryData> iterator = list.iterator();
 		while(iterator.hasNext()){
 			RepositoryData next = iterator.next();
