@@ -17,6 +17,8 @@ import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
 /**
+ * Generate a CMake pack from and SBS pack
+ * 
  * @author Ratouit Thomas
  *
  */
@@ -26,17 +28,35 @@ public class CMakePackGenerator {
 	Pack pack;
 	CMakePack cmakePack;
 	
+	/**
+	 * Unique generator constructor
+	 * 
+	 * @param pack Input SBS pack
+	 * @param cmakePack Output CMake pack
+	 */
 	public CMakePackGenerator(Pack pack, CMakePack cmakePack) {
 		this.pack = pack;
 		this.cmakePack = cmakePack;
 	}
 	
+	/**
+	 * performs the generation
+	 */
 	public void generate(){
 		convertFromProperties(pack.getProperties());
 		convertFromDependencies(pack.getDependencyList(), pack.getDescriptionMap());
 		convertFromFlags(pack.getFlagList());
 	}
 
+	/**
+	 * Convert SBS property part of an SBS Pack
+	 * Content :
+	 *  - component name
+	 *  - component version
+	 *  - component build type
+	 *  
+	 *  @param properties Component properties
+	 */
 	protected void convertFromProperties(ProjectProperties properties) {
 		FieldString name = pack.getProperties().getName();
 		if(name.isValid())
@@ -59,6 +79,17 @@ public class CMakePackGenerator {
 		else
 			err.addError("invalid build type into the pack");
 	}
+	
+	/**
+	 * Convert dependency list
+	 * Content :
+	 *  - include path list
+	 *  - library path list
+	 *  - library list
+	 * 
+	 * @param dependencyList 
+	 * @param descriptionMap
+	 */
 
 	protected void convertFromDependencies(List<Dependency> dependencyList,
 			Hashtable<String, Description> descriptionMap) {
@@ -71,6 +102,11 @@ public class CMakePackGenerator {
 		}
 	}
 
+	/**
+	 * Convert include path list
+	 * 
+	 * @param includePathList
+	 */
 	protected void convertFromIncludePathList(List<FieldPath> includePathList) {
 		Iterator<FieldPath> iterator = includePathList.iterator();
 		while (iterator.hasNext()) {
@@ -82,6 +118,11 @@ public class CMakePackGenerator {
 		}
 	}
 
+	/**
+	 * Convert library path list
+	 * 
+	 * @param libraryPathList
+	 */
 	protected void convertFromLibraryPathList(List<FieldPath> libraryPathList) {
 		Iterator<FieldPath> iterator = libraryPathList.iterator();
 		while (iterator.hasNext()) {
@@ -93,6 +134,12 @@ public class CMakePackGenerator {
 		}
 	}
 
+	/**
+	 * Convert library list
+	 * 
+	 * @param libraryList
+	 * @param descriptionMap
+	 */
 	protected void convertFromLibraryList(List<Library> libraryList,
 			Hashtable<String, Description> descriptionMap) {
 		Iterator<Library> iterator = libraryList.iterator();
@@ -113,6 +160,11 @@ public class CMakePackGenerator {
 		}
 	}
 
+	/**
+	 * Convert flag list
+	 * 
+	 * @param flagList
+	 */
 	protected void convertFromFlags(List<Flag> flagList) {
 		Iterator<Flag> iterator = flagList.iterator();
 		while (iterator.hasNext()) {
