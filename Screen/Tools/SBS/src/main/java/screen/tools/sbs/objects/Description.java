@@ -27,6 +27,8 @@ import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldString;
 
 public class Description {
+	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
+
 	private FieldString name;
 	private FieldString fullName;
 	private FieldString compileName;
@@ -42,23 +44,29 @@ public class Description {
 	}
 	
 	public void setName(FieldString name) {
-		this.name = name;
+		if(name!=null)
+			this.name = name;
+		else
+			err.addWarning("Null FieldString for description name");
 	}
 	
 	public void setName(String name) {
-		this.name.setString(name);
+		setName(new FieldString(name));
 	}
-
+	
 	public FieldString getName() {
 		return name;
 	}
 	
 	public void setFullName(FieldString name) {
-		fullName = name;
+		if(name!=null)
+			this.fullName = name;
+		else
+			err.addWarning("Null FieldString for description full name");
 	}
 	
 	public void setFullName(String name) {
-		fullName.setString(name);
+		setFullName(new FieldString(name));
 	}
 
 	public FieldString getFullName() {
@@ -66,11 +74,14 @@ public class Description {
 	}
 	
 	public void setCompileName(FieldString name) {
-		compileName = name;
+		if(name!=null)
+			this.compileName = name;
+		else
+			err.addWarning("Null FieldString for description compile name");
 	}
 	
 	public void setCompileName(String name) {
-		compileName.setString(name);
+		setCompileName(new FieldString(name));
 	}
 
 	public FieldString getCompileName() {
@@ -78,15 +89,18 @@ public class Description {
 	}
 
 	public void setBuildType(FieldBuildType buildType) {
-		this.buildType = buildType;
+		if(buildType!=null)
+			this.buildType = buildType;
+		else
+			err.addWarning("Null FieldBuildType for description build type");
 	}
 	
 	public void setBuildType(String type) {
-		buildType.set(type);
+		setBuildType(new FieldBuildType(type));
 	}
 	
 	public void setBuildType(FieldBuildType.Type type) {
-		buildType.set(type);
+		setBuildType(new FieldBuildType(type));
 	}
 
 	public FieldBuildType.Type getBuildType() {
@@ -94,15 +108,18 @@ public class Description {
 	}
 	
 	public void setBuildMode(FieldBuildMode buildMode) {
-		this.buildMode = buildMode;
+		if(buildMode!=null)
+			this.buildMode = buildMode;
+		else
+			err.addWarning("Null FieldBuildMode for description build mode");
 	}
 	
 	public void setBuildMode(String mode) {
-		buildMode.set(mode);
+		setBuildMode(new FieldBuildMode(mode));
 	}
 	
 	public void setBuildMode(FieldBuildMode.Type type) {
-		buildMode.set(type);
+		setBuildMode(new FieldBuildMode(type));
 	}
 
 	public FieldBuildMode getBuildMode() {

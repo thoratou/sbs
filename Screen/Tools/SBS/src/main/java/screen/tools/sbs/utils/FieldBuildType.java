@@ -40,6 +40,10 @@ public class FieldBuildType {
 		valid = false;
 	}
 	
+	public FieldBuildType(String value) {
+		set(value);
+	}
+	
 	public FieldBuildType(Type buildType) {
 		type = buildType;
 		valid = true;
