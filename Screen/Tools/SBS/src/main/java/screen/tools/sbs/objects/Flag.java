@@ -26,34 +26,60 @@ import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldString;
 
 public class Flag {
+	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
+
 	private FieldString flag;
 	private FieldString value;
-	FieldBuildMode fieldBuildMode;
+	private FieldBuildMode buildMode;
 	
 	public Flag() {
 		flag = new FieldString();
 		value = new FieldString();
-		fieldBuildMode = new FieldBuildMode();
+		buildMode = new FieldBuildMode();
 	}
 	
 	public void setFlag(FieldString flag) {
-		this.flag = flag;
+		if(flag!=null)
+			this.flag = flag;
+		else
+			err.addWarning("Null FieldString for flag key");
 	}
+	
+	public void setFlag(String flag) {
+		setFlag(new FieldString(flag));
+	}
+	
 	public FieldString getFlag() {
 		return flag;
 	}
+	
 	public void setValue(FieldString value) {
-		this.value = value;
+		if(value!=null)
+			this.value = value;
+		else
+			err.addWarning("Null FieldString for flag value");
 	}
+
+	public void setValue(String value) {
+		setValue(new FieldString(value));
+	}
+		
 	public FieldString getValue() {
 		return value;
 	}
 	
 	public void setBuildMode(FieldBuildMode mode){
-		fieldBuildMode = mode;
+		if(value!=null)
+			this.buildMode = mode;
+		else
+			err.addWarning("Null FieldString for flag build mode");
+	}
+
+	public void setBuildMode(String mode){
+		setBuildMode(new FieldBuildMode(mode));
 	}
 	
 	public FieldBuildMode getBuildMode(){
-		return fieldBuildMode;
+		return buildMode;
 	}
 }
