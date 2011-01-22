@@ -25,6 +25,8 @@ package screen.tools.sbs.objects;
 import screen.tools.sbs.utils.FieldString;
 
 public class ProjectProperties {
+	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
+
 	private FieldString name;
 	private FieldString version;
 	private FieldString buildType;
@@ -36,7 +38,10 @@ public class ProjectProperties {
 	}
 
 	public void setName(FieldString name) {
-		this.name = name;
+		if(name!=null)
+			this.name = name;
+		else
+			err.addWarning("Null FieldString for property name");
 	}
 
 	public FieldString getName() {
@@ -44,7 +49,10 @@ public class ProjectProperties {
 	}
 
 	public void setVersion(FieldString version) {
-		this.version = version;
+		if(version!=null)
+			this.version = version;
+		else
+			err.addWarning("Null FieldString for property version");
 	}
 
 	public FieldString getVersion() {
@@ -52,7 +60,10 @@ public class ProjectProperties {
 	}
 
 	public void setBuildType(FieldString buildType) {
-		this.buildType = buildType;
+		if(buildType!=null)
+			this.buildType = buildType;
+		else
+			err.addWarning("Null FieldString for property build type");
 	}
 
 	public FieldString getBuildType() {
