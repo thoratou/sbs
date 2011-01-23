@@ -67,7 +67,11 @@ public class CompileLauncher {
             	Logger.info(s);
             }
             while ((s = stdError.readLine()) != null) {
-                err.addError(s);
+            	if(s.contains("Creating library file"))
+            		//Wascana and MSYS log error just for .a files associated to a .dll
+            		Logger.info(s);
+            	else
+            		err.addError(s);
             }
             
         }

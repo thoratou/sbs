@@ -381,13 +381,13 @@ public class SBSCMakeFileGenerator {
 				try {
 					linkPath.createLink(targetPath);
 				} catch (IOException e) {
-					err.addWarning("Unable to create hard link :\n"+e.getMessage());
+					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
 		
 				try {
 					finalLinkPath.createLink(linkPath);
 				} catch (IOException e) {
-					err.addWarning("Unable to create hard link :\n"+e.getMessage());
+					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
 			}
 			
