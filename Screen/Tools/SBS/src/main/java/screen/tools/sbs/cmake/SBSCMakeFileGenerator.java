@@ -405,56 +405,5 @@ public class SBSCMakeFileGenerator {
 				}
 			}
 		}
-		/*try{
-			//Symbolic link generation
-			if(Utilities.isLinux()){
-				//On Linux, generate symbolic links to dynamic libraries and executables
-				String root = System.getProperty("SBS_ROOT");
-				String[] cmd = null;
-				if(hasSharedLibBuild){
-				   //shared library
-			       cmd = new String[]{"/bin/sh",
-							root+"/"+"generate-lib-sym-links.sh",
-							packName,
-							packVersion,
-							outputPath+"/",
-							repoRoot+"/"+envName+"/"+compileMode+"/" };
-				}
-				else if(!hasLibBuild){
-					//executable
-					cmd = new String[]{"/bin/sh",
-							root+"/"+"generate-exe-sym-links.sh",
-							packName,
-							packVersion,
-							outputPath+"/",
-							repoRoot+"/"+envName+"/"+compileMode+"/" };
-				}
-				if(cmd!=null){
-					Logger.info("command : "+ProcessLauncher.getCommand(cmd));
-					
-					ProcessLauncher p = new ProcessLauncher();
-					p.execute(cmd,null,new File(sbsXmlPath));
-					
-					BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-		
-		            String s;
-			        while ((s = stdInput.readLine()) != null) {
-		            	Logger.info(s);
-		            }
-		            while ((s = stdError.readLine()) != null) {
-		            	if(s.contains("ln: creating symbolic link") && s.contains("File exists"))
-		            		Logger.debug(s);
-		            	else
-		            		err.addError(s);
-		            }
-				}
-			}
-			else if(Utilities.isWindows()){
-				
-			}
-		}catch (IOException e) {
-			err.addError(e.getMessage());
-		}*/
 	}
 }
