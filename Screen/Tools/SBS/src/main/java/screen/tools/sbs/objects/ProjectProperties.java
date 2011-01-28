@@ -43,6 +43,11 @@ public class ProjectProperties {
 		else
 			err.addWarning("Null FieldString for property name");
 	}
+	
+	public void setName(String name) {
+		setName(new FieldString(name));
+	}
+	
 
 	public FieldString getName() {
 		return name;
@@ -53,6 +58,10 @@ public class ProjectProperties {
 			this.version = version;
 		else
 			err.addWarning("Null FieldString for property version");
+	}
+
+	public void setVersion(String version) {
+		setVersion(new FieldString(version));
 	}
 
 	public FieldString getVersion() {
@@ -66,6 +75,10 @@ public class ProjectProperties {
 			err.addWarning("Null FieldString for property build type");
 	}
 
+	public void setBuildType(String buildType) {
+		setBuildType(new FieldString(buildType));
+	}
+	
 	public FieldString getBuildType() {
 		return buildType;
 	}
