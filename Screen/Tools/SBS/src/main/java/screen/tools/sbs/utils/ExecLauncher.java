@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.objects.EnvironmentVariables;
@@ -73,9 +74,17 @@ public class ExecLauncher {
 		
         try {
 			List<String> command = new ArrayList<String>();
-			command.add(launchCommand);
+			command.add(path+"/"+launchCommand);
         	ProcessLauncher p = new ProcessLauncher();
-			p.execute(command.toArray(new String[command.size()]),null,new File(path));
+        	
+        	Logger.info(path);
+        	Iterator<String> iterator = command.iterator();
+        	while(iterator.hasNext()){
+        		String next = iterator.next();
+        		Logger.info(next);
+        	}
+        	
+        	p.execute(command.toArray(new String[command.size()]),null,new File(path));
 			
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
