@@ -24,8 +24,6 @@ package screen.tools.sbs.objects;
 
 import java.io.File;
 
-import org.w3c.dom.Document;
-
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.targets.TargetCall;
@@ -36,12 +34,9 @@ public class GlobalSettings {
 	private ErrorList errorList;
 	private String sbsXmlPath;
 	private String sbsXmlFile;
-	private Pack pack;
-	private Pack testPack;
 	private boolean debug;
 	private boolean isUsage;
 	private TargetCall targetUsage;
-	private Document xmlDocument;
 	private RepositoryFilterTable repositoryFilterTable;
 	private RepositoryDataTable repositoryDataTable;
 	
@@ -50,12 +45,9 @@ public class GlobalSettings {
 		errorList = new ErrorList();
 		sbsXmlFile = null;
 		sbsXmlPath = null;
-		pack = null;
-		testPack = null;
 		debug = false;
 		isUsage = false;
 		targetUsage = null;
-		xmlDocument = null;
 		repositoryFilterTable = new RepositoryFilterTable();
 		repositoryDataTable = new RepositoryDataTable();
 	}
@@ -118,37 +110,7 @@ public class GlobalSettings {
 	public TargetCall getTargetUsage(){
 		return targetUsage;
 	}
-
-	@Deprecated
-	public Pack getPack() {
-		return pack;
-	}
 	
-	@Deprecated
-	public Pack getTestPack() {
-		return testPack;
-	}
-	
-	@Deprecated
-	public void setPack(Pack pack) {
-		this.pack = pack;
-	}
-	
-	@Deprecated
-	public void setTestPack(Pack testPack) {
-		this.testPack = testPack;
-	}
-
-	@Deprecated
-	public void setXmlDocument(Document doc) {
-		xmlDocument = doc;
-	}
-	
-	@Deprecated
-	public Document getXmlDocument(){
-		return xmlDocument;
-	}
-
 	public RepositoryFilterTable getRepositoryFilterTable() {
 		return repositoryFilterTable;
 	}
