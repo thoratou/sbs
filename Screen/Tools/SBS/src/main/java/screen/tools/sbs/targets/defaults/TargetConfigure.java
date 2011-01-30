@@ -24,6 +24,7 @@ package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigure;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -58,6 +59,9 @@ public class TargetConfigure implements Target {
 	public void registerActions(ActionManager actionManager,
 			Parameters parameters) {
 		helper.perform(parameters);
+		
+		ContextHandler contextHandler = new ContextHandler();
+		actionManager.setContext(contextHandler);
 		
 		ActionConfigure action = new ActionConfigure();
 		action.setGlobal(optionGlobal.isGlobal());

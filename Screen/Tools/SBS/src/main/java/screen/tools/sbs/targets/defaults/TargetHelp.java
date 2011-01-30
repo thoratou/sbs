@@ -23,6 +23,7 @@
 package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
@@ -45,6 +46,9 @@ public class TargetHelp implements Target {
 	public void registerActions(ActionManager actionManager,
 			Parameters parameters) {		
 		helper.perform(parameters);
+
+		ContextHandler contextHandler = new ContextHandler();
+		actionManager.setContext(contextHandler);
 
 		GlobalSettings.getGlobalSettings().needUsage(optionTarget.getTargetCall());
 	}
