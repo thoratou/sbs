@@ -29,6 +29,7 @@ import screen.tools.sbs.context.Context;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
@@ -43,13 +44,15 @@ import screen.tools.sbs.xml.SBSDomDataFiller;
 public class ActionPackLoad implements Action {
 
 	private PackContext packContext;
+	private XmlDocumentContext xmlDocContext;
 
 	/**
 	 * Loads the pack from the global XML Dom.
 	 * The pack is set in global settings.
 	 */
 	public void perform() {
-		Document doc = GlobalSettings.getGlobalSettings().getXmlDocument();
+		//Document doc = GlobalSettings.getGlobalSettings().getXmlDocument();
+		Document doc = xmlDocContext.getDocument();
 		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
 		Pack pack = new Pack();
 		SBSDomDataFiller dataFiller = new SBSDomDataFiller(pack,null,new FieldPath(path));
@@ -61,5 +64,7 @@ public class ActionPackLoad implements Action {
 	public void setContext(ContextHandler contextHandler) {
 		Context context = contextHandler.getContext(ContextKeys.PACK);
 		packContext = (PackContext) context;
+		Context context2 = contextHandler.getContext(ContextKeys.SBS_XML_DOCUMENT);
+		xmlDocContext = (XmlDocumentContext) context2;
 	}
 }

@@ -27,7 +27,10 @@ import java.io.File;
 import org.w3c.dom.Document;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.Context;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.xml.SBSDomParser;
 
@@ -38,6 +41,8 @@ import screen.tools.sbs.xml.SBSDomParser;
  *
  */
 public class ActionXmlLoad implements Action {
+	private XmlDocumentContext xmlDocContext;
+
 	/**
 	 * Loads the XML file
 	 */
@@ -45,8 +50,12 @@ public class ActionXmlLoad implements Action {
 		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
 		String file = GlobalSettings.getGlobalSettings().getSbsXmlFile();
 		Document doc = SBSDomParser.parserFile(new File(path+"/"+file));
-		GlobalSettings.getGlobalSettings().setXmlDocument(doc);
+		//GlobalSettings.getGlobalSettings().setXmlDocument(doc);
+		xmlDocContext.setDocument(doc);
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		Context context2 = contextHandler.getContext(ContextKeys.SBS_XML_DOCUMENT);
+		xmlDocContext = (XmlDocumentContext) context2;
+	}
 }

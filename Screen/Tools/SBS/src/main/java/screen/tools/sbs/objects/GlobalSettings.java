@@ -139,10 +139,12 @@ public class GlobalSettings {
 		this.testPack = testPack;
 	}
 
+	@Deprecated
 	public void setXmlDocument(Document doc) {
 		xmlDocument = doc;
 	}
 	
+	@Deprecated
 	public Document getXmlDocument(){
 		return xmlDocument;
 	}

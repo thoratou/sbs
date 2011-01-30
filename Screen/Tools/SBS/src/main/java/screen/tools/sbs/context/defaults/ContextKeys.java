@@ -5,7 +5,7 @@ import screen.tools.sbs.context.ContextKey;
 public class ContextKeys {
 	public final static ContextKey PACK;
 	public final static ContextKey TEST_PACK;
-	public final static ContextKey XML_DOCUMENT;
+	public final static ContextKey SBS_XML_DOCUMENT;
 	
 	static{
 		{
@@ -21,7 +21,7 @@ public class ContextKeys {
 		{
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("xml-document");
-			XML_DOCUMENT = tmp;	
+			SBS_XML_DOCUMENT = tmp;	
 		}
 	}
 }
