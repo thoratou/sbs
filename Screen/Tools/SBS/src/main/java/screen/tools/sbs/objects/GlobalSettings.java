@@ -119,18 +119,22 @@ public class GlobalSettings {
 		return targetUsage;
 	}
 
+	@Deprecated
 	public Pack getPack() {
 		return pack;
 	}
-
+	
+	@Deprecated
 	public Pack getTestPack() {
 		return testPack;
 	}
-
+	
+	@Deprecated
 	public void setPack(Pack pack) {
 		this.pack = pack;
 	}
-
+	
+	@Deprecated
 	public void setTestPack(Pack testPack) {
 		this.testPack = testPack;
 	}

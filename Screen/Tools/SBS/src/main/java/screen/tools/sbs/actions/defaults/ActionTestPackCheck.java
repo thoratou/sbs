@@ -23,7 +23,10 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.Pack;
 
 /**
@@ -33,12 +36,21 @@ import screen.tools.sbs.objects.Pack;
  *
  */
 public class ActionTestPackCheck implements Action {
+	private PackContext packContext;
+
 	/**
 	 * Verifies test pack content. 
 	 */
 	public void perform() {
-		Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
+		//Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
+		Pack pack = packContext.getPack();
 		ActionPackCheck.checkFields(pack);
 	}
+	
+	public void setContext(ContextHandler contextHandler) {
+		Context context = contextHandler.getContext(ContextKeys.TEST_PACK);
+		packContext = (PackContext) context;
+	}
+
 
 }

@@ -25,6 +25,10 @@ package screen.tools.sbs.actions.defaults;
 import org.w3c.dom.Document;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
@@ -37,6 +41,8 @@ import screen.tools.sbs.xml.SBSDomDataFiller;
  *
  */
 public class ActionTestPackLoad implements Action {
+	private PackContext packContext;
+
 	/**
 	 * Loads the test pack from the global XML Dom.
 	 * The test pack is set in global settings.
@@ -47,7 +53,13 @@ public class ActionTestPackLoad implements Action {
 		Pack pack = new Pack();
 		SBSDomDataFiller dataFiller = new SBSDomDataFiller(null,pack,new FieldPath(path));
 		dataFiller.fill(doc,true);
-		GlobalSettings.getGlobalSettings().setTestPack(pack);
+		//GlobalSettings.getGlobalSettings().setTestPack(pack);
+		packContext.setPack(pack);
+	}
+
+	public void setContext(ContextHandler contextHandler) {
+		Context context = contextHandler.getContext(ContextKeys.TEST_PACK);
+		packContext = (PackContext) context;
 	}
 
 }

@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
@@ -80,5 +81,7 @@ public class ActionRepositoryFilterDisplay implements Action {
 		
 		System.out.println();
 	}
+
+	public void setContext(ContextHandler contextHandler) {}
 
 }

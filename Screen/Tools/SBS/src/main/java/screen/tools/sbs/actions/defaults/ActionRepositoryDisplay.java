@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.repositories.RepositoryData;
 import screen.tools.sbs.repositories.RepositoryDataTable;
@@ -74,4 +75,6 @@ public class ActionRepositoryDisplay implements Action {
 		
 		System.out.println();
 	}
+
+	public void setContext(ContextHandler contextHandler) {}
 }

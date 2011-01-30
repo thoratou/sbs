@@ -23,6 +23,7 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.utils.CompileLauncher;
 
 /**
@@ -39,5 +40,7 @@ public class ActionCMakeCompile implements Action {
 		CompileLauncher launcher = new CompileLauncher(false);
 		launcher.launch();
 	}
+
+	public void setContext(ContextHandler contextHandler) {}
 
 }

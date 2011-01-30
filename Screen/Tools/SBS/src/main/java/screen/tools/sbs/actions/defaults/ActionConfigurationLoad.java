@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.repositories.RepositoryDataTable;
@@ -100,5 +101,7 @@ public class ActionConfigurationLoad implements Action {
 									repositoryFilterTable);
 		parser.fill();
 	}
+
+	public void setContext(ContextHandler contextHandler) {}
 
 }

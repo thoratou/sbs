@@ -25,6 +25,10 @@ package screen.tools.sbs.actions.defaults;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.cmake.SBSCMakeFileGenerator;
 import screen.tools.sbs.cmake.SBSCMakeLauncher;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 
@@ -36,16 +40,25 @@ import screen.tools.sbs.objects.Pack;
  *
  */
 public class ActionTestCMakeGenerate implements Action {
+	private PackContext packContext;
+
 	/**
 	 * Performs action to generate test CMakeLists.txt, makefiles and projects
 	 */
 	public void perform() {
 		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath()+"test/";
-		Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
+		//Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
+		Pack pack = packContext.getPack();
 		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(pack, path, true);
 		generator.generate();
 		SBSCMakeLauncher launcher = new SBSCMakeLauncher();
 		launcher.launch(path);		
 	}
+	
+	public void setContext(ContextHandler contextHandler) {
+		Context context = contextHandler.getContext(ContextKeys.TEST_PACK);
+		packContext = (PackContext) context;
+	}
+
 
 }

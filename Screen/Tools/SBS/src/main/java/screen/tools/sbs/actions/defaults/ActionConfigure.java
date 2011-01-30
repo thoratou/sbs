@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldFile;
@@ -125,5 +126,7 @@ public class ActionConfigure implements Action {
 			return;
 		}
 	}
+
+	public void setContext(ContextHandler contextHandler) {}
 
 }

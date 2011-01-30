@@ -25,6 +25,8 @@ package screen.tools.sbs.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import screen.tools.sbs.context.ContextHandler;
+
 /**
  * Class to handler, register and launch actions.
  * 
@@ -33,6 +35,8 @@ import java.util.List;
  */
 public class ActionManager {
 	private List<Action> actions;
+	private ContextHandler contextHandler;
+	
 	
 	/**
 	 * Default ActionManager constructor.
@@ -56,7 +60,16 @@ public class ActionManager {
 	public void processActions(){
 		for(int i=0; i<actions.size(); i++){
 			Action action = actions.get(i);
+			action.setContext(contextHandler);
 			action.perform();
 		}
+	}
+
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
+
+	public ContextHandler getContext() {
+		return contextHandler;
 	}
 }

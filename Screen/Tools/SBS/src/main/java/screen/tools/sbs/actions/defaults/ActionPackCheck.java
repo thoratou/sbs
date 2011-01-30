@@ -25,10 +25,13 @@ package screen.tools.sbs.actions.defaults;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
@@ -42,13 +45,23 @@ import screen.tools.sbs.utils.Logger;
  */
 public class ActionPackCheck implements Action {
 
+	private PackContext packContext;
+
+
 	/**
 	 * Verifies pack content. 
 	 */
 	public void perform() {
-		Pack pack = GlobalSettings.getGlobalSettings().getPack();
+		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
+		Pack pack = packContext.getPack();
 		checkFields(pack);
 	}
+	
+	public void setContext(ContextHandler contextHandler) {
+		Context context = contextHandler.getContext(ContextKeys.PACK);
+		packContext = (PackContext) context;
+	}
+
 	
 	/**
 	 * Static method to verify a main pack or test pack.

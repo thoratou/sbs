@@ -24,6 +24,10 @@ package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.cmake.SBSCMakeCleaner;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 
@@ -34,14 +38,22 @@ import screen.tools.sbs.objects.Pack;
  *
  */
 public class ActionClean implements Action {
+	PackContext packContext;
+	
 	/**
 	 * Performs clean action.
 	 */
 	public void perform() {
 		SBSCMakeCleaner cleaner = new SBSCMakeCleaner();
-		Pack pack = GlobalSettings.getGlobalSettings().getPack();
+		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
+		Pack pack = packContext.getPack();
 		String sbsXmlPath = GlobalSettings.getGlobalSettings().getSbsXmlPath();
 		cleaner.clean(pack, sbsXmlPath);		
+	}
+
+	public void setContext(ContextHandler contextHandler) {
+		Context context = contextHandler.getContext(ContextKeys.PACK);
+		packContext = (PackContext) context;
 	}
 
 }

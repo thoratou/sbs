@@ -31,6 +31,9 @@ import screen.tools.sbs.actions.defaults.ActionTestCMakeGenerate;
 import screen.tools.sbs.actions.defaults.ActionTestPackCheck;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
@@ -74,6 +77,11 @@ public class TargetGenerate implements Target {
 		GlobalSettings.getGlobalSettings().setSbsXmlPath(mandatoryPath.getPath());		
 		GlobalSettings.getGlobalSettings().setSbsXmlFile(optionChooseSbsFile.getFile());
 
+		ContextHandler contextHandler = new ContextHandler();
+		contextHandler.addContext(ContextKeys.PACK, new PackContext());
+		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
+		actionManager.setContext(contextHandler);
+		
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionXmlLoad());
 		if(optionIsTest.isMain()){

@@ -27,6 +27,7 @@ import java.io.File;
 import org.w3c.dom.Document;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.xml.SBSDomParser;
 
@@ -47,4 +48,5 @@ public class ActionXmlLoad implements Action {
 		GlobalSettings.getGlobalSettings().setXmlDocument(doc);
 	}
 
+	public void setContext(ContextHandler contextHandler) {}
 }

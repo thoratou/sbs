@@ -22,6 +22,8 @@
 
 package screen.tools.sbs.actions;
 
+import screen.tools.sbs.context.ContextHandler;
+
 /**
  * Common interface to SBS Actions.
  * Actions are unit task done for a given command.
@@ -34,4 +36,9 @@ public interface Action {
 	 * Abstract method called to perform an action.
 	 */
 	void perform();
+	
+	/**
+	 * Abstract method called to register the current context.
+	 */	
+	void setContext(ContextHandler contextHandler);
 }
