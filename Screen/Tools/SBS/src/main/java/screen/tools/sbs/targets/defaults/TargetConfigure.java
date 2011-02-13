@@ -30,6 +30,7 @@ import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.TargetHelper;
+import screen.tools.sbs.utils.targethelper.OptionClean;
 import screen.tools.sbs.utils.targethelper.OptionEnvFiles;
 import screen.tools.sbs.utils.targethelper.OptionGlobal;
 import screen.tools.sbs.utils.targethelper.OptionProjects;
@@ -39,6 +40,7 @@ public class TargetConfigure implements Target {
 	
 	private TargetHelper helper;
 	private OptionGlobal optionGlobal;
+	private OptionClean optionClean;
 	private OptionProjects optionProjects;
 	private OptionEnvFiles optionEnvFiles;
 	private OptionVerbose optionVerbose;
@@ -46,12 +48,14 @@ public class TargetConfigure implements Target {
 	public TargetConfigure() {
 		helper = new TargetHelper(getTargetCall());
 		optionGlobal = new OptionGlobal();
+		optionClean = new OptionClean();
 		optionProjects = new OptionProjects();
 		optionEnvFiles = new OptionEnvFiles();
 		optionVerbose = new OptionVerbose();
 		
 		helper.addOption(optionGlobal);
 		helper.addOption(optionProjects);
+		helper.addOption(optionClean);		
 		helper.addOption(optionEnvFiles);
 		helper.addOption(optionVerbose);
 	}
@@ -65,6 +69,7 @@ public class TargetConfigure implements Target {
 		
 		ActionConfigure action = new ActionConfigure();
 		action.setGlobal(optionGlobal.isGlobal());
+		action.setClean(optionClean.isClean());
 		
 		for(int i = 0; i<optionProjects.getPaths().size(); i++){
 			action.pushProject(optionProjects.getPaths().get(i));

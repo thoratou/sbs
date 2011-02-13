@@ -55,7 +55,7 @@ public class OptionGlobal implements Option {
 	}
 
 	public void usage(List<String> manUsage) {
-		manUsage.add(option+" : global");
+		manUsage.add(option+" : global option");
 	}
 
 }

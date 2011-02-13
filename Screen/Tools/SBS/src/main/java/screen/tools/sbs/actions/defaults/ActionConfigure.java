@@ -34,6 +34,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldFile;
+import screen.tools.sbs.utils.Logger;
 
 /**
  * Action to set configuration files to load for other commands.
@@ -47,12 +48,14 @@ public class ActionConfigure implements Action {
 	private boolean isGlobal;
 	private List<String> configs;
 	private List<String> projects;
+	private boolean isClean;
 	
 	/**
 	 * Default constructor for ActionConfigure.
 	 */
 	public ActionConfigure() {
 		isGlobal = false;
+		isClean = false;
 		configs = new ArrayList<String>();
 		projects = new ArrayList<String>();
 	}
@@ -64,6 +67,15 @@ public class ActionConfigure implements Action {
 	 */
 	public void setGlobal(boolean b) {
 		isGlobal = b;
+	}
+
+	/**
+	 * Chooses between local or global configuration.
+	 * 
+	 * @param b
+	 */
+	public void setClean(boolean clean) {
+		isClean = clean;
 	}
 
 	/**
@@ -96,14 +108,39 @@ public class ActionConfigure implements Action {
 			return;
 		}
 		
-		if(isGlobal){
-			write(new FieldFile("${SBS_ROOT}/.sbsconfig"));
+		if(isClean){
+			if(configs.size()>0)
+				Logger.warning("clean option incompatible with configurations, -e options ignored");
+			if(isGlobal){
+				clean(new FieldFile("${SBS_ROOT}/.sbsconfig"));
+			}
+			for(int i=0; i<projects.size(); i++){
+				clean(new FieldFile(projects.get(i)+"/.sbsconfig"));
+			}
 		}
-		for(int i=0; i<projects.size(); i++){
-			write(new FieldFile(projects.get(i)+"/.sbsconfig"));
+		else{
+			if(isGlobal){
+				write(new FieldFile("${SBS_ROOT}/.sbsconfig"));
+			}
+			for(int i=0; i<projects.size(); i++){
+				write(new FieldFile(projects.get(i)+"/.sbsconfig"));
+			}			
 		}
 	}
 	
+	/**
+	 * Suppress .sbsconfig file
+	 * 
+	 * @param file
+	 */
+	private void clean(FieldFile fieldFile) {
+		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
+		if(new File(fieldFile.getString()).delete())
+			Logger.info("configuration cleaned : "+fieldFile.getString());
+		else
+			err.addWarning("no configuration file : "+fieldFile.getString());
+	}
+
 	/**
 	 * Writes .sbsconfig file
 	 * 
@@ -128,5 +165,4 @@ public class ActionConfigure implements Action {
 	}
 
 	public void setContext(ContextHandler contextHandler) {}
-
 }
