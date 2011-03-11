@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -379,13 +380,15 @@ public class SBSCMakeFileGenerator {
 			
 			if(Utilities.isWindows()){
 				try {
-					linkPath.createLink(targetPath);
+					//linkPath.createLink(targetPath);
+					Files.createLink(targetPath, linkPath);
 				} catch (IOException e) {
 					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
 		
 				try {
-					finalLinkPath.createLink(linkPath);
+					//finalLinkPath.createLink(linkPath);
+					Files.createLink(linkPath, finalLinkPath);
 				} catch (IOException e) {
 					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
@@ -393,13 +396,15 @@ public class SBSCMakeFileGenerator {
 			
 			if(Utilities.isLinux()){
 				try {
-					linkPath.createSymbolicLink(targetPath);
+					//linkPath.createSymbolicLink(targetPath);
+					Files.createSymbolicLink(targetPath, linkPath);
 				} catch (IOException e) {
 					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
 				}
 		
 				try {
-					finalLinkPath.createSymbolicLink(linkPath);
+					//finalLinkPath.createSymbolicLink(linkPath);
+					Files.createSymbolicLink(linkPath, finalLinkPath);
 				} catch (IOException e) {
 					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
 				}
