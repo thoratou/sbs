@@ -2,7 +2,7 @@
 <repositories>
 	<data>
 		<repository id="1" type="local,snapshot,internal" path="${REPOSITORY_ROOT}" comment="main local repository" />
-		<repository id="2" type="local,release,internal"  path="C:/Users/Thanh/Documents/My Dropbox/ScreenFrameWork/SBS-repository" comment="Screen dropbox repository" />
+		<repository id="2" type="local,release,internal"  path="${SCREEN_DEPS_REPOSOTORY_ROOT}" comment="Screen dropbox repository" />
 	</data>
 	<filters>
 		<!-- by default, a component is taken in the main local repository in order to obtain the latest snapshot version of the component.
