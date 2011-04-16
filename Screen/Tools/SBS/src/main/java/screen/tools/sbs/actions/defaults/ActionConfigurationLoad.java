@@ -28,7 +28,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.repositories.RepositoryDataTable;
@@ -45,13 +48,16 @@ import screen.tools.sbs.repositories.RepositoryParser;
  */
 public class ActionConfigurationLoad implements Action {
 
+	private ContextHandler contextHandler;
+
 	/**
 	 * Performs configuration load
+	 * @throws ContextException 
 	 */
-	public void perform() {
+	public void perform() throws ContextException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		String root = GlobalSettings.getGlobalSettings().getEnvironmentVariables().getValue("SBS_ROOT");
-		String sbsXmlPath = GlobalSettings.getGlobalSettings().getSbsXmlPath();
+		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		//searches local .sbsconfig
 		File file = new File(sbsXmlPath+"/.sbsconfig");
@@ -102,6 +108,8 @@ public class ActionConfigurationLoad implements Action {
 		parser.fill();
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 
 }

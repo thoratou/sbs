@@ -24,11 +24,11 @@ package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.cmake.SBSCMakeCleaner;
-import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.Pack;
 
 /**
@@ -38,22 +38,22 @@ import screen.tools.sbs.objects.Pack;
  *
  */
 public class ActionClean implements Action {
-	PackContext packContext;
+	private ContextHandler contextHandler;
 	
 	/**
 	 * Performs clean action.
+	 * @throws ContextException 
 	 */
-	public void perform() {
+	public void perform() throws ContextException {
 		SBSCMakeCleaner cleaner = new SBSCMakeCleaner();
 		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
-		Pack pack = packContext.getPack();
-		String sbsXmlPath = GlobalSettings.getGlobalSettings().getSbsXmlPath();
+		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
+		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		cleaner.clean(pack, sbsXmlPath);		
 	}
 
 	public void setContext(ContextHandler contextHandler) {
-		Context context = contextHandler.getContext(ContextKeys.PACK);
-		packContext = (PackContext) context;
+		this.contextHandler = contextHandler;
 	}
 
 }

@@ -6,6 +6,7 @@ public class ContextKeys {
 	public final static ContextKey PACK;
 	public final static ContextKey TEST_PACK;
 	public final static ContextKey SBS_XML_DOCUMENT;
+	public final static ContextKey SBS_FILE_AND_PATH;
 	
 	static{
 		{
@@ -22,6 +23,11 @@ public class ContextKeys {
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("xml-document");
 			SBS_XML_DOCUMENT = tmp;	
+		}
+		{
+			ContextKey tmp = new ContextKey();
+			tmp.setKey("sbs-file-and-path");
+			SBS_FILE_AND_PATH = tmp;	
 		}
 	}
 }

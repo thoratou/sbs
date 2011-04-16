@@ -27,11 +27,11 @@ import java.io.File;
 import org.w3c.dom.Document;
 
 import screen.tools.sbs.actions.Action;
-import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.xml.SBSDomParser;
 
 /**
@@ -41,21 +41,21 @@ import screen.tools.sbs.xml.SBSDomParser;
  *
  */
 public class ActionXmlLoad implements Action {
-	private XmlDocumentContext xmlDocContext;
+	private ContextHandler contextHandler;
 
 	/**
 	 * Loads the XML file
+	 * @throws ContextException 
 	 */
-	public void perform() {
-		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
-		String file = GlobalSettings.getGlobalSettings().getSbsXmlFile();
+	public void perform() throws ContextException {
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();
 		Document doc = SBSDomParser.parserFile(new File(path+"/"+file));
 		//GlobalSettings.getGlobalSettings().setXmlDocument(doc);
-		xmlDocContext.setDocument(doc);
+		contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).setDocument(doc);
 	}
 
 	public void setContext(ContextHandler contextHandler) {
-		Context context2 = contextHandler.getContext(ContextKeys.SBS_XML_DOCUMENT);
-		xmlDocContext = (XmlDocumentContext) context2;
+		this.contextHandler = contextHandler;
 	}
 }

@@ -38,6 +38,8 @@ import screen.tools.sbs.repositories.RepositoryDataTable;
  *
  */
 public class ActionRepositoryDisplay implements Action {
+	private ContextHandler contextHandler;
+
 	/**
 	 * Print repository list.
 	 */
@@ -76,5 +78,7 @@ public class ActionRepositoryDisplay implements Action {
 		System.out.println();
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 }

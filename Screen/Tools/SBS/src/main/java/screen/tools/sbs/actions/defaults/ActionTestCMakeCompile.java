@@ -23,6 +23,7 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.utils.CompileLauncher;
 
@@ -33,14 +34,19 @@ import screen.tools.sbs.utils.CompileLauncher;
  *
  */
 public class ActionTestCMakeCompile implements Action {
+	private ContextHandler contextHandler;
+
 	/**
 	 * Performs compile action on component tests.
+	 * @throws ContextException 
 	 */
-	public void perform() {
-		CompileLauncher launcher = new CompileLauncher(true);
+	public void perform() throws ContextException {
+		CompileLauncher launcher = new CompileLauncher(contextHandler, true);
 		launcher.launch();
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 
 }

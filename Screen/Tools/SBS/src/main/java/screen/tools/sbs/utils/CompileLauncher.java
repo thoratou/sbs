@@ -27,25 +27,31 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 
 public class CompileLauncher {
 	private boolean isTest;
+	private ContextHandler contextHandler;
 
-	public CompileLauncher(boolean test){
+	public CompileLauncher(ContextHandler contextHandler, boolean test){
+		this.contextHandler = contextHandler;
 		isTest = test;
 	}
 	
-	public void launch(){
+	public void launch() throws ContextException{
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
 		String path = null;
 		if(isTest)
-			path = GlobalSettings.getGlobalSettings().getSbsXmlPath()+"test/";
+			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath()+"test/";
 		else
-			path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
+			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		if(!variables.contains("COMPILE_COMMAND")){
 			err.addError("undefined variable : COMPILE_COMMAND");

@@ -32,8 +32,8 @@ import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -73,13 +73,15 @@ public class TargetCheck implements Target {
 			Parameters parameters) {		
 		helper.perform(parameters);
 		
-		GlobalSettings.getGlobalSettings().setSbsXmlPath(mandatoryPath.getPath());		
-		GlobalSettings.getGlobalSettings().setSbsXmlFile(optionChooseSbsFile.getFile());
+		SbsFileAndPathContext context = new SbsFileAndPathContext();
+		context.setSbsXmlFile(optionChooseSbsFile.getFile());
+		context.setSbsXmlPath(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
+		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		actionManager.setContext(contextHandler);
 
 		actionManager.pushAction(new ActionConfigurationLoad());

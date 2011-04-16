@@ -13,7 +13,17 @@ public class ContextHandler {
 		contextTable.put(key, context);
 	}
 	
+	@Deprecated
 	public Context getContext(ContextKey key){
 		return contextTable.get(key);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends Context> T get(ContextKey key) throws ContextException{
+		T concreteContext = (T) contextTable.get(key);
+		if(concreteContext == null){
+			throw new ContextException("unable to retrieve concrete context : key = " + key.getKey());
+		}
+		return concreteContext;
 	}
 }

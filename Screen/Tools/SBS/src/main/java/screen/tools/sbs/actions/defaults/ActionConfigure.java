@@ -49,6 +49,7 @@ public class ActionConfigure implements Action {
 	private List<String> configs;
 	private List<String> projects;
 	private boolean isClean;
+	private ContextHandler contextHandler;
 	
 	/**
 	 * Default constructor for ActionConfigure.
@@ -164,5 +165,7 @@ public class ActionConfigure implements Action {
 		}
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 }

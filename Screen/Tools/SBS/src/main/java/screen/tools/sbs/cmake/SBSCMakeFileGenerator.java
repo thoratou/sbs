@@ -381,16 +381,16 @@ public class SBSCMakeFileGenerator {
 			if(Utilities.isWindows()){
 				try {
 					//linkPath.createLink(targetPath);
-					Files.createLink(targetPath, linkPath);
+					Files.createLink(linkPath, targetPath);
 				} catch (IOException e) {
-					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
+					err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
 		
 				try {
 					//finalLinkPath.createLink(linkPath);
-					Files.createLink(linkPath, finalLinkPath);
+					Files.createLink(finalLinkPath, linkPath);
 				} catch (IOException e) {
-					//err.addWarning("Unable to create hard link :\n"+e.getMessage());
+					err.addWarning("Unable to create hard link :\n"+e.getMessage());
 				}
 			}
 			

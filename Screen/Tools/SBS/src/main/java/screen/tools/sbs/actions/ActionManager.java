@@ -25,6 +25,7 @@ package screen.tools.sbs.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
@@ -65,10 +66,14 @@ public class ActionManager {
 		if(contextHandler==null)
 			err.addError("Internal error : missing context handler to process actions");
 			
-		for(int i=0; i<actions.size(); i++){
-			Action action = actions.get(i);
-			action.setContext(contextHandler);
-			action.perform();
+		try {
+			for(int i=0; i<actions.size(); i++){
+				Action action = actions.get(i);
+				action.setContext(contextHandler);
+					action.perform();
+			}
+		} catch (ContextException e) {
+			err.addError("Internal error : " + e.getMessage());
 		}
 	}
 

@@ -22,6 +22,7 @@
 
 package screen.tools.sbs.actions;
 
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 
 /**
@@ -34,8 +35,9 @@ import screen.tools.sbs.context.ContextHandler;
 public interface Action {
 	/**
 	 * Abstract method called to perform an action.
+	 * @throws ContextException 
 	 */
-	void perform();
+	void perform() throws ContextException;
 	
 	/**
 	 * Abstract method called to register the current context.

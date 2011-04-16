@@ -22,8 +22,6 @@
 
 package screen.tools.sbs.objects;
 
-import java.io.File;
-
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.targets.TargetCall;
@@ -32,8 +30,6 @@ public class GlobalSettings {
 	private static GlobalSettings globalSettings = new GlobalSettings();
 	private EnvironmentVariables envVar;
 	private ErrorList errorList;
-	private String sbsXmlPath;
-	private String sbsXmlFile;
 	private boolean debug;
 	private boolean isUsage;
 	private TargetCall targetUsage;
@@ -43,8 +39,6 @@ public class GlobalSettings {
 	private GlobalSettings() {
 		envVar = new EnvironmentVariables();
 		errorList = new ErrorList();
-		sbsXmlFile = null;
-		sbsXmlPath = null;
 		debug = false;
 		isUsage = false;
 		targetUsage = null;
@@ -74,22 +68,6 @@ public class GlobalSettings {
 
 	public void setError(boolean b) {
 		errorList.setLogError(b);
-	}
-	
-	public void setSbsXmlPath(String path) {
-		sbsXmlPath = new File(path).getAbsolutePath()+"/";
-	}
-	
-	public String getSbsXmlPath(){
-		return sbsXmlPath;
-	}
-	
-	public void setSbsXmlFile(String file){
-		sbsXmlFile = file;
-	}
-	
-	public String getSbsXmlFile(){
-		return sbsXmlFile;
 	}
 
 	public void needUsage() {

@@ -38,6 +38,8 @@ import screen.tools.sbs.repositories.RepositoryFilterTable;
  *
  */
 public class ActionRepositoryFilterDisplay implements Action {
+	private ContextHandler contextHandler;
+
 	/**
 	 * Print repository filter list
 	 */
@@ -82,6 +84,8 @@ public class ActionRepositoryFilterDisplay implements Action {
 		System.out.println();
 	}
 
-	public void setContext(ContextHandler contextHandler) {}
+	public void setContext(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 
 }

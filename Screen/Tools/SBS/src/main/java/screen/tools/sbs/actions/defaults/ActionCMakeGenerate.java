@@ -25,11 +25,11 @@ package screen.tools.sbs.actions.defaults;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.cmake.SBSCMakeFileGenerator;
 import screen.tools.sbs.cmake.SBSCMakeLauncher;
-import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.Pack;
 
 /**
@@ -40,15 +40,15 @@ import screen.tools.sbs.objects.Pack;
  *
  */
 public class ActionCMakeGenerate implements Action {
-	private PackContext packContext;
+	private ContextHandler contextHandler;
 
 	/**
 	 * Performs action to generate CMakeLists.txt, makefiles and projects
+	 * @throws ContextException 
 	 */
-	public void perform() {
-		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
-		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
-		Pack pack = packContext.getPack();
+	public void perform() throws ContextException {
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
 		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(pack, path, false);
 		generator.generate();
 		SBSCMakeLauncher launcher = new SBSCMakeLauncher();
@@ -56,8 +56,7 @@ public class ActionCMakeGenerate implements Action {
 	}
 
 	public void setContext(ContextHandler contextHandler) {
-		Context context = contextHandler.getContext(ContextKeys.PACK);
-		packContext = (PackContext) context;
+		this.contextHandler = contextHandler;
 	}
 
 }

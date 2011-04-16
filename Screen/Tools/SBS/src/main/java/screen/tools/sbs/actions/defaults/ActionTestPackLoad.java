@@ -25,12 +25,12 @@ package screen.tools.sbs.actions.defaults;
 import org.w3c.dom.Document;
 
 import screen.tools.sbs.actions.Action;
-import screen.tools.sbs.context.Context;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.xml.SBSDomDataFiller;
@@ -42,29 +42,25 @@ import screen.tools.sbs.xml.SBSDomDataFiller;
  *
  */
 public class ActionTestPackLoad implements Action {
-	private PackContext packContext;
-	private XmlDocumentContext xmlDocContext;
+
+	private ContextHandler contextHandler;
 
 	/**
 	 * Loads the test pack from the global XML Dom.
 	 * The test pack is set in global settings.
+	 * @throws ContextException 
 	 */
-	public void perform() {
-		//Document doc = GlobalSettings.getGlobalSettings().getXmlDocument();
-		Document doc = xmlDocContext.getDocument();
-		String path = GlobalSettings.getGlobalSettings().getSbsXmlPath();
+	public void perform() throws ContextException {
+		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();
 		SBSDomDataFiller dataFiller = new SBSDomDataFiller(null,pack,new FieldPath(path));
 		dataFiller.fill(doc,true);
-		//GlobalSettings.getGlobalSettings().setTestPack(pack);
-		packContext.setPack(pack);
+		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);
 	}
 
 	public void setContext(ContextHandler contextHandler) {
-		Context context = contextHandler.getContext(ContextKeys.TEST_PACK);
-		packContext = (PackContext) context;
-		Context context2 = contextHandler.getContext(ContextKeys.SBS_XML_DOCUMENT);
-		xmlDocContext = (XmlDocumentContext) context2;
+		this.contextHandler = contextHandler;
 	}
 
 }
