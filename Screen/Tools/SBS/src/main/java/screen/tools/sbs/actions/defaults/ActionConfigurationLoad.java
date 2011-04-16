@@ -31,6 +31,7 @@ import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
@@ -96,8 +97,8 @@ public class ActionConfigurationLoad implements Action {
 		}
 		
 		//load repositories
-		RepositoryDataTable repositoryDataTable = GlobalSettings.getGlobalSettings().getRepositoryDataTable();
-		RepositoryFilterTable repositoryFilterTable = GlobalSettings.getGlobalSettings().getRepositoryFilterTable();
+		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
+		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
 		
 		String sbsRoot = GlobalSettings.getGlobalSettings().getEnvironmentVariables().getValue("SBS_ROOT");
 		

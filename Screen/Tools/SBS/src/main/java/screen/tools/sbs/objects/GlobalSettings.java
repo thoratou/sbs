@@ -22,8 +22,6 @@
 
 package screen.tools.sbs.objects;
 
-import screen.tools.sbs.repositories.RepositoryDataTable;
-import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.targets.TargetCall;
 
 public class GlobalSettings {
@@ -33,8 +31,6 @@ public class GlobalSettings {
 	private boolean debug;
 	private boolean isUsage;
 	private TargetCall targetUsage;
-	private RepositoryFilterTable repositoryFilterTable;
-	private RepositoryDataTable repositoryDataTable;
 	
 	private GlobalSettings() {
 		envVar = new EnvironmentVariables();
@@ -42,8 +38,6 @@ public class GlobalSettings {
 		debug = false;
 		isUsage = false;
 		targetUsage = null;
-		repositoryFilterTable = new RepositoryFilterTable();
-		repositoryDataTable = new RepositoryDataTable();
 	}
 	
 	public static GlobalSettings getGlobalSettings() {
@@ -87,13 +81,5 @@ public class GlobalSettings {
 	
 	public TargetCall getTargetUsage(){
 		return targetUsage;
-	}
-	
-	public RepositoryFilterTable getRepositoryFilterTable() {
-		return repositoryFilterTable;
-	}
-
-	public RepositoryDataTable getRepositoryDataTable() {
-		return repositoryDataTable;
 	}
 }

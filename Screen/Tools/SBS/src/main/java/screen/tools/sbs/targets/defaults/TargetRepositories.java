@@ -27,6 +27,8 @@ import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionRepositoryDisplay;
 import screen.tools.sbs.actions.defaults.ActionRepositoryFilterDisplay;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -64,6 +66,7 @@ public class TargetRepositories implements Target {
 		helper.perform(parameters);
 		
 		ContextHandler contextHandler = new ContextHandler();
+		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
 		
 		actionManager.pushAction(new ActionConfigurationLoad());

@@ -34,6 +34,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.EnvironmentVariables;
@@ -56,6 +60,7 @@ import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.Utilities;
 
 public class SBSDomDataFiller {
+	private ContextHandler contextHandler;
 	private Pack pack;
 	private Pack testPack;
 	private FieldPath sbsXmlPath;
@@ -67,13 +72,14 @@ public class SBSDomDataFiller {
 	private String propertyBuildType;
 	private boolean isRelease;
 	
-	public SBSDomDataFiller(Pack pack, Pack testPack, FieldPath sbsXmlPath) {
+	public SBSDomDataFiller(ContextHandler contextHandler, Pack pack, Pack testPack, FieldPath sbsXmlPath) {
+		this.contextHandler = contextHandler;
 		this.sbsXmlPath = sbsXmlPath;
 		this.pack = pack;
 		this.testPack = testPack;
 	}
 	
-	public void fill(Document doc, boolean isTest){
+	public void fill(Document doc, boolean isTest) throws ContextException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
 
@@ -134,7 +140,7 @@ public class SBSDomDataFiller {
 		}
 	}
 
-	private void processAll(Element root, Pack pack, FieldPath xmlPath) {
+	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		//main
 		NodeList main = root.getElementsByTagName("main");
 		if(main.getLength() == 1){
@@ -149,7 +155,7 @@ public class SBSDomDataFiller {
 		processImports(root, pack, xmlPath);
 	}
 
-	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) {
+	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
 		
@@ -264,7 +270,7 @@ public class SBSDomDataFiller {
 					FieldString compilerField = new FieldString(compiler);
 					
 					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), compilerField);
-					RepositoryFilter retrieved = finder.retrieve(GlobalSettings.getGlobalSettings().getRepositoryFilterTable());
+					RepositoryFilter retrieved = finder.retrieve(contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable());
 					if(retrieved == null){
 						err.addError("Unable to retrieve component into repositories :\n"+
 									"- component name : "+packName+"\n"+
@@ -391,7 +397,7 @@ public class SBSDomDataFiller {
 		}
 	}
 	
-	private void processImports(Element root, Pack pack, FieldPath xmlPath) {
+	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
 		boolean isRelease = true;
 		if(variables.contains("_COMPILE_MODE")){

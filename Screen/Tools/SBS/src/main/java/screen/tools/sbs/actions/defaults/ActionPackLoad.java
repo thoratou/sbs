@@ -54,7 +54,7 @@ public class ActionPackLoad implements Action {
 		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();
-		SBSDomDataFiller dataFiller = new SBSDomDataFiller(pack,null,new FieldPath(path));
+		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler, pack,null,new FieldPath(path));
 		dataFiller.fill(doc,false);
 		contextHandler.<PackContext>get(ContextKeys.PACK).setPack(pack);
 	}

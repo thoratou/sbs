@@ -26,8 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.repositories.RepositoryData;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 
@@ -42,10 +44,11 @@ public class ActionRepositoryDisplay implements Action {
 
 	/**
 	 * Print repository list.
+	 * @throws ContextException 
 	 */
-	public void perform() {
+	public void perform() throws ContextException {
 		//retrieve repository list
-		RepositoryDataTable repositoryDataTable = GlobalSettings.getGlobalSettings().getRepositoryDataTable();
+		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
 		List<RepositoryData> list = repositoryDataTable.getSorterByIDList();
 		
 		//define output format

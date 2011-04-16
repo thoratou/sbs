@@ -26,8 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 
@@ -42,10 +44,11 @@ public class ActionRepositoryFilterDisplay implements Action {
 
 	/**
 	 * Print repository filter list
+	 * @throws ContextException 
 	 */
-	public void perform() {
+	public void perform() throws ContextException {
 		//retrieve repository filter list
-		RepositoryFilterTable repositoryFilterTable = GlobalSettings.getGlobalSettings().getRepositoryFilterTable();
+		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
 		List<RepositoryFilter> list = repositoryFilterTable.getSortedList();
 		
 		//define output format

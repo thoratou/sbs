@@ -34,6 +34,7 @@ import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
@@ -80,6 +81,7 @@ public class TargetClean implements Target {
 		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
+		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
