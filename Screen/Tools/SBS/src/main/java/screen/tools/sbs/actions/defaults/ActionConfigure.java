@@ -157,10 +157,10 @@ public class ActionConfigure implements Action {
 			}
 			outWriter.close();
 		} catch (FileNotFoundException e) {
-			err.addError("Can't create file CMakeLists.txt");
+			err.addError("Can't create file .sbsconfig");
 			return;
 		} catch (IOException e) {
-			err.addError("Can't write file CMakeLists.txt");
+			err.addError("Can't write file .sbsconfig");
 			return;
 		}
 	}
