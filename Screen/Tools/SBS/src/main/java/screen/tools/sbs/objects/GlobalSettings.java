@@ -27,13 +27,11 @@ import screen.tools.sbs.targets.TargetCall;
 public class GlobalSettings {
 	private static GlobalSettings globalSettings = new GlobalSettings();
 	private ErrorList errorList;
-	private boolean debug;
 	private boolean isUsage;
 	private TargetCall targetUsage;
 	
 	private GlobalSettings() {
 		errorList = new ErrorList();
-		debug = false;
 		isUsage = false;
 		targetUsage = null;
 	}
@@ -44,14 +42,6 @@ public class GlobalSettings {
 	
 	public ErrorList getErrorList(){
 		return errorList;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
-	public boolean isDebug() {
-		return debug;
 	}
 
 	public void setError(boolean b) {

@@ -22,11 +22,11 @@
 
 package screen.tools.sbs.utils;
 
-import screen.tools.sbs.objects.GlobalSettings;
-
 public class Logger {
+	private static boolean isDebug = false;
+	
 	public static void debug(String s){
-		if(GlobalSettings.getGlobalSettings().isDebug())
+		if(isDebug)
 			System.out.println("[DEBUG] "+s);
 	}
 	
@@ -40,5 +40,13 @@ public class Logger {
 	
 	public static void error(String s){
 		System.out.println("[ERROR] "+s);
+	}
+
+	public static void setDebug(boolean isDebug) {
+		Logger.isDebug = isDebug;
+	}
+
+	public static boolean isDebug() {
+		return isDebug;
 	}
 }

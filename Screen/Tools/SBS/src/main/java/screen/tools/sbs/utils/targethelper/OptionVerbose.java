@@ -24,8 +24,8 @@ package screen.tools.sbs.utils.targethelper;
 
 import java.util.List;
 
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
+import screen.tools.sbs.utils.Logger;
 
 public class OptionVerbose implements Option{
 	
@@ -42,7 +42,7 @@ public class OptionVerbose implements Option{
 	public int perform(Parameters pars, int it) {
 		String par = pars.getParameterAt(it);
 		if(option.equals(par)){
-			GlobalSettings.getGlobalSettings().setDebug(true);
+			Logger.setDebug(true);
 			return it;
 		}
 		return -1;
