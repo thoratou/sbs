@@ -31,6 +31,7 @@ import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.ErrorList;
@@ -57,7 +58,7 @@ public class ActionConfigurationLoad implements Action {
 	 */
 	public void perform() throws ContextException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		String root = GlobalSettings.getGlobalSettings().getEnvironmentVariables().getValue("SBS_ROOT");
+		String root = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().getValue("SBS_ROOT");
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		//searches local .sbsconfig
@@ -85,7 +86,7 @@ public class ActionConfigurationLoad implements Action {
 			
 			String[] configs = config.split("\n");
 			for(int i=0; i<configs.length-1; i++){
-				GlobalSettings.getGlobalSettings().getEnvironmentVariables().putFromFile(root+"/"+configs[i]+".config");				
+				contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().putFromFile(root+"/"+configs[i]+".config");				
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
@@ -100,7 +101,7 @@ public class ActionConfigurationLoad implements Action {
 		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
 		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
 		
-		String sbsRoot = GlobalSettings.getGlobalSettings().getEnvironmentVariables().getValue("SBS_ROOT");
+		String sbsRoot = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().getValue("SBS_ROOT");
 		
 		RepositoryParser parser = new RepositoryParser(
 									new File(sbsRoot+"/repositories/repositories.xml"),

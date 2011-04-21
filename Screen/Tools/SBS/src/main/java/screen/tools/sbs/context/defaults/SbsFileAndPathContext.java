@@ -12,7 +12,7 @@ public class SbsFileAndPathContext implements Context{
 	}
 
 	public String getSbsXmlPath() {
-		return sbsXmlPath;
+		return sbsXmlPath+"/";
 	}
 
 	public void setSbsXmlFile(String sbsXmlFile) {

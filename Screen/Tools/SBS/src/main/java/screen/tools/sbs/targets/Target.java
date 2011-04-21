@@ -23,9 +23,10 @@
 package screen.tools.sbs.targets;
 
 import screen.tools.sbs.actions.ActionManager;
+import screen.tools.sbs.context.ContextException;
 
 public interface Target {
-	void registerActions(ActionManager actionManager, Parameters parameters);
+	void registerActions(ActionManager actionManager, Parameters parameters) throws ContextException;
 	TargetCall getTargetCall();
 	void usage();
 }

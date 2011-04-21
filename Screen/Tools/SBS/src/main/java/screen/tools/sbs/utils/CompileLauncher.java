@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
@@ -46,7 +47,7 @@ public class CompileLauncher {
 	
 	public void launch() throws ContextException{
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		String path = null;
 		if(isTest)
 			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath()+"test/";

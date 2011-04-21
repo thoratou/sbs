@@ -46,7 +46,7 @@ public class ActionTestLaunch implements Action {
 	public void perform() throws ContextException {
 		//Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
-		ExecLauncher launcher = new ExecLauncher(pack);
+		ExecLauncher launcher = new ExecLauncher(contextHandler, pack);
 		launcher.launch();
 	}
 	

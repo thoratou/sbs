@@ -49,9 +49,9 @@ public class ActionTestCMakeGenerate implements Action {
 	public void perform() throws ContextException {
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath()+"test/";
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
-		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(pack, path, true);
+		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(contextHandler, pack, path, true);
 		generator.generate();
-		SBSCMakeLauncher launcher = new SBSCMakeLauncher();
+		SBSCMakeLauncher launcher = new SBSCMakeLauncher(contextHandler);
 		launcher.launch(path);		
 	}
 	

@@ -27,6 +27,7 @@ import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 
 public class FieldString {
+	private static EnvironmentVariables currentEnvironmentVariables;
 	private String originalString;
 
 	public FieldString() {
@@ -99,7 +100,7 @@ public class FieldString {
 		boolean isValid = true;
 		int currentIndex = 0;
 		int returnedIndex = 0;
-		EnvironmentVariables env = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables env = currentEnvironmentVariables;
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
 		while((returnedIndex = originalString.indexOf("${", currentIndex)) != -1){
@@ -139,5 +140,10 @@ public class FieldString {
 			return finalString;
 		else
 			return null;
+	}
+
+	public static void setCurrentEnvironmentVariables(
+			EnvironmentVariables currentEnvironmentVariables) {
+		FieldString.currentEnvironmentVariables = currentEnvironmentVariables;
 	}
 }

@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import screen.tools.sbs.cmake.writers.CMakeAddProjectWriter;
@@ -44,6 +42,10 @@ import screen.tools.sbs.cmake.writers.CMakeProjectNameWriter;
 import screen.tools.sbs.cmake.writers.CMakeProjectVersionWriter;
 import screen.tools.sbs.cmake.writers.CMakeSourceFilterWriter;
 import screen.tools.sbs.cmake.writers.CMakeVersionWriter;
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
@@ -88,6 +90,8 @@ public class SBSCMakeFileGenerator {
 	private String compileName;
 
 	private String fullName;
+
+	private ContextHandler contextHandler;
 	
 	/**
 	 * Constructor for SBSCMakeFileGenerator class
@@ -96,14 +100,15 @@ public class SBSCMakeFileGenerator {
 	 * @param sbsXmlPath
 	 * @param isTest
 	 */
-	public SBSCMakeFileGenerator(Pack pack, String sbsXmlPath, boolean isTest) {
+	public SBSCMakeFileGenerator(ContextHandler contextHandler, Pack pack, String sbsXmlPath, boolean isTest) {
+		this.contextHandler = contextHandler;
 		this.pack = pack;
 		this.sbsXmlPath = sbsXmlPath;
 		this.isTest = isTest;
 	}
 	
-	private void retrieveContext(){
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+	private void retrieveContext() throws ContextException{
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//repoRoot
 		if(!variables.contains("REPOSITORY_ROOT")){
@@ -178,7 +183,7 @@ public class SBSCMakeFileGenerator {
 				).getString(additionalVars);
 	}
 	
-	public void generate() {
+	public void generate() throws ContextException {
 		retrieveContext();
 		generateCMakeLists();
 		generateComponentFiles();
@@ -193,7 +198,7 @@ public class SBSCMakeFileGenerator {
 			try {
 				cmakeListWriter = new FileWriter(cmakeListFile,false);
 			} catch (FileNotFoundException e) {
-				err.addError("Can't create file CMakeLists.txt");
+				err.addError("Can't create file CMakeLists.txt : "+e.getMessage());
 				return;
 			}
 			
@@ -371,14 +376,14 @@ public class SBSCMakeFileGenerator {
 		if(hasSharedLibBuild || !hasLibBuild){
 			String deployPath = repoRoot+"/"+envName+"/"+compileMode;
 			new File(deployPath).mkdirs();
-			File target = new File(outputPath+"/"+fullName);
+			/*File target = new File(outputPath+"/"+fullName);
 			File link = new File(deployPath+"/"+fullName+"."+packVersion);
-			File finalLink = new File(deployPath+"/"+fullName);
-			Path targetPath = target.toPath();
-			Path linkPath = link.toPath();
-			Path finalLinkPath = finalLink.toPath();
+			File finalLink = new File(deployPath+"/"+fullName);*/
+			//Path targetPath = target.toPath();
+			//Path linkPath = link.toPath();
+			//Path finalLinkPath = finalLink.toPath();
 			
-			if(Utilities.isWindows()){
+			/*if(Utilities.isWindows()){
 				try {
 					//linkPath.createLink(targetPath);
 					Files.createLink(linkPath, targetPath);
@@ -408,7 +413,8 @@ public class SBSCMakeFileGenerator {
 				} catch (IOException e) {
 					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
 				}
-			}
+			}*/
+			
 		}
 	}
 }

@@ -26,14 +26,12 @@ import screen.tools.sbs.targets.TargetCall;
 
 public class GlobalSettings {
 	private static GlobalSettings globalSettings = new GlobalSettings();
-	private EnvironmentVariables envVar;
 	private ErrorList errorList;
 	private boolean debug;
 	private boolean isUsage;
 	private TargetCall targetUsage;
 	
 	private GlobalSettings() {
-		envVar = new EnvironmentVariables();
 		errorList = new ErrorList();
 		debug = false;
 		isUsage = false;
@@ -42,10 +40,6 @@ public class GlobalSettings {
 	
 	public static GlobalSettings getGlobalSettings() {
 		return globalSettings;
-	}
-
-	public EnvironmentVariables getEnvironmentVariables() {
-		return envVar;
 	}
 	
 	public ErrorList getErrorList(){

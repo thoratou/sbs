@@ -29,6 +29,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
@@ -42,10 +46,14 @@ import screen.tools.sbs.utils.ProcessLauncher;
  *
  */
 public class SBSCMakeLauncher {
-	public SBSCMakeLauncher() {}
+	private ContextHandler contextHandler;
+
+	public SBSCMakeLauncher(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 	
-	public void launch(String sbsXmlPath){
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+	public void launch(String sbsXmlPath) throws ContextException{
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
 		if(!variables.contains("TARGET_ENV")){

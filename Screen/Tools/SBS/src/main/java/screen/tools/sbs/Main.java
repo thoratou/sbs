@@ -72,9 +72,6 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		Logger.info("------------ begin SBS ------------");
 		
-		String root = System.getProperty("SBS_ROOT");
-		GlobalSettings.getGlobalSettings().getEnvironmentVariables().put("SBS_ROOT", root);
-		
 		ActionManager actionManager = new ActionManager();
 		TargetManager targetManager = new TargetManager(actionManager);
 		Parameters parameters = new Parameters(args);

@@ -8,6 +8,7 @@ public class ContextKeys {
 	public final static ContextKey SBS_XML_DOCUMENT;
 	public final static ContextKey SBS_FILE_AND_PATH;
 	public final static ContextKey REPOSITORIES;
+	public final static ContextKey ENV_VARIABLES;
 	
 	static{
 		{
@@ -34,6 +35,11 @@ public class ContextKeys {
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("repositories");
 			REPOSITORIES = tmp;	
+		}
+		{
+			ContextKey tmp = new ContextKey();
+			tmp.setKey("env-variables");
+			ENV_VARIABLES = tmp;	
 		}
 	}
 }

@@ -28,8 +28,10 @@ import screen.tools.sbs.actions.defaults.ActionLaunch;
 import screen.tools.sbs.actions.defaults.ActionPackCheck;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
@@ -66,7 +68,7 @@ public class TargetRun implements Target {
 	}
 
 	public void registerActions(ActionManager actionManager,
-			Parameters parameters) {
+			Parameters parameters) throws ContextException {
 		helper.perform(parameters);
 		
 		SbsFileAndPathContext context = new SbsFileAndPathContext();
@@ -79,6 +81,9 @@ public class TargetRun implements Target {
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
+		
+		contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables()
+			.put("_COMPILE_MODE", optionIsDebug.getString());
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionXmlLoad());

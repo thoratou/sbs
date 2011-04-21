@@ -30,6 +30,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
@@ -37,14 +41,16 @@ import screen.tools.sbs.objects.Pack;
 
 public class ExecLauncher {
 	private Pack pack;
+	private ContextHandler contextHandler;
 	
-	public ExecLauncher(Pack pack) {
+	public ExecLauncher(ContextHandler contextHandler, Pack pack) {
+		this.contextHandler = contextHandler;
 		this.pack = pack;
 	}
 	
-	public void launch(){
+	public void launch() throws ContextException{
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		if(!variables.contains("REPOSITORY_ROOT")){
 			err.addError("undefined variable : REPOSITORY_ROOT");

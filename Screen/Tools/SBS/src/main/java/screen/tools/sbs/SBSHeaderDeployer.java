@@ -27,6 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
@@ -45,11 +49,17 @@ import screen.tools.sbs.utils.Utilities;
  */
 @Deprecated
 public class SBSHeaderDeployer {
+	
+	private ContextHandler contextHandler;
 
-	public void deploy(String sbsXmlPath, Pack pack) {
+	public SBSHeaderDeployer(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
+
+	public void deploy(String sbsXmlPath, Pack pack) throws ContextException {
 		try {
 			ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-			EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+			EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 			
 	    	String[] command = null;
 	    	

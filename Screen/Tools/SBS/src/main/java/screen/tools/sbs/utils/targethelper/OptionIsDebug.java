@@ -24,30 +24,38 @@ package screen.tools.sbs.utils.targethelper;
 
 import java.util.List;
 
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 
 public class OptionIsDebug implements Option {
 	
 	private String option;
+	private boolean isDebug;
 
-	public OptionIsDebug() {
+	public OptionIsDebug(){
 		option = "-d";
-		GlobalSettings.getGlobalSettings().getEnvironmentVariables().put("_COMPILE_MODE", "Release");
+		isDebug = false;
 	}
 	
-	public OptionIsDebug(String defaultOption) {
+	public OptionIsDebug(String defaultOption){
 		option = defaultOption;
-		GlobalSettings.getGlobalSettings().getEnvironmentVariables().put("_COMPILE_MODE", "Release");
+		isDebug = false;
 	}
 
-	public int perform(Parameters pars, int it) {
+	public int perform(Parameters pars, int it){
 		String par = pars.getParameterAt(it);
 		if(option.equals(par)){
-			GlobalSettings.getGlobalSettings().getEnvironmentVariables().put("_COMPILE_MODE", "Debug");
+			isDebug = true;
 			return it;
 		}
 		return -1;
+	}
+	
+	public boolean isDebug() {
+		return isDebug;
+	}
+	
+	public String getString() {
+		return isDebug ? "Debug" : "Release";
 	}
 
 	public void usage(List<String> manUsage) {

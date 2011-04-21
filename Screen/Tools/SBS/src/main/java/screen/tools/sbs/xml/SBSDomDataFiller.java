@@ -37,6 +37,7 @@ import org.w3c.dom.NodeList;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Description;
@@ -81,7 +82,7 @@ public class SBSDomDataFiller {
 	
 	public void fill(Document doc, boolean isTest) throws ContextException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 
 		isRelease = true;
 		if(!variables.contains("_COMPILE_MODE")){
@@ -157,7 +158,7 @@ public class SBSDomDataFiller {
 
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//dependencies
 		Logger.debug("dependencies");
@@ -353,8 +354,8 @@ public class SBSDomDataFiller {
 		}
 	}
 		
-	void processDescriptions(Element root, Pack pack, FieldPath xmlPath){
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+	void processDescriptions(Element root, Pack pack, FieldPath xmlPath) throws ContextException{
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
 		if(variables.contains("_COMPILE_MODE")){
 			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
@@ -398,7 +399,7 @@ public class SBSDomDataFiller {
 	}
 	
 	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
-		EnvironmentVariables variables = GlobalSettings.getGlobalSettings().getEnvironmentVariables();
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
 		if(variables.contains("_COMPILE_MODE")){
 			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));

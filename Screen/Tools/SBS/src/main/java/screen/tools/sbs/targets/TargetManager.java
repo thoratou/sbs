@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import screen.tools.sbs.actions.ActionManager;
+import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.defaults.TargetBuild;
@@ -66,7 +67,11 @@ public class TargetManager {
 		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		Target target = targets.get(targetCall);
 		if(target!=null)
-			target.registerActions(actionManager,parameters);
+			try {
+				target.registerActions(actionManager,parameters);
+			} catch (ContextException e) {
+				err.addError("Internal error : " + e.getMessage());
+			}
 		else{
 			err.addError("Unknown target \""+targetCall.getTarget()+"\"");
 			GlobalSettings.getGlobalSettings().needUsage();
