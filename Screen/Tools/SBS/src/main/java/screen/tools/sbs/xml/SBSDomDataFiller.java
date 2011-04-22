@@ -84,8 +84,8 @@ public class SBSDomDataFiller {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 
 		isRelease = true;
-		if(!variables.contains("_COMPILE_MODE")){
-			isRelease = "Debug".equals(variables.getValue("_COMPILE_MODE"));
+		if(variables.contains("_COMPILE_MODE")){
+			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
 		}
 		
 		Element root = doc.getDocumentElement();
