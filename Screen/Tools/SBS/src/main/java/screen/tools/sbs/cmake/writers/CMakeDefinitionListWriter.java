@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -52,8 +51,6 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-
 		Hashtable<FieldString, FieldString> compileFlags = cmakePack.getCompileFlags();
 		Set<Entry<FieldString, FieldString>> entrySet = compileFlags.entrySet();
 		Iterator<Entry<FieldString, FieldString>> iterator = entrySet.iterator();
@@ -69,7 +66,7 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 				cmakeListsWriter.write("\")\n");
 			}
 			else{
-				err.addError("invalid definition");
+				ErrorList.instance.addError("invalid definition");
 			}
 		}		
 	}

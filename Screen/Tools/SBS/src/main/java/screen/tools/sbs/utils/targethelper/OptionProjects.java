@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 
 public class OptionProjects implements Option {
@@ -45,7 +44,6 @@ public class OptionProjects implements Option {
 	}
 	
 	public int perform(Parameters pars, int it) {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		String par = pars.getParameterAt(it);
 		if(option.equals(par)){
 			if(it+1<pars.size()){
@@ -53,8 +51,8 @@ public class OptionProjects implements Option {
 				it++;
 			}
 			else{
-				err.addError("Missing parameter / \""+option+"\" option without project path");
-				GlobalSettings.getGlobalSettings().needUsage();
+				ErrorList.instance.addError("Missing parameter / \""+option+"\" option without project path");
+				ErrorList.instance.needUsage();
 			}
 			return it;
 		}

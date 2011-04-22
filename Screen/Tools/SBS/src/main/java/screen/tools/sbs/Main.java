@@ -24,7 +24,6 @@ package screen.tools.sbs;
 
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.TargetManager;
 import screen.tools.sbs.utils.Logger;
@@ -43,21 +42,20 @@ public class Main {
 	 * 
 	 */
 	private static boolean checkErrors(){
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		if(err.hasErrors()){
+		if(ErrorList.instance.hasErrors()){
 			Logger.info("errors detected");
-			Logger.info("Logged errors (" + err.getErrors().size() + ") :");
-			err.displayErrors();
-			if(err.hasWarnings()){
-				Logger.info("Logged warnings (" + err.getWarnings().size() + ")");
-				err.displayWarnings();
+			Logger.info("Logged errors (" + ErrorList.instance.getErrors().size() + ") :");
+			ErrorList.instance.displayErrors();
+			if(ErrorList.instance.hasWarnings()){
+				Logger.info("Logged warnings (" + ErrorList.instance.getWarnings().size() + ")");
+				ErrorList.instance.displayWarnings();
 			}
 			Logger.info("============== STOP ===============");
 			return false;
-		}else if(err.hasWarnings()){
+		}else if(ErrorList.instance.hasWarnings()){
 			Logger.info("warnings detected");
-			Logger.info("Logged warnings (" + err.getWarnings().size() + ")");
-			err.displayWarnings();
+			Logger.info("Logged warnings (" + ErrorList.instance.getWarnings().size() + ")");
+			ErrorList.instance.displayWarnings();
 		}
 		return true;
 	}
@@ -80,9 +78,9 @@ public class Main {
 		targetManager.call(parameters.getTargetCall(), parameters);
 		//verify that there is no error to resume the process
 		boolean hasNoError = checkErrors();
-		if(GlobalSettings.getGlobalSettings().isPrintUsage()){
+		if(ErrorList.instance.isPrintUsage()){
 			//print help
-			targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
+			targetManager.callUsage(ErrorList.instance.getTargetUsage());
 		}
 		else{
 			//don't process actions if there are some errors while target processing
@@ -91,9 +89,9 @@ public class Main {
 				actionManager.processActions();
 				//verify that there is no error to resume the process
 				hasNoError = checkErrors();
-				if(GlobalSettings.getGlobalSettings().isPrintUsage())
+				if(ErrorList.instance.isPrintUsage())
 					//print help
-					targetManager.callUsage(GlobalSettings.getGlobalSettings().getTargetUsage());
+					targetManager.callUsage(ErrorList.instance.getTargetUsage());
 			}
 		}
 		

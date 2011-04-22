@@ -30,8 +30,6 @@ import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
 public class Dependency {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-	
 	private FieldString name;
 	private FieldString version;
 	private FieldBool export;
@@ -52,7 +50,7 @@ public class Dependency {
 		if(name!=null)
 			this.name = name;
 		else
-			err.addWarning("Null FieldString for dependency name");
+			ErrorList.instance.addWarning("Null FieldString for dependency name");
 	}
 	
 	public void setName(String name) {
@@ -67,7 +65,7 @@ public class Dependency {
 		if(version!=null)
 			this.version = version;
 		else
-			err.addWarning("Null FieldString for dependency version");
+			ErrorList.instance.addWarning("Null FieldString for dependency version");
 	}
 
 	public void setVersion(String version) {
@@ -82,7 +80,7 @@ public class Dependency {
 		if(export!=null)
 			this.export = export;
 		else
-			err.addWarning("Null FieldString for dependency export flag");
+			ErrorList.instance.addWarning("Null FieldString for dependency export flag");
 	}
 	
 	public void setExport(String export) {
@@ -107,7 +105,7 @@ public class Dependency {
 		if(include!=null)
 			includePathList.add(include);
 		else
-			err.addWarning("Null FieldPath for dependency include path");
+			ErrorList.instance.addWarning("Null FieldPath for dependency include path");
 	}
 	
 	public void addIncludePath(String include){
@@ -118,7 +116,7 @@ public class Dependency {
 		if(library!=null)
 			libraryPathList.add(library);
 		else
-			err.addWarning("Null FieldPath for dependency library path");
+			ErrorList.instance.addWarning("Null FieldPath for dependency library path");
 	}
 	
 	public void addLibraryPath(String library){
@@ -132,7 +130,7 @@ public class Dependency {
 			libraryList.add(lib);
 		}
 		else
-			err.addWarning("Null FieldString for dependency library name");
+			ErrorList.instance.addWarning("Null FieldString for dependency library name");
 	}
 
 	public void addLibrary(FieldString name, FieldString version){
@@ -144,7 +142,7 @@ public class Dependency {
 			libraryList.add(lib);
 		}
 		else
-			err.addWarning("Null FieldString for dependency library name");
+			ErrorList.instance.addWarning("Null FieldString for dependency library name");
 	}
 	
 	public void addLibrary(String name){

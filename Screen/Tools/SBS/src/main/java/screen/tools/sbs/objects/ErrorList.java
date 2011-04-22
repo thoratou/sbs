@@ -25,17 +25,23 @@ package screen.tools.sbs.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import screen.tools.sbs.targets.TargetCall;
 import screen.tools.sbs.utils.Logger;
 
 public class ErrorList {
+	public final static ErrorList instance = new ErrorList();
 	private List<String> errorList;
 	private List<String> warningList;
 	private boolean logError;
+	private boolean isUsage;
+	private TargetCall targetUsage;
 	
 	public ErrorList() {
 		errorList = new ArrayList<String>();
 		warningList = new ArrayList<String>();
 		logError = true;
+		isUsage = false;
+		targetUsage = null;
 	}
 	
 	public void addError(String error){
@@ -79,6 +85,25 @@ public class ErrorList {
 	}
 
 	public void setLogError(boolean b) {
-		logError = true;
+		logError = b;
+	}
+
+	public void needUsage() {
+		isUsage = true;
+		targetUsage = null;
+	}
+	
+	public void needUsage(TargetCall call) {
+		isUsage = true;
+		targetUsage = call;
+	}
+
+	
+	public boolean isPrintUsage(){
+		return isUsage;
+	}
+	
+	public TargetCall getTargetUsage(){
+		return targetUsage;
 	}
 }

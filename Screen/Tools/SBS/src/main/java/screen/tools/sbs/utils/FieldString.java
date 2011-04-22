@@ -24,7 +24,6 @@ package screen.tools.sbs.utils;
 
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 
 public class FieldString {
 	private static EnvironmentVariables currentEnvironmentVariables;
@@ -101,7 +100,6 @@ public class FieldString {
 		int currentIndex = 0;
 		int returnedIndex = 0;
 		EnvironmentVariables env = currentEnvironmentVariables;
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
 		while((returnedIndex = originalString.indexOf("${", currentIndex)) != -1){
 			Logger.debug("originalString : "+originalString);
@@ -109,7 +107,7 @@ public class FieldString {
 			finalString = finalString.concat(originalString.substring(currentIndex, returnedIndex));
 			int endVarIndex = 0;
 			if((endVarIndex = originalString.indexOf("}", returnedIndex)) == -1){
-				err.addError("variable never ended by } caracter : "
+				ErrorList.instance.addError("variable never ended by } caracter : "
 							  + originalString.substring(returnedIndex, endVarIndex));
 				isValid = false;
 			}
@@ -127,7 +125,7 @@ public class FieldString {
 					finalString = finalString.concat(value);
 				}
 				else {
-					err.addError("undefined variable : "+var);
+					ErrorList.instance.addError("undefined variable : "+var);
 					isValid = false;
 				}
 				currentIndex = endVarIndex + 1;

@@ -32,7 +32,6 @@ import java.util.List;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldFile;
 import screen.tools.sbs.utils.Logger;
 
@@ -49,7 +48,6 @@ public class ActionConfigure implements Action {
 	private List<String> configs;
 	private List<String> projects;
 	private boolean isClean;
-	private ContextHandler contextHandler;
 	
 	/**
 	 * Default constructor for ActionConfigure.
@@ -101,11 +99,10 @@ public class ActionConfigure implements Action {
 	 * Saves configuration files to load.
 	 */
 	public void perform() {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		//select the file to write
 		if(!isGlobal && projects.isEmpty()){
-			err.addError("\"configure\" action without target to configure");
-			GlobalSettings.getGlobalSettings().needUsage();
+			ErrorList.instance.addError("\"configure\" action without target to configure");
+			ErrorList.instance.needUsage();
 			return;
 		}
 		
@@ -135,11 +132,10 @@ public class ActionConfigure implements Action {
 	 * @param file
 	 */
 	private void clean(FieldFile fieldFile) {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		if(new File(fieldFile.getString()).delete())
 			Logger.info("configuration cleaned : "+fieldFile.getString());
 		else
-			err.addWarning("no configuration file : "+fieldFile.getString());
+			ErrorList.instance.addWarning("no configuration file : "+fieldFile.getString());
 	}
 
 	/**
@@ -148,7 +144,6 @@ public class ActionConfigure implements Action {
 	 * @param file
 	 */
 	private void write(FieldFile file){
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		File outFile = new File(file.getString());
 		try {
 			FileWriter outWriter = new FileWriter(outFile,false);
@@ -157,15 +152,13 @@ public class ActionConfigure implements Action {
 			}
 			outWriter.close();
 		} catch (FileNotFoundException e) {
-			err.addError("Can't create file .sbsconfig");
+			ErrorList.instance.addError("Can't create file .sbsconfig");
 			return;
 		} catch (IOException e) {
-			err.addError("Can't write file .sbsconfig");
+			ErrorList.instance.addError("Can't write file .sbsconfig");
 			return;
 		}
 	}
 
-	public void setContext(ContextHandler contextHandler) {
-		this.contextHandler = contextHandler;
-	}
+	public void setContext(ContextHandler contextHandler) {	}
 }

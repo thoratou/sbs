@@ -44,7 +44,6 @@ import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
@@ -157,7 +156,6 @@ public class SBSDomDataFiller {
 	}
 
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//dependencies
@@ -265,7 +263,7 @@ public class SBSDomDataFiller {
 					String packVersion = newDep.getVersion().getString();
 					
 					if(!variables.contains("ENV_NAME")){
-						err.addError("undefined variable : ENV_NAME");
+						ErrorList.instance.addError("undefined variable : ENV_NAME");
 					}
 					String compiler = variables.getValue("ENV_NAME");
 					FieldString compilerField = new FieldString(compiler);
@@ -273,7 +271,7 @@ public class SBSDomDataFiller {
 					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), compilerField);
 					RepositoryFilter retrieved = finder.retrieve(contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable());
 					if(retrieved == null){
-						err.addError("Unable to retrieve component into repositories :\n"+
+						ErrorList.instance.addError("Unable to retrieve component into repositories :\n"+
 									"- component name : "+packName+"\n"+
 									"- component version : "+packVersion+"\n"+
 									"- compiler : "+compiler);
@@ -293,9 +291,9 @@ public class SBSDomDataFiller {
 					}
 					else { 
 						if(Utilities.isWindows())
-							err.addError("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist");
+							ErrorList.instance.addError("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist");
 						else {
-							err.addWarning("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist => Uses default settings");
+							ErrorList.instance.addWarning("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist => Uses default settings");
 							for(int j=0; j<tmpLibList.size(); j++){
 								//add default library description
 								Description description = new Description();

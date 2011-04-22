@@ -27,7 +27,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
@@ -39,8 +38,6 @@ import screen.tools.sbs.utils.FieldString;
  *
  */
 public class CMakePack {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-	
 	private FieldString cmakeVersion;
 	private FieldString projectName;
 	private FieldString projectVersion;
@@ -74,7 +71,7 @@ public class CMakePack {
 		if(cmakeVersion!=null)
 			this.cmakeVersion = cmakeVersion;
 		else
-			err.addWarning("Null FieldString for cmakeVersion");
+			ErrorList.instance.addWarning("Null FieldString for cmakeVersion");
 	}
 
 	public FieldString getVersion() {
@@ -89,7 +86,7 @@ public class CMakePack {
 		if(projectName!=null)
 			this.projectName = projectName;
 		else
-			err.addWarning("Null FieldString for projectName");
+			ErrorList.instance.addWarning("Null FieldString for projectName");
 	}
 	
 	public void setProjectName(String projectName) {
@@ -104,7 +101,7 @@ public class CMakePack {
 		if(projectVersion!=null)
 			this.projectVersion = projectVersion;
 		else
-			err.addWarning("Null FieldString for projectVersion");
+			ErrorList.instance.addWarning("Null FieldString for projectVersion");
 	}
 	
 	public void setProjectVersion(String projectVersion) {
@@ -119,7 +116,7 @@ public class CMakePack {
 		if(buildMode!=null)
 			this.buildMode = buildMode;
 		else
-			err.addWarning("Null FieldString for buildMode");
+			ErrorList.instance.addWarning("Null FieldString for buildMode");
 	}
 	
 	public void setBuildMode(String buildMode) {
@@ -134,7 +131,7 @@ public class CMakePack {
 		if(buildType!=null)
 			this.buildType = buildType;
 		else
-			err.addWarning("Null FieldString for buildType");
+			ErrorList.instance.addWarning("Null FieldString for buildType");
 	}
 
 	public void setBuildType(FieldBuildType.Type buildType) {
@@ -156,7 +153,7 @@ public class CMakePack {
 			compileFlags.put(flag, value);
 		}
 		else
-			err.addWarning("Null FieldString for compileFlag");
+			ErrorList.instance.addWarning("Null FieldString for compileFlag");
 	}
 	
 	public void addCompileFlag(FieldString flag, String value) {
@@ -224,7 +221,7 @@ public class CMakePack {
 		if(file!=null)
 			includeDirectories.add(file);
 		else
-			err.addWarning("Null FieldString for includeDirectory");
+			ErrorList.instance.addWarning("Null FieldString for includeDirectory");
 	}
 	
 	public void addIncludeDirectory(String file) {
@@ -243,7 +240,7 @@ public class CMakePack {
 		if(file!=null)
 			linkDirectories.add(file);
 		else
-			err.addWarning("Null FieldString for linkDirectory");
+			ErrorList.instance.addWarning("Null FieldString for linkDirectory");
 	}
 	
 	public void addLinkDirectory(String file) {
@@ -262,7 +259,7 @@ public class CMakePack {
 		if(file!=null)
 			linkLibraries.add(file);
 		else
-			err.addWarning("Null FieldString for linkLibrary");
+			ErrorList.instance.addWarning("Null FieldString for linkLibrary");
 	}
 	
 	public void addLinkLibraries(String file) {
@@ -277,7 +274,7 @@ public class CMakePack {
 		if(outputPath!=null)
 			this.outputPath = outputPath;
 		else
-			err.addWarning("Null FieldString for outputPath");
+			ErrorList.instance.addWarning("Null FieldString for outputPath");
 	}
 	
 	public void setOutputPath(String outputPath) {

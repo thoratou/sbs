@@ -26,8 +26,6 @@ import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldString;
 
 public class Flag {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-
 	private FieldString flag;
 	private FieldString value;
 	private FieldBuildMode buildMode;
@@ -42,7 +40,7 @@ public class Flag {
 		if(flag!=null)
 			this.flag = flag;
 		else
-			err.addWarning("Null FieldString for flag key");
+			ErrorList.instance.addWarning("Null FieldString for flag key");
 	}
 	
 	public void setFlag(String flag) {
@@ -57,7 +55,7 @@ public class Flag {
 		if(value!=null)
 			this.value = value;
 		else
-			err.addWarning("Null FieldString for flag value");
+			ErrorList.instance.addWarning("Null FieldString for flag value");
 	}
 
 	public void setValue(String value) {
@@ -72,7 +70,7 @@ public class Flag {
 		if(value!=null)
 			this.buildMode = mode;
 		else
-			err.addWarning("Null FieldString for flag build mode");
+			ErrorList.instance.addWarning("Null FieldString for flag build mode");
 	}
 
 	public void setBuildMode(String mode){

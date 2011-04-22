@@ -27,10 +27,9 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldPath;
 
 /**
@@ -55,8 +54,6 @@ public class CMakeHeaderFolderListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-
 		List<FieldPath> includeDirectories = cmakePack.getIncludeDirectories();
 		Iterator<FieldPath> iterator = includeDirectories.iterator();
 		cmakeListsWriter.write("INCLUDE_DIRECTORIES(\n");
@@ -66,7 +63,7 @@ public class CMakeHeaderFolderListWriter implements CMakeSegmentWriter{
 				cmakeListsWriter.write("    "+next.getCMakeString()+"\n");
 			}
 			else{
-				err.addError("invalid include directory");
+				ErrorList.instance.addError("invalid include directory");
 			}
 		}		
 		cmakeListsWriter.write(")\n");

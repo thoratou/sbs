@@ -26,8 +26,6 @@ import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldFile;
 
 public class Import {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-
 	private FieldBuildMode buildMode;
 	private FieldFile file;
 	
@@ -40,7 +38,7 @@ public class Import {
 		if(buildMode!=null)
 			this.buildMode = buildMode;
 		else
-			err.addWarning("Null FieldBuildMode for import build mode");
+			ErrorList.instance.addWarning("Null FieldBuildMode for import build mode");
 	}
 	
 	public void setBuildMode(String mode) {
@@ -59,7 +57,7 @@ public class Import {
 		if(file!=null)
 			this.file = file;
 		else
-			err.addWarning("Null FieldFile for import file");
+			ErrorList.instance.addWarning("Null FieldFile for import file");
 	}
 	
 	public void setFile(String file) {

@@ -8,7 +8,6 @@ import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.objects.ProjectProperties;
@@ -23,10 +22,8 @@ import screen.tools.sbs.utils.FieldString;
  *
  */
 public class CMakePackGenerator {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-
-	Pack pack;
-	CMakePack cmakePack;
+	private Pack pack;
+	private CMakePack cmakePack;
 	
 	/**
 	 * Unique generator constructor
@@ -62,7 +59,7 @@ public class CMakePackGenerator {
 		if(name.isValid())
 			cmakePack.setProjectName(name.getString().replaceAll("/", ""));
 		else
-			err.addError("invalid name into the pack");
+			ErrorList.instance.addError("invalid name into the pack");
 		cmakePack.setProjectVersion(pack.getProperties().getVersion());
 
 		FieldString buildType = pack.getProperties().getBuildType();
@@ -73,11 +70,11 @@ public class CMakePackGenerator {
 				cmakePack.setBuildType(type);
 			}
 			else{
-				err.addError("Internal error : invalid build type into the pack");
+				ErrorList.instance.addError("Internal error : invalid build type into the pack");
 			}
 		}
 		else
-			err.addError("invalid build type into the pack");
+			ErrorList.instance.addError("invalid build type into the pack");
 	}
 	
 	/**
@@ -114,7 +111,7 @@ public class CMakePackGenerator {
 			if(fieldPath.isValid())
 				cmakePack.addIncludeDirectory(fieldPath.getCMakeString());
 			else
-				err.addError("invalid include path into the pack");
+				ErrorList.instance.addError("invalid include path into the pack");
 		}
 	}
 
@@ -130,7 +127,7 @@ public class CMakePackGenerator {
 			if(fieldPath.isValid())
 				cmakePack.addLinkDirectory(fieldPath.getCMakeString());
 			else
-				err.addError("invalid link path into the pack");
+				ErrorList.instance.addError("invalid link path into the pack");
 		}
 	}
 
@@ -153,10 +150,10 @@ public class CMakePackGenerator {
 					cmakePack.addLinkLibraries(description.getCompileName().getString());
 				}
 				else
-					err.addError("no description for library "+name+" into the pack");
+					ErrorList.instance.addError("no description for library "+name+" into the pack");
 			}
 			else
-				err.addError("invalid library into the pack");
+				ErrorList.instance.addError("invalid library into the pack");
 		}
 	}
 

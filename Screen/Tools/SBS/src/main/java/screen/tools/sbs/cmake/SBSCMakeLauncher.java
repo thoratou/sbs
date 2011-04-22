@@ -35,7 +35,6 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessLauncher;
 
@@ -54,22 +53,21 @@ public class SBSCMakeLauncher {
 	
 	public void launch(String sbsXmlPath) throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		
 		if(!variables.contains("TARGET_ENV")){
-			err.addError("undefined variable : TARGET_ENV");
+			ErrorList.instance.addError("undefined variable : TARGET_ENV");
 		}
 		if(!variables.contains("MAKE_PROGRAM")){
-			err.addError("undefined variable : MAKE_PROGRAM");
+			ErrorList.instance.addError("undefined variable : MAKE_PROGRAM");
 		}
 		if(!variables.contains("C_COMPILER")){
-			err.addError("undefined variable : C_COMPILER");
+			ErrorList.instance.addError("undefined variable : C_COMPILER");
 		}
 		if(!variables.contains("CPP_COMPILER")){
-			err.addError("undefined variable : CPP_COMPILER");
+			ErrorList.instance.addError("undefined variable : CPP_COMPILER");
 		}
 		
-		if(err.hasErrors())
+		if(ErrorList.instance.hasErrors())
 			return;
 		
 		String targetEnv = variables.getValue("TARGET_ENV");
@@ -111,12 +109,12 @@ public class SBSCMakeLauncher {
             	Logger.info(s);
             }
             while ((s = stdError.readLine()) != null) {
-                err.addError(s);
+            	ErrorList.instance.addError(s);
             }
             
         }
         catch (IOException e) {
-        	err.addError(e.getMessage());
+        	ErrorList.instance.addError(e.getMessage());
         }
 
 	}

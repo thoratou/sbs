@@ -49,7 +49,6 @@ import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldPath;
@@ -63,8 +62,6 @@ import screen.tools.sbs.utils.Utilities;
  * 
  */
 public class SBSCMakeFileGenerator {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-	
 	private Pack pack;
 	private String sbsXmlPath;
 	private boolean isTest;
@@ -112,26 +109,26 @@ public class SBSCMakeFileGenerator {
 		
 		//repoRoot
 		if(!variables.contains("REPOSITORY_ROOT")){
-			err.addError("undefined variable : REPOSITORY_ROOT");
+			ErrorList.instance.addError("undefined variable : REPOSITORY_ROOT");
 		}
 		repoRoot = variables.getValue("REPOSITORY_ROOT");
 		
 		//compile mode
 		if(!variables.contains("_COMPILE_MODE")){
-			err.addError("Internal error : undefined variable : _COMPILE_MODE");
+			ErrorList.instance.addError("Internal error : undefined variable : _COMPILE_MODE");
 		}
 		compileMode = variables.getValue("_COMPILE_MODE");
 		
 		//envName
 		if(!variables.contains("ENV_NAME")){
-			err.addError("undefined variable : ENV_NAME");
+			ErrorList.instance.addError("undefined variable : ENV_NAME");
 		}
 		envName = variables.getValue("ENV_NAME");
 		
 		//compile flags
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
 		if(!variables.contains(flagVar)){
-			err.addError("undefined variable : "+flagVar);
+			ErrorList.instance.addError("undefined variable : "+flagVar);
 		}
 		String flagString = variables.getValue(flagVar);
 		flags = flagString.split(" ");
@@ -139,12 +136,12 @@ public class SBSCMakeFileGenerator {
 		//default paths
 		if(Utilities.isLinux()){
 			if(!variables.contains("DEFAULT_INCLUDE_PATH")){
-				err.addError("undefined variable : DEFAULT_INCLUDE_PATH");
+				ErrorList.instance.addError("undefined variable : DEFAULT_INCLUDE_PATH");
 			}
 			defaultIncludePath = variables.getValue("DEFAULT_INCLUDE_PATH");
 			
 			if(!variables.contains("DEFAULT_LIB_PATH")){
-				err.addError("undefined variable : DEFAULT_LIB_PATH");
+				ErrorList.instance.addError("undefined variable : DEFAULT_LIB_PATH");
 			}
 			defaultLibPath = variables.getValue("DEFAULT_LIB_PATH");
 		}
@@ -198,7 +195,7 @@ public class SBSCMakeFileGenerator {
 			try {
 				cmakeListWriter = new FileWriter(cmakeListFile,false);
 			} catch (FileNotFoundException e) {
-				err.addError("Can't create file CMakeLists.txt : "+e.getMessage());
+				ErrorList.instance.addError("Can't create file CMakeLists.txt : "+e.getMessage());
 				return;
 			}
 			
@@ -247,7 +244,7 @@ public class SBSCMakeFileGenerator {
 			
 			cmakeListWriter.close();
 		} catch (IOException e) {
-			err.addError(e.getMessage());
+			ErrorList.instance.addError(e.getMessage());
 		}
 	}
 		
@@ -263,7 +260,7 @@ public class SBSCMakeFileGenerator {
 				try {
 					sbsComponentWriter = new FileWriter(sbsComponentFile,false);
 				} catch (FileNotFoundException e) {
-					err.addError("Can't create file component.xml");
+					ErrorList.instance.addError("Can't create file component.xml");
 					return;
 				}
 				sbsComponentWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -346,7 +343,7 @@ public class SBSCMakeFileGenerator {
 				try {
 					sbsLibraryWriter = new FileWriter(sbsLibraryFile,false);
 				} catch (FileNotFoundException e) {
-					err.addError("Can't create file component.xml");
+					ErrorList.instance.addError("Can't create file component.xml");
 					return;
 				}
 				
@@ -368,7 +365,7 @@ public class SBSCMakeFileGenerator {
 				sbsLibraryWriter.close();
 			}
 		} catch (IOException e) {
-			err.addError(e.getMessage());
+			ErrorList.instance.addError(e.getMessage());
 		}
 	}
 	

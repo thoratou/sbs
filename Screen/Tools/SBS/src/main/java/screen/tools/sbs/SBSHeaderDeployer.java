@@ -33,7 +33,6 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessLauncher;
@@ -58,13 +57,12 @@ public class SBSHeaderDeployer {
 
 	public void deploy(String sbsXmlPath, Pack pack) throws ContextException {
 		try {
-			ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 			EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 			
 	    	String[] command = null;
 	    	
 	    	if(!variables.contains("REPOSITORY_ROOT")){
-				err.addError("undefined variable : REPOSITORY_ROOT");
+	    		ErrorList.instance.addError("undefined variable : REPOSITORY_ROOT");
 			}
 			String repoRoot = variables.getValue("REPOSITORY_ROOT");
 	    	String packPath = pack.getProperties().getName().getString();
@@ -91,7 +89,7 @@ public class SBSHeaderDeployer {
 		        	Logger.info(s);
 		        }
 		        while ((s = stdError.readLine()) != null) {
-		            err.addError(s);
+		        	ErrorList.instance.addError(s);
 		        }
 	    	}
 		} catch (IOException e) {

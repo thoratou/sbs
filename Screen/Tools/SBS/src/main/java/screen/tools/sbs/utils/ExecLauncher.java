@@ -36,7 +36,6 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.objects.Pack;
 
 public class ExecLauncher {
@@ -49,28 +48,27 @@ public class ExecLauncher {
 	}
 	
 	public void launch() throws ContextException{
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		if(!variables.contains("REPOSITORY_ROOT")){
-			err.addError("undefined variable : REPOSITORY_ROOT");
+			ErrorList.instance.addError("undefined variable : REPOSITORY_ROOT");
 		}
 		String repoRoot = variables.getValue("REPOSITORY_ROOT");
 		
 		if(!variables.contains("ENV_NAME")){
-			err.addError("undefined variable : ENV_NAME");
+			ErrorList.instance.addError("undefined variable : ENV_NAME");
 		}
 		String envName = variables.getValue("ENV_NAME");
 
 		if(!variables.contains("_COMPILE_MODE")){
-			err.addError("undefined variable : _COMPILE_MODE");
+			ErrorList.instance.addError("undefined variable : _COMPILE_MODE");
 		}
 		String compileMode = variables.getValue("_COMPILE_MODE");
 
 		String path = repoRoot+"/"+envName+"/"+compileMode;
 
 		if(!variables.contains("LAUNCH_COMMAND")){
-			err.addError("undefined variable : LAUNCH_COMMAND");
+			ErrorList.instance.addError("undefined variable : LAUNCH_COMMAND");
 		}
 		
 		EnvironmentVariables addVars = new EnvironmentVariables();
@@ -101,12 +99,12 @@ public class ExecLauncher {
             	Logger.info(s);
             }
             while ((s = stdError.readLine()) != null) {
-                err.addError(s);
+            	ErrorList.instance.addError(s);
             }
             
         }
         catch (IOException e) {
-        	err.addError(e.getMessage());
+        	ErrorList.instance.addError(e.getMessage());
         }
 	}
 }

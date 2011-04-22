@@ -26,16 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 
 public class Parameters {
 	public TargetCall targetCall;
 	public List<String> parameters;
 	
 	public Parameters(String[] args) {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		if(args.length < 1){
-			err.addError("No parameters");
+			ErrorList.instance.addError("No parameters");
 		}
 		else{
 			retrievePluginAndTarget(args[0]);

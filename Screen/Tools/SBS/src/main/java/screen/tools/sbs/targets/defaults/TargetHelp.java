@@ -24,7 +24,7 @@ package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.objects.GlobalSettings;
+import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -50,7 +50,7 @@ public class TargetHelp implements Target {
 		ContextHandler contextHandler = new ContextHandler();
 		actionManager.setContext(contextHandler);
 
-		GlobalSettings.getGlobalSettings().needUsage(optionTarget.getTargetCall());
+		ErrorList.instance.needUsage(optionTarget.getTargetCall());
 	}
 
 	public TargetCall getTargetCall() {

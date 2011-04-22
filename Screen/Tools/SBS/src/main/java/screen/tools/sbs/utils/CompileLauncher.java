@@ -34,7 +34,6 @@ import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 
 public class CompileLauncher {
 	private boolean isTest;
@@ -46,7 +45,6 @@ public class CompileLauncher {
 	}
 	
 	public void launch() throws ContextException{
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		String path = null;
 		if(isTest)
@@ -55,7 +53,7 @@ public class CompileLauncher {
 			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		if(!variables.contains("COMPILE_COMMAND")){
-			err.addError("undefined variable : COMPILE_COMMAND");
+			ErrorList.instance.addError("undefined variable : COMPILE_COMMAND");
 		}
 		String compileCommand = variables.getValue("COMPILE_COMMAND");
 		
@@ -78,12 +76,12 @@ public class CompileLauncher {
             		//Wascana and MSYS log error just for .a files associated to a .dll
             		Logger.info(s);
             	else
-            		err.addError(s);
+            		ErrorList.instance.addError(s);
             }
             
         }
         catch (IOException e) {
-        	err.addError(e.getMessage());
+        	ErrorList.instance.addError(e.getMessage());
         }
 	}
 }

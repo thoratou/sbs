@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.defaults.TargetBuild;
 import screen.tools.sbs.targets.defaults.TargetCheck;
 import screen.tools.sbs.targets.defaults.TargetClean;
@@ -64,17 +63,16 @@ public class TargetManager {
 	}
 	
 	public void call(TargetCall targetCall, Parameters parameters){
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		Target target = targets.get(targetCall);
 		if(target!=null)
 			try {
 				target.registerActions(actionManager,parameters);
 			} catch (ContextException e) {
-				err.addError("Internal error : " + e.getMessage());
+				ErrorList.instance.addError("Internal error : " + e.getMessage());
 			}
 		else{
-			err.addError("Unknown target \""+targetCall.getTarget()+"\"");
-			GlobalSettings.getGlobalSettings().needUsage();
+			ErrorList.instance.addError("Unknown target \""+targetCall.getTarget()+"\"");
+			ErrorList.instance.needUsage();
 		}
 	}
 	

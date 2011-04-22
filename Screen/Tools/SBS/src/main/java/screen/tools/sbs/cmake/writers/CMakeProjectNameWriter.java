@@ -28,7 +28,6 @@ import java.io.Writer;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -46,12 +45,10 @@ public class CMakeProjectNameWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		
 		FieldString projectName = cmakePack.getProjectName();
 		if(projectName.isValid())
 			cmakeListsWriter.write("PROJECT("+projectName.getString()+")\n");
 		else
-			err.addError("invalid project name");
+			ErrorList.instance.addError("invalid project name");
 	}
 }

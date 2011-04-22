@@ -28,7 +28,6 @@ import java.io.Writer;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -46,12 +45,10 @@ public class CMakeProjectVersionWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		
 		FieldString projectVersion = cmakePack.getProjectVersion();
 		if(projectVersion.isValid())
 			cmakeListsWriter.write("SET(${PROJECT_NAME}_VERSION \""+projectVersion.getString()+"\")\n");
 		else
-			err.addError("invalid project version");
+			ErrorList.instance.addError("invalid project version");
 	}
 }

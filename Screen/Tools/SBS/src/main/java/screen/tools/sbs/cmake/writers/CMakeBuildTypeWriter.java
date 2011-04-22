@@ -25,10 +25,9 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldBuildType.Type;
 
@@ -47,8 +46,6 @@ public class CMakeBuildTypeWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-
 		FieldBuildType typeInst = cmakePack.getBuildType();
 		if(typeInst.isValid()){
 			FieldBuildType.Type type = typeInst.get();
@@ -58,7 +55,7 @@ public class CMakeBuildTypeWriter implements CMakeSegmentWriter{
 			}
 		}
 		else{
-			err.addError("invalid build type");
+			ErrorList.instance.addError("invalid build type");
 		}
 	}
 }

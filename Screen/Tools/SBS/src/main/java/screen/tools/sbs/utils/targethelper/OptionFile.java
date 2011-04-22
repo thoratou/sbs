@@ -25,7 +25,6 @@ package screen.tools.sbs.utils.targethelper;
 import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 
 public class OptionFile implements Option {
@@ -44,7 +43,6 @@ public class OptionFile implements Option {
 	}
 	
 	public int perform(Parameters pars, int it) {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		String par = pars.getParameterAt(it);
 		if(option.equals(par)){
 			if(it+1<pars.size()){
@@ -52,8 +50,8 @@ public class OptionFile implements Option {
 				it++;
 			}
 			else{
-				err.addError("Missing parameter / \""+option+"\" option without file name");
-				GlobalSettings.getGlobalSettings().needUsage();
+				ErrorList.instance.addError("Missing parameter / \""+option+"\" option without file name");
+				ErrorList.instance.needUsage();
 			}
 			return it;
 		}

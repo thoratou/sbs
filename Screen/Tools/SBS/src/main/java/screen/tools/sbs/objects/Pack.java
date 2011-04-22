@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Pack {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-
 	private ProjectProperties properties;
 	private List<Dependency> dependencyList;
 	private List<Flag> flagList;
@@ -47,7 +45,7 @@ public class Pack {
 		if(properties!=null)
 			this.properties = properties;
 		else
-			err.addWarning("Null FieldString for pack properties");
+			ErrorList.instance.addWarning("Null FieldString for pack properties");
 	}
 	public ProjectProperties getProperties() {
 		return properties;
@@ -57,14 +55,14 @@ public class Pack {
 		if(dependency!=null)
 			dependencyList.add(dependency);
 		else
-			err.addWarning("Null FieldString for pack dependency");
+			ErrorList.instance.addWarning("Null FieldString for pack dependency");
 	}
 
 	public void setDependencyList(List<Dependency> dependencyList) {
 		if(dependencyList!=null)
 			this.dependencyList = dependencyList;
 		else
-			err.addWarning("Null FieldString for pack dependency list");
+			ErrorList.instance.addWarning("Null FieldString for pack dependency list");
 	}
 
 	public List<Dependency> getDependencyList() {
@@ -75,14 +73,14 @@ public class Pack {
 		if(flag!=null)
 			flagList.add(flag);
 		else
-			err.addWarning("Null FieldString for pack flag");
+			ErrorList.instance.addWarning("Null FieldString for pack flag");
 	}
 
 	public void setFlagList(List<Flag> flagList) {
 		if(flagList!=null)
 			this.flagList = flagList;
 		else
-			err.addWarning("Null FieldString for pack flag list");
+			ErrorList.instance.addWarning("Null FieldString for pack flag list");
 	}
 
 	public List<Flag> getFlagList() {
@@ -93,14 +91,14 @@ public class Pack {
 		if(desc!=null)
 			descriptionList.put(desc.getName().getString(),desc);
 		else
-			err.addWarning("Null FieldString for pack description");
+			ErrorList.instance.addWarning("Null FieldString for pack description");
 	}
 
 	public void setDescriptionMap(Hashtable<String, Description> descriptionList) {
 		if(descriptionList!=null)
 			this.descriptionList = descriptionList;
 		else
-			err.addWarning("Null FieldString for pack description list");
+			ErrorList.instance.addWarning("Null FieldString for pack description list");
 	}
 
 	public List<Description> getDescriptionList() {

@@ -39,7 +39,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
@@ -60,8 +59,6 @@ public class RepositoryParser {
 	}
 	
 	public void fill(){
-		ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
-		
 		Document doc = parseFile(inputFile);
 		
 		XPathFactory xFactory = XPathFactory.newInstance();
@@ -99,11 +96,10 @@ public class RepositoryParser {
 				    		else if(!"local".equals(string2) &&
 				    				!"snapshot".equals(string2) &&
 				    				!"internal".equals(string2))
-				    			errList.addWarning("unknown repository type : "+string2);
+				    			ErrorList.instance.addWarning("unknown repository type : "+string2);
 				    	}
 				    	data.setType(new RepositoryType(flags));
 				    }
-				    //TODO comment
 				    dataTable.add(data);
 				}
 			}			
@@ -133,7 +129,7 @@ public class RepositoryParser {
 				}
 			}
 		} catch (XPathExpressionException e) {
-			errList.addError(e.getMessage());
+			ErrorList.instance.addError(e.getMessage());
 		}
 	}
 	

@@ -28,7 +28,6 @@ import java.util.List;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 
 /**
  * Class to handler, register and launch actions.
@@ -61,11 +60,11 @@ public class ActionManager {
 	 * Performs all registered actions.
 	 */
 	public void processActions(){
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
+		if(contextHandler==null){
+			ErrorList.instance.addError("Internal error : missing context handler to process actions");
+			return;
+		}
 		
-		if(contextHandler==null)
-			err.addError("Internal error : missing context handler to process actions");
-			
 		try {
 			for(int i=0; i<actions.size(); i++){
 				Action action = actions.get(i);
@@ -73,7 +72,7 @@ public class ActionManager {
 					action.perform();
 			}
 		} catch (ContextException e) {
-			err.addError("Internal error : " + e.getMessage());
+			ErrorList.instance.addError("Internal error : " + e.getMessage());
 		}
 	}
 

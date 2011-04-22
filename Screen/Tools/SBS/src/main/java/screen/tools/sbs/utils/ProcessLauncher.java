@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 
 public class ProcessLauncher {
 
@@ -105,8 +104,6 @@ public class ProcessLauncher {
 	}
 
 	public void processOutputs() throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(getErrorStream()));
 
@@ -115,7 +112,7 @@ public class ProcessLauncher {
 			Logger.info(s);
 		}
         while ((s = stdError.readLine()) != null) {
-            err.addError(s);
+        	ErrorList.instance.addError(s);
         }		
 	}
 	

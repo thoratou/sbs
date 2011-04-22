@@ -27,8 +27,6 @@ import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldString;
 
 public class Description {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-
 	private FieldString name;
 	private FieldString fullName;
 	private FieldString compileName;
@@ -47,7 +45,7 @@ public class Description {
 		if(name!=null)
 			this.name = name;
 		else
-			err.addWarning("Null FieldString for description name");
+			ErrorList.instance.addWarning("Null FieldString for description name");
 	}
 	
 	public void setName(String name) {
@@ -62,7 +60,7 @@ public class Description {
 		if(name!=null)
 			this.fullName = name;
 		else
-			err.addWarning("Null FieldString for description full name");
+			ErrorList.instance.addWarning("Null FieldString for description full name");
 	}
 	
 	public void setFullName(String name) {
@@ -77,7 +75,7 @@ public class Description {
 		if(name!=null)
 			this.compileName = name;
 		else
-			err.addWarning("Null FieldString for description compile name");
+			ErrorList.instance.addWarning("Null FieldString for description compile name");
 	}
 	
 	public void setCompileName(String name) {
@@ -92,7 +90,7 @@ public class Description {
 		if(buildType!=null)
 			this.buildType = buildType;
 		else
-			err.addWarning("Null FieldBuildType for description build type");
+			ErrorList.instance.addWarning("Null FieldBuildType for description build type");
 	}
 	
 	public void setBuildType(String type) {
@@ -111,7 +109,7 @@ public class Description {
 		if(buildMode!=null)
 			this.buildMode = buildMode;
 		else
-			err.addWarning("Null FieldBuildMode for description build mode");
+			ErrorList.instance.addWarning("Null FieldBuildMode for description build mode");
 	}
 	
 	public void setBuildMode(String mode) {

@@ -30,7 +30,6 @@ import java.util.List;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -54,8 +53,6 @@ public class CMakeLibraryListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-
 		List<FieldString> linkLibraries = cmakePack.getLinkLibraries();
 		Iterator<FieldString> iterator = linkLibraries.iterator();
 		cmakeListsWriter.write("TARGET_LINK_LIBRARIES(\n");
@@ -66,7 +63,7 @@ public class CMakeLibraryListWriter implements CMakeSegmentWriter{
 				cmakeListsWriter.write("    "+next.getString()+"\n");
 			}
 			else{
-				err.addError("invalid library");
+				ErrorList.instance.addError("invalid library");
 			}
 		}		
 		cmakeListsWriter.write(")\n");

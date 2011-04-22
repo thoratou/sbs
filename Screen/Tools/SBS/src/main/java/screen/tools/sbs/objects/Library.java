@@ -25,8 +25,6 @@ package screen.tools.sbs.objects;
 import screen.tools.sbs.utils.FieldString;
 
 public class Library {
-	private static ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();	
-
 	private FieldString name;
 	private FieldString version;
 	
@@ -39,7 +37,7 @@ public class Library {
 		if(name!=null)
 			this.name = name;
 		else
-			err.addWarning("Null FieldString for library name");
+			ErrorList.instance.addWarning("Null FieldString for library name");
 	}
 	
 	public void setName(String name) {
@@ -54,7 +52,7 @@ public class Library {
 		if(version!=null)
 			this.version = version;
 		else
-			err.addWarning("Null FieldString for library version");
+			ErrorList.instance.addWarning("Null FieldString for library version");
 	}
 
 	public void setVersion(String version) {

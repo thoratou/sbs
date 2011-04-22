@@ -28,7 +28,6 @@ import java.io.Writer;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -45,12 +44,10 @@ import screen.tools.sbs.utils.FieldString;
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
-		
 		FieldString version = cmakePack.getVersion();
 		if(version.isValid())
 			cmakeListsWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION "+version.getString()+")\n");
 		else
-			err.addError("invalid CMake version");
+			ErrorList.instance.addError("invalid CMake version");
 	}
 }

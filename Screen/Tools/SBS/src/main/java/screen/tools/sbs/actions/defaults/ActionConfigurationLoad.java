@@ -35,7 +35,6 @@ import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.repositories.RepositoryParser;
@@ -57,7 +56,6 @@ public class ActionConfigurationLoad implements Action {
 	 * @throws ContextException 
 	 */
 	public void perform() throws ContextException {
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		String root = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().getValue("SBS_ROOT");
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
@@ -68,7 +66,7 @@ public class ActionConfigurationLoad implements Action {
 		if(!file.exists()){
 			file = new File(root+"/.sbsconfig");
 			if(!file.exists()){
-				err.addError("Can't find configuration, please use \"configure\" target");
+				ErrorList.instance.addError("Can't find configuration, please use \"configure\" target");
 				return;
 			}
 		}
@@ -90,10 +88,10 @@ public class ActionConfigurationLoad implements Action {
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
-			err.addError("Can't read configuration");
+			ErrorList.instance.addError("Can't read configuration");
 			return;
 		} catch (IOException e) {
-			err.addError("Can't read configuration");
+			ErrorList.instance.addError("Can't read configuration");
 			return;
 		}
 		

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.GlobalSettings;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.TargetCall;
 import screen.tools.sbs.utils.targethelper.Mandatory;
@@ -52,7 +51,6 @@ public class TargetHelper {
 	}
 	
 	public void perform(Parameters pars){
-		ErrorList err = GlobalSettings.getGlobalSettings().getErrorList();
 		int parIt = 0;
 		
 		for(int i = 0; i<mandatories.size(); i++){
@@ -63,10 +61,10 @@ public class TargetHelper {
 			}
 			else{
 				if(pars.size() > parIt)
-					err.addError("Unknown parameter / \""+pars.getParameterAt(parIt)+"\" isn't a valid mandatory parameter");
+					ErrorList.instance.addError("Unknown parameter / \""+pars.getParameterAt(parIt)+"\" isn't a valid mandatory parameter");
 				else
-					err.addError("Missing mandatory parameter");
-				GlobalSettings.getGlobalSettings().needUsage();
+					ErrorList.instance.addError("Missing mandatory parameter");
+				ErrorList.instance.needUsage();
 				return;
 			}
 		}
@@ -83,8 +81,8 @@ public class TargetHelper {
 				}
 			}
 			if(!matchOption){
-				err.addError("Unknown parameter / \""+par+"\" isn't a valid option");
-				GlobalSettings.getGlobalSettings().needUsage();
+				ErrorList.instance.addError("Unknown parameter / \""+par+"\" isn't a valid option");
+				ErrorList.instance.needUsage();
 			}
 		}
 	}
