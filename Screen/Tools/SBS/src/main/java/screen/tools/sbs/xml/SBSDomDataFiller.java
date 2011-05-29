@@ -26,13 +26,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import org.jdom.xpath.XPath;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -80,6 +78,7 @@ public class SBSDomDataFiller {
 		this.testPack = testPack;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void fill(Document doc, boolean isTest) throws ContextException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
@@ -89,9 +88,7 @@ public class SBSDomDataFiller {
 			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
 		}
 		
-		Element root = doc.getDocumentElement();
-		XPathFactory xFactory = XPathFactory.newInstance();
-		XPath query = xFactory.newXPath();
+		Element root = doc.getRootElement();
 		
 		try {
 			if(pack == null)
@@ -101,29 +98,38 @@ public class SBSDomDataFiller {
 			//properties
 			
 			//name
-			propertyName = (String) query.compile(propertyNameQuery).evaluate(root);
-			Logger.debug("propertyName : "+propertyName);
-			pack.getProperties().setName(new FieldString(propertyName));
+			{
+				XPath xpa = XPath.newInstance(propertyNameQuery);
+				propertyName = xpa.valueOf(root);
+				Logger.debug("propertyName : "+propertyName);
+				pack.getProperties().setName(new FieldString(propertyName));
+			}
 			
 			//version
-			propertyVersion = (String) query.compile(propertyVersionQuery).evaluate(root);
-			Logger.debug("propertyVersion : "+propertyVersion);
-			pack.getProperties().setVersion(new FieldString(propertyVersion));
-
+			{
+				XPath xpa = XPath.newInstance(propertyVersionQuery);
+				propertyVersion = xpa.valueOf(root);
+				Logger.debug("propertyVersion : "+propertyVersion);
+				pack.getProperties().setVersion(new FieldString(propertyVersion));
+			}
+			
 			//build type
-			propertyBuildType = (String) query.compile(propertyBuildTypeQuery).evaluate(root);
-			Logger.debug("propertyBuildType : "+propertyBuildType);
-			pack.getProperties().setBuildType(new FieldString(propertyBuildType));
-
+			{
+				XPath xpa = XPath.newInstance(propertyBuildTypeQuery);
+				propertyBuildType = xpa.valueOf(root);
+				Logger.debug("propertyBuildType : "+propertyBuildType);
+				pack.getProperties().setBuildType(new FieldString(propertyBuildType));
+			}
+			
 			if(isTest){
 				//test
-				NodeList test = root.getElementsByTagName("test");
-				if(test.getLength() == 1){
+				List test = root.getChildren("test");
+				if(test.size() == 1){
 					testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
 					testPack.getProperties().setVersion(new FieldString(propertyVersion));
 					testPack.getProperties().setBuildType(new FieldString("executable"));
 					FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
-					processDependencies((Element) test.item(0), testPack, path);
+					processDependencies((Element) test.get(0), testPack, path);
 					
 					//descriptions
 					processDescriptions(root, testPack, path);
@@ -136,17 +142,19 @@ public class SBSDomDataFiller {
 				processAll(root, pack, sbsXmlPath);
 			}
 			
-		} catch (XPathExpressionException e) {
+		} catch (JDOMException e) {
 			e.printStackTrace();
 		}
+
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		//main
-		NodeList main = root.getElementsByTagName("main");
-		if(main.getLength() == 1){
-			processDependencies((Element) main.item(0),pack,xmlPath);
-			processFlags((Element) main.item(0),pack,xmlPath);
+		List main = root.getChildren("main");
+		if(main.size() == 1){
+			processDependencies((Element) main.get(0),pack,xmlPath);
+			processFlags((Element) main.get(0),pack,xmlPath);
 		}
 		
 		//descriptions
@@ -156,52 +164,54 @@ public class SBSDomDataFiller {
 		processImports(root, pack, xmlPath);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//dependencies
 		Logger.debug("dependencies");
-		NodeList depsRoot = root.getElementsByTagName("dependencies");
-		if(depsRoot.getLength() == 1){
-			NodeList deps = ((Element) depsRoot.item(0)).getElementsByTagName("dependency");
-			for(int i=0; i<deps.getLength(); i++){
+		List depsRoot = root.getChildren("dependencies");
+		if(depsRoot.size() == 1){
+			List deps = ((Element) depsRoot.get(0)).getChildren("dependency");
+			for(int i=0; i<deps.size(); i++){
 				List<Library> tmpLibList = new ArrayList<Library>();
 				
 				//dependency
 				Logger.debug("\tdependency");
-				Element dep = (Element) deps.item(i);
+				Element dep = (Element) deps.get(i);
 				Dependency newDep = new Dependency();
 				
-				String name = dep.getAttribute("name");
+				String name = dep.getAttributeValue("name");
+				name = ("".equals(name)) ? null : name;
 				newDep.setName(new FieldString(name));
 
-				String version = dep.getAttribute("version");
+				String version = dep.getAttributeValue("version");
 				version = ("".equals(version)) ? null : version;
 				newDep.setVersion(new FieldString(version));
 				
-				String export = dep.getAttribute("export");
+				String export = dep.getAttributeValue("export");
 				export = ("".equals(export)) ? null : export;
 				newDep.setExport(new FieldBool(export));
 				
 				// includes
-				NodeList inclRoot = dep.getElementsByTagName("includes");
-				if(inclRoot.getLength() == 1){
+				List inclRoot = dep.getChildren("includes");
+				if(inclRoot.size() == 1){
 					Logger.debug("\t\tincludes");
-					NodeList paths = ((Element) inclRoot.item(0)).getElementsByTagName("path");
-					for(int j=0; j<paths.getLength(); j++){
+					List paths = ((Element) inclRoot.get(0)).getChildren("path");
+					for(int j=0; j<paths.size(); j++){
 						//path
 						Logger.debug("\t\t\tpath");
-						Element path = (Element) paths.item(j);
+						Element path = (Element) paths.get(j);
 						
-						String pathString = path.getTextContent();
+						String pathString = path.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+pathString);
 						
-						String type = path.getAttribute("type");
+						String type = path.getAttributeValue("type");
 						FieldPathType pType = new FieldPathType();
 						pType.set(type);
 						Logger.debug("\t\t\t\ttype : "+type);
 						
-						String buildMode = path.getAttribute("build");
+						String buildMode = path.getAttributeValue("build");
 						Logger.debug("\t\t\t\tbuild : "+buildMode);
 						
 						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
@@ -213,23 +223,23 @@ public class SBSDomDataFiller {
 				}
 				
 				//libraries
-				NodeList libsRoot = dep.getElementsByTagName("libraries");
-				if(libsRoot.getLength() == 1){
+				List libsRoot = dep.getChildren("libraries");
+				if(libsRoot.size() == 1){
 					Logger.debug("\t\tlibraries");
-					NodeList paths = ((Element) libsRoot.item(0)).getElementsByTagName("path");
-					for(int j=0; j<paths.getLength(); j++){
+					List paths = ((Element) libsRoot.get(0)).getChildren("path");
+					for(int j=0; j<paths.size(); j++){
 						//path
 						Logger.debug("\t\t\tpath");
-						Element path = (Element) paths.item(j);
-						String pathString = path.getTextContent();
+						Element path = (Element) paths.get(j);
+						String pathString = path.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+pathString);
 						
-						String type = path.getAttribute("type");
+						String type = path.getAttributeValue("type");
 						FieldPathType pType = new FieldPathType();
 						pType.set(type);
 						Logger.debug("\t\t\t\ttype : "+type);
 						
-						String buildMode = path.getAttribute("build");
+						String buildMode = path.getAttributeValue("build");
 						Logger.debug("\t\t\t\tbuild : "+buildMode);
 						
 						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
@@ -238,15 +248,15 @@ public class SBSDomDataFiller {
 						if(fieldPath.getBuildMode().isSameMode(isRelease))
 							newDep.addLibraryPath(fieldPath);
 					}
-					NodeList libs = ((Element) libsRoot.item(0)).getElementsByTagName("lib");
-					for(int j=0; j<libs.getLength(); j++){
+					List libs = ((Element) libsRoot.get(0)).getChildren("lib");
+					for(int j=0; j<libs.size(); j++){
 						//lib
 						Logger.debug("\t\t\tlib");
-						Element lib = (Element) libs.item(j);
-						String libString = lib.getTextContent();
+						Element lib = (Element) libs.get(j);
+						String libString = lib.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+libString);
 
-						String libVersion = lib.getAttribute("version");
+						String libVersion = lib.getAttributeValue("version");
 						libVersion = ("".equals(libVersion)) ? null : libVersion;
 						
 						Library library = new Library();
@@ -285,7 +295,7 @@ public class SBSDomDataFiller {
 					if(new File(fullPath+"/component.xml").exists()){
 						//if component.xml exists, retrieve contents into pack
 						Document doc = SBSDomParser.parserFile(new File(fullPath+"/component.xml"));
-						Element root2 = doc.getDocumentElement();
+						Element root2 = doc.getRootElement();
 						Logger.debug("import "+fullPath+"/component.xml");
 						
 						processAll(root2, pack, new FieldPath(fullPath));
@@ -323,27 +333,28 @@ public class SBSDomDataFiller {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processFlags(Element root, Pack pack, FieldPath xmlPath) {
 		//flags
 		Logger.debug("flags");
-		NodeList optsRoot = root.getElementsByTagName("flags");
-		if(optsRoot.getLength() == 1){
-			NodeList opts = ((Element) optsRoot.item(0)).getElementsByTagName("flag");
-			for(int i=0; i<opts.getLength(); i++){
+		List optsRoot = root.getChildren("flags");
+		if(optsRoot.size() == 1){
+			List opts = ((Element) optsRoot.get(0)).getChildren("flag");
+			for(int i=0; i<opts.size(); i++){
 				//dependency
 				Logger.debug("\tflag");
-				Element opt = (Element) opts.item(i);
+				Element opt = (Element) opts.get(i);
 				Flag flag = new Flag();
 				
-				String flagValue = opt.getAttribute("flag");
+				String flagValue = opt.getAttributeValue("flag");
 				flag.setFlag(new FieldString(flagValue));
 				Logger.debug("\t\t\tflag : "+flagValue);
 				
-				String value = opt.getAttribute("value");
+				String value = opt.getAttributeValue("value");
 				flag.setValue(new FieldString(value));
 				Logger.debug("\t\t\tvalue : "+value);
 				
-				String buildMode = opt.getAttribute("build");
+				String buildMode = opt.getAttributeValue("build");
 				Logger.debug("\t\t\t\tbuild : "+buildMode);
 				flag.setBuildMode(new FieldBuildMode(buildMode));
 				
@@ -353,6 +364,7 @@ public class SBSDomDataFiller {
 		}
 	}
 		
+	@SuppressWarnings("unchecked")
 	void processDescriptions(Element root, Pack pack, FieldPath xmlPath) throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
@@ -362,32 +374,32 @@ public class SBSDomDataFiller {
 		
 		//descriptions
 		Logger.debug("descriptions");
-		NodeList descRoot = root.getElementsByTagName("descriptions");
-		if(descRoot.getLength() == 1){
-			NodeList descs = ((Element) descRoot.item(0)).getElementsByTagName("library");
-			for(int i=0; i<descs.getLength(); i++){
+		List descRoot = root.getChildren("descriptions");
+		if(descRoot.size() == 1){
+			List descs = ((Element) descRoot.get(0)).getChildren("library");
+			for(int i=0; i<descs.size(); i++){
 				//dependency
 				Logger.debug("\tlibrary");
-				Element lib = (Element) descs.item(i);
+				Element lib = (Element) descs.get(i);
 				Description description = new Description();
 				
-				String name = lib.getAttribute("name");
+				String name = lib.getAttributeValue("name");
 				description.setName(name);
 				Logger.debug("\t\t\tname : "+name);
 				
-				String fullName = lib.getAttribute("full-name");
+				String fullName = lib.getAttributeValue("full-name");
 				description.setFullName(fullName);
 				Logger.debug("\t\t\tfull-name : "+fullName);
 				
-				String compileName = lib.getAttribute("compile-name");
+				String compileName = lib.getAttributeValue("compile-name");
 				description.setCompileName(compileName);
 				Logger.debug("\t\t\tcompile-name : "+compileName);
 
-				String buildType = lib.getAttribute("type");
+				String buildType = lib.getAttributeValue("type");
 				description.setBuildType(buildType);
 				Logger.debug("\t\t\ttype : "+buildType);
 
-				String buildMode = lib.getAttribute("build");
+				String buildMode = lib.getAttributeValue("build");
 				description.setBuildMode(buildMode);
 				Logger.debug("\t\t\tbuild : "+buildMode);
 
@@ -397,6 +409,7 @@ public class SBSDomDataFiller {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
@@ -406,24 +419,24 @@ public class SBSDomDataFiller {
 		
 		//descriptions
 		Logger.debug("imports");
-		NodeList importRoot = root.getElementsByTagName("imports");
-		if(importRoot.getLength() == 1){
-			NodeList imports = ((Element) importRoot.item(0)).getElementsByTagName("import");
-			for(int i=0; i<imports.getLength(); i++){
+		List importRoot = root.getChildren("imports");
+		if(importRoot.size() == 1){
+			List imports = ((Element) importRoot.get(0)).getChildren("import");
+			for(int i=0; i<imports.size(); i++){
 				//dependency
 				Logger.debug("\timport");
-				Element imp = (Element) imports.item(i);
+				Element imp = (Element) imports.get(i);
 				Import import_ = new Import();
 				
-				String buildMode = imp.getAttribute("build");
+				String buildMode = imp.getAttributeValue("build");
 				import_.setBuildMode(buildMode);
 				Logger.debug("\t\tbuild : "+buildMode);
 				
 				//path
-				String file = imp.getAttribute("file");
+				String file = imp.getAttributeValue("file");
 				Logger.debug("\t\tfile : "+file);
 				
-				String type = imp.getAttribute("pathtype");
+				String type = imp.getAttributeValue("pathtype");
 				FieldPathType pType = new FieldPathType();
 				pType.set(type);
 				Logger.debug("\t\tpathtype : "+type);
@@ -437,7 +450,7 @@ public class SBSDomDataFiller {
 					if(importFile.exists()){
 						//if component.xml exists, retrieve contents into pack
 						Document doc = SBSDomParser.parserFile(importFile);
-						Element root2 = doc.getDocumentElement();
+						Element root2 = doc.getRootElement();
 						Logger.debug("import "+file2);
 						
 						processAll(root2, pack, new FieldPath(importFile.getParent()));

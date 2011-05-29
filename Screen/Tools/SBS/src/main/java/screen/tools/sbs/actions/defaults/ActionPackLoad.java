@@ -22,7 +22,7 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import org.w3c.dom.Document;
+import org.jdom.Document;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;

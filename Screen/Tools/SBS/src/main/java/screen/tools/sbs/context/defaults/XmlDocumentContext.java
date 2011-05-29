@@ -22,7 +22,7 @@
 
 package screen.tools.sbs.context.defaults;
 
-import org.w3c.dom.Document;
+import org.jdom.Document;
 
 import screen.tools.sbs.context.Context;
 
