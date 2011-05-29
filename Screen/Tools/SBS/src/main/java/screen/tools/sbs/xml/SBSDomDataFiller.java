@@ -47,6 +47,7 @@ import screen.tools.sbs.objects.Flag;
 import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.objects.TinyPack;
 import screen.tools.sbs.repositories.RepositoryComponent;
 import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.utils.FieldBool;
@@ -257,7 +258,7 @@ public class SBSDomDataFiller {
 					}
 				}
 				
-				if(newDep.getSbs()){
+				if(newDep.getSbs() && !(pack instanceof TinyPack)){
 					//retrieve dependency file in SBS repository
 					String packName = newDep.getName().getString();
 					String packVersion = newDep.getVersion().getString();
@@ -430,7 +431,7 @@ public class SBSDomDataFiller {
 				FieldFile fieldFile = pType.getFieldFile(xmlPath.getOriginalString(), file);
 				import_.setFile(fieldFile);
 				
-				if(import_.getBuildMode().isSameMode(isRelease)){
+				if(import_.getBuildMode().isSameMode(isRelease) && !(pack instanceof TinyPack)){
 					String file2 = import_.getFile().getString();
 					File importFile = new File(file2);
 					if(importFile.exists()){
