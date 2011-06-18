@@ -24,6 +24,7 @@ package screen.tools.sbs.xml;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jdom.xpath.XPath;
@@ -124,12 +125,13 @@ public class SBSDomDataFiller {
 			if(isTest){
 				//test
 				List test = root.getChildren("test");
-				if(test.size() == 1){
+				Iterator iterator = test.iterator();
+				while(iterator.hasNext()){
 					testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
 					testPack.getProperties().setVersion(new FieldString(propertyVersion));
 					testPack.getProperties().setBuildType(new FieldString("executable"));
 					FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
-					processDependencies((Element) test.get(0), testPack, path);
+					processDependencies((Element) iterator.next(), testPack, path);
 					
 					//descriptions
 					processDescriptions(root, testPack, path);
@@ -152,9 +154,11 @@ public class SBSDomDataFiller {
 	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		//main
 		List main = root.getChildren("main");
-		if(main.size() == 1){
-			processDependencies((Element) main.get(0),pack,xmlPath);
-			processFlags((Element) main.get(0),pack,xmlPath);
+		Iterator iterator = main.iterator();
+		while(iterator.hasNext()){
+			Element next = (Element) iterator.next();
+			processDependencies(next,pack,xmlPath);
+			processFlags(next,pack,xmlPath);
 		}
 		
 		//descriptions
@@ -171,14 +175,17 @@ public class SBSDomDataFiller {
 		//dependencies
 		Logger.debug("dependencies");
 		List depsRoot = root.getChildren("dependencies");
-		if(depsRoot.size() == 1){
-			List deps = ((Element) depsRoot.get(0)).getChildren("dependency");
-			for(int i=0; i<deps.size(); i++){
+		Iterator rootIterator = depsRoot.iterator();
+		if(rootIterator.hasNext()){
+			Element next = (Element) rootIterator.next();
+			List deps = (next).getChildren("dependency");
+			Iterator iterator = deps.iterator();
+			while(iterator.hasNext()){
+				Element dep = (Element) iterator.next();
 				List<Library> tmpLibList = new ArrayList<Library>();
 				
 				//dependency
 				Logger.debug("\tdependency");
-				Element dep = (Element) deps.get(i);
 				Dependency newDep = new Dependency();
 				
 				String name = dep.getAttributeValue("name");
@@ -195,13 +202,16 @@ public class SBSDomDataFiller {
 				
 				// includes
 				List inclRoot = dep.getChildren("includes");
-				if(inclRoot.size() == 1){
+				Iterator inclIterator = inclRoot.iterator();
+				while(inclIterator.hasNext()){
+					Element inclNext = (Element) inclIterator.next();
 					Logger.debug("\t\tincludes");
-					List paths = ((Element) inclRoot.get(0)).getChildren("path");
-					for(int j=0; j<paths.size(); j++){
+					List paths = inclNext.getChildren("path");
+					Iterator pathIterator = paths.iterator();
+					while(pathIterator.hasNext()){
 						//path
 						Logger.debug("\t\t\tpath");
-						Element path = (Element) paths.get(j);
+						Element path = (Element) pathIterator.next();
 						
 						String pathString = path.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+pathString);
@@ -224,13 +234,16 @@ public class SBSDomDataFiller {
 				
 				//libraries
 				List libsRoot = dep.getChildren("libraries");
-				if(libsRoot.size() == 1){
+				Iterator libsRootIterator = libsRoot.iterator();
+				if(libsRootIterator.hasNext()){
+					Element libsRootNext = (Element) libsRootIterator.next();
 					Logger.debug("\t\tlibraries");
-					List paths = ((Element) libsRoot.get(0)).getChildren("path");
-					for(int j=0; j<paths.size(); j++){
+					List paths = libsRootNext.getChildren("path");
+					Iterator pathsIterator = paths.iterator();
+					while(pathsIterator.hasNext()){
 						//path
 						Logger.debug("\t\t\tpath");
-						Element path = (Element) paths.get(j);
+						Element path = (Element) pathsIterator.next();
 						String pathString = path.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+pathString);
 						
@@ -248,11 +261,12 @@ public class SBSDomDataFiller {
 						if(fieldPath.getBuildMode().isSameMode(isRelease))
 							newDep.addLibraryPath(fieldPath);
 					}
-					List libs = ((Element) libsRoot.get(0)).getChildren("lib");
-					for(int j=0; j<libs.size(); j++){
+					List libs = libsRootNext.getChildren("lib");
+					Iterator libsIterator = libs.iterator();
+					while(libsIterator.hasNext()){
 						//lib
 						Logger.debug("\t\t\tlib");
-						Element lib = (Element) libs.get(j);
+						Element lib = (Element) libsIterator.next();
 						String libString = lib.getTextTrim();
 						Logger.debug("\t\t\t\ttext : "+libString);
 
@@ -305,10 +319,11 @@ public class SBSDomDataFiller {
 							ErrorList.instance.addError("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist");
 						else {
 							ErrorList.instance.addWarning("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist => Uses default settings");
-							for(int j=0; j<tmpLibList.size(); j++){
+							Iterator<Library> libIterator = tmpLibList.iterator();
+							while(libIterator.hasNext()){
 								//add default library description
 								Description description = new Description();
-								Library lib = tmpLibList.get(j);
+								Library lib = libIterator.next();
 								description.setName(lib.getName().getString());
 								
 								EnvironmentVariables additionalVars = new EnvironmentVariables();
@@ -338,12 +353,15 @@ public class SBSDomDataFiller {
 		//flags
 		Logger.debug("flags");
 		List optsRoot = root.getChildren("flags");
-		if(optsRoot.size() == 1){
-			List opts = ((Element) optsRoot.get(0)).getChildren("flag");
-			for(int i=0; i<opts.size(); i++){
+		Iterator optsRootIterator = optsRoot.iterator();
+		while(optsRootIterator.hasNext()){
+			Element optsRootNext = (Element) optsRootIterator.next();
+			List opts = optsRootNext.getChildren("flag");
+			Iterator optsIterator = opts.iterator();
+			while(optsIterator.hasNext()){
 				//dependency
 				Logger.debug("\tflag");
-				Element opt = (Element) opts.get(i);
+				Element opt = (Element) optsIterator.next();
 				Flag flag = new Flag();
 				
 				String flagValue = opt.getAttributeValue("flag");
@@ -375,12 +393,15 @@ public class SBSDomDataFiller {
 		//descriptions
 		Logger.debug("descriptions");
 		List descRoot = root.getChildren("descriptions");
-		if(descRoot.size() == 1){
-			List descs = ((Element) descRoot.get(0)).getChildren("library");
-			for(int i=0; i<descs.size(); i++){
+		Iterator descRootIterator = descRoot.iterator();
+		while(descRootIterator.hasNext()){
+			Element descRootNext = (Element) descRootIterator.next();
+			List descs = descRootNext.getChildren("library");
+			Iterator descsIterator = descs.iterator();
+			while(descsIterator.hasNext()){
 				//dependency
 				Logger.debug("\tlibrary");
-				Element lib = (Element) descs.get(i);
+				Element lib = (Element) descsIterator.next();
 				Description description = new Description();
 				
 				String name = lib.getAttributeValue("name");
@@ -420,12 +441,15 @@ public class SBSDomDataFiller {
 		//descriptions
 		Logger.debug("imports");
 		List importRoot = root.getChildren("imports");
-		if(importRoot.size() == 1){
-			List imports = ((Element) importRoot.get(0)).getChildren("import");
-			for(int i=0; i<imports.size(); i++){
+		Iterator importRootIterator = importRoot.iterator();
+		while(importRootIterator.hasNext()){
+			Element importRootNext = (Element) importRootIterator.next();
+			List imports = importRootNext.getChildren("import");
+			Iterator importsIterator = imports.iterator();
+			while(importsIterator.hasNext()){
 				//dependency
 				Logger.debug("\timport");
-				Element imp = (Element) imports.get(i);
+				Element imp = (Element) importsIterator.next();
 				Import import_ = new Import();
 				
 				String buildMode = imp.getAttributeValue("build");
