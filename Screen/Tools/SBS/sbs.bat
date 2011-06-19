@@ -1,3 +1,3 @@
 @echo off
 
-java -DSBS_ROOT="%SBS_ROOT%" -Xmx1024m -cp "%SBS_ROOT%\target\SBS.jar;%SBS_ROOT%\lib\jdom-1.1.jar;%SBS_ROOT%\lib\jaxen-1.1.jar" screen.tools.sbs.Main %*
+java -DSBS_ROOT="%SBS_ROOT%" -Xmx1024m -cp "%SBS_ROOT%\target\SBS-dist\SBS.jar;%SBS_ROOT%\target\SBS-dist\lib\*" screen.tools.sbs.Main %*
