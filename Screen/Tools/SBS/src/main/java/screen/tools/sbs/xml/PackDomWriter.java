@@ -67,7 +67,10 @@ public class PackDomWriter {
 	}
 
 	private void writeDom(Document document, String path, String file) {
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		Format prettyFormat = Format.getPrettyFormat();
+		//change indent to 4 lines
+		prettyFormat.setIndent("    ");
+		XMLOutputter outputter = new XMLOutputter(prettyFormat);
 		try {
 			outputter.output(document, new FileOutputStream(path+"/"+file));
 		} catch (FileNotFoundException e) {
