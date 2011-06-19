@@ -52,13 +52,13 @@ public class PackDomWriter {
 			
 			if(versionValid){
 				Element versionElt = new Element("version");
-				versionElt.setText(name.getString());
+				versionElt.setText(version.getString());
 				propertiesElt.addContent(versionElt);
 			}
 			
 			if(buildTypeValid){
 				Element buildTypeElt = new Element("buildtype");
-				buildTypeElt.setText(name.getString());
+				buildTypeElt.setText(buildType.getString());
 				propertiesElt.addContent(buildTypeElt);
 			}
 			

@@ -79,7 +79,6 @@ public class SBSDomDataFiller {
 		this.testPack = testPack;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void fill(Document doc, boolean isTest) throws ContextException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
@@ -124,8 +123,8 @@ public class SBSDomDataFiller {
 			
 			if(isTest){
 				//test
-				List test = root.getChildren("test");
-				Iterator iterator = test.iterator();
+				List<?> test = root.getChildren("test");
+				Iterator<?> iterator = test.iterator();
 				while(iterator.hasNext()){
 					testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
 					testPack.getProperties().setVersion(new FieldString(propertyVersion));
@@ -150,11 +149,10 @@ public class SBSDomDataFiller {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		//main
-		List main = root.getChildren("main");
-		Iterator iterator = main.iterator();
+		List<?> main = root.getChildren("main");
+		Iterator<?> iterator = main.iterator();
 		while(iterator.hasNext()){
 			Element next = (Element) iterator.next();
 			processDependencies(next,pack,xmlPath);
@@ -168,18 +166,17 @@ public class SBSDomDataFiller {
 		processImports(root, pack, xmlPath);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//dependencies
 		Logger.debug("dependencies");
-		List depsRoot = root.getChildren("dependencies");
-		Iterator rootIterator = depsRoot.iterator();
+		List<?> depsRoot = root.getChildren("dependencies");
+		Iterator<?> rootIterator = depsRoot.iterator();
 		if(rootIterator.hasNext()){
 			Element next = (Element) rootIterator.next();
-			List deps = (next).getChildren("dependency");
-			Iterator iterator = deps.iterator();
+			List<?> deps = (next).getChildren("dependency");
+			Iterator<?> iterator = deps.iterator();
 			while(iterator.hasNext()){
 				Element dep = (Element) iterator.next();
 				List<Library> tmpLibList = new ArrayList<Library>();
@@ -201,13 +198,13 @@ public class SBSDomDataFiller {
 				newDep.setExport(new FieldBool(export));
 				
 				// includes
-				List inclRoot = dep.getChildren("includes");
-				Iterator inclIterator = inclRoot.iterator();
+				List<?> inclRoot = dep.getChildren("includes");
+				Iterator<?> inclIterator = inclRoot.iterator();
 				while(inclIterator.hasNext()){
 					Element inclNext = (Element) inclIterator.next();
 					Logger.debug("\t\tincludes");
-					List paths = inclNext.getChildren("path");
-					Iterator pathIterator = paths.iterator();
+					List<?> paths = inclNext.getChildren("path");
+					Iterator<?> pathIterator = paths.iterator();
 					while(pathIterator.hasNext()){
 						//path
 						Logger.debug("\t\t\tpath");
@@ -233,13 +230,13 @@ public class SBSDomDataFiller {
 				}
 				
 				//libraries
-				List libsRoot = dep.getChildren("libraries");
-				Iterator libsRootIterator = libsRoot.iterator();
+				List<?> libsRoot = dep.getChildren("libraries");
+				Iterator<?> libsRootIterator = libsRoot.iterator();
 				if(libsRootIterator.hasNext()){
 					Element libsRootNext = (Element) libsRootIterator.next();
 					Logger.debug("\t\tlibraries");
-					List paths = libsRootNext.getChildren("path");
-					Iterator pathsIterator = paths.iterator();
+					List<?> paths = libsRootNext.getChildren("path");
+					Iterator<?> pathsIterator = paths.iterator();
 					while(pathsIterator.hasNext()){
 						//path
 						Logger.debug("\t\t\tpath");
@@ -261,8 +258,8 @@ public class SBSDomDataFiller {
 						if(fieldPath.getBuildMode().isSameMode(isRelease))
 							newDep.addLibraryPath(fieldPath);
 					}
-					List libs = libsRootNext.getChildren("lib");
-					Iterator libsIterator = libs.iterator();
+					List<?> libs = libsRootNext.getChildren("lib");
+					Iterator<?> libsIterator = libs.iterator();
 					while(libsIterator.hasNext()){
 						//lib
 						Logger.debug("\t\t\tlib");
@@ -348,16 +345,15 @@ public class SBSDomDataFiller {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processFlags(Element root, Pack pack, FieldPath xmlPath) {
 		//flags
 		Logger.debug("flags");
-		List optsRoot = root.getChildren("flags");
-		Iterator optsRootIterator = optsRoot.iterator();
+		List<?> optsRoot = root.getChildren("flags");
+		Iterator<?> optsRootIterator = optsRoot.iterator();
 		while(optsRootIterator.hasNext()){
 			Element optsRootNext = (Element) optsRootIterator.next();
-			List opts = optsRootNext.getChildren("flag");
-			Iterator optsIterator = opts.iterator();
+			List<?> opts = optsRootNext.getChildren("flag");
+			Iterator<?> optsIterator = opts.iterator();
 			while(optsIterator.hasNext()){
 				//dependency
 				Logger.debug("\tflag");
@@ -382,7 +378,6 @@ public class SBSDomDataFiller {
 		}
 	}
 		
-	@SuppressWarnings("unchecked")
 	void processDescriptions(Element root, Pack pack, FieldPath xmlPath) throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
@@ -392,12 +387,12 @@ public class SBSDomDataFiller {
 		
 		//descriptions
 		Logger.debug("descriptions");
-		List descRoot = root.getChildren("descriptions");
-		Iterator descRootIterator = descRoot.iterator();
+		List<?> descRoot = root.getChildren("descriptions");
+		Iterator<?> descRootIterator = descRoot.iterator();
 		while(descRootIterator.hasNext()){
 			Element descRootNext = (Element) descRootIterator.next();
-			List descs = descRootNext.getChildren("library");
-			Iterator descsIterator = descs.iterator();
+			List<?> descs = descRootNext.getChildren("library");
+			Iterator<?> descsIterator = descs.iterator();
 			while(descsIterator.hasNext()){
 				//dependency
 				Logger.debug("\tlibrary");
@@ -430,7 +425,6 @@ public class SBSDomDataFiller {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		boolean isRelease = true;
@@ -440,12 +434,12 @@ public class SBSDomDataFiller {
 		
 		//descriptions
 		Logger.debug("imports");
-		List importRoot = root.getChildren("imports");
-		Iterator importRootIterator = importRoot.iterator();
+		List<?> importRoot = root.getChildren("imports");
+		Iterator<?> importRootIterator = importRoot.iterator();
 		while(importRootIterator.hasNext()){
 			Element importRootNext = (Element) importRootIterator.next();
-			List imports = importRootNext.getChildren("import");
-			Iterator importsIterator = imports.iterator();
+			List<?> imports = importRootNext.getChildren("import");
+			Iterator<?> importsIterator = imports.iterator();
 			while(importsIterator.hasNext()){
 				//dependency
 				Logger.debug("\timport");
