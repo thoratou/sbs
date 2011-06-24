@@ -59,7 +59,7 @@ public class TargetCreateComponent implements Target {
 		mandatoryName = new MandatoryName();
 		mandatoryVersion = new MandatoryVersion();
 		mandatoryBuildType = new MandatoryBuildType();
-		optionChooseSbsFile = new OptionFile("sbs.xml");
+		optionChooseSbsFile = new OptionFile("sbs.xml","-o");
 		optionVerbose = new OptionVerbose();
 		
 		helper.addMandatory(mandatoryPath);

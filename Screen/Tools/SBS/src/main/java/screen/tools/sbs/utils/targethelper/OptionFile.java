@@ -37,7 +37,7 @@ public class OptionFile implements Option {
 		file = defaultFile;
 	}
 
-	public OptionFile(String defaultOption, String defaultFile) {
+	public OptionFile(String defaultFile, String defaultOption) {
 		option = defaultOption;
 		file = defaultFile;
 	}
