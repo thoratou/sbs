@@ -23,6 +23,7 @@
 package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
+import screen.tools.sbs.actions.defaults.ActionCreateFolders;
 import screen.tools.sbs.actions.defaults.ActionCreateTinyPack;
 import screen.tools.sbs.actions.defaults.ActionWriteTinyPack;
 import screen.tools.sbs.context.ContextHandler;
@@ -90,8 +91,16 @@ public class TargetCreateComponent implements Target {
 		
 		ActionWriteTinyPack actionWriteTinyPack = new ActionWriteTinyPack();
 		
+		ActionCreateFolders actionCreateSource =  new ActionCreateFolders();
+		actionCreateSource.setFolderPath("src");
+		
+		ActionCreateFolders actionCreateInclude =  new ActionCreateFolders();
+		actionCreateInclude.setFolderPath("include");
+		
 		actionManager.pushAction(actionCreatePack);
 		actionManager.pushAction(actionWriteTinyPack);
+		actionManager.pushAction(actionCreateSource);
+		actionManager.pushAction(actionCreateInclude);
 	}
 
 	public TargetCall getTargetCall() {
