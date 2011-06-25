@@ -43,6 +43,10 @@ public class ContextHandler {
 		String root = System.getProperty("SBS_ROOT");
 		environmentVariablesContext.getEnvironmentVariables().put("SBS_ROOT", root);
 		
+		String home = System.getProperty("user.home");
+		environmentVariablesContext.getEnvironmentVariables().put("HOME", home);
+		
+		
 		// set variable context to field string process
 		FieldString.setCurrentEnvironmentVariables(environmentVariablesContext.getEnvironmentVariables());
 
