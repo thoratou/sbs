@@ -29,12 +29,15 @@ import screen.tools.sbs.actions.defaults.ActionRepositoryFilterDisplay;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.TargetHelper;
+import screen.tools.sbs.utils.targethelper.MandatoryPath;
 import screen.tools.sbs.utils.targethelper.MandatorySubTarget;
+import screen.tools.sbs.utils.targethelper.OptionFile;
 import screen.tools.sbs.utils.targethelper.OptionVoid;
 
 public class TargetRepositories implements Target {
@@ -42,6 +45,7 @@ public class TargetRepositories implements Target {
 	private TargetHelper displayHelper;
 	private TargetHelper findHelper;
 	
+	private MandatoryPath mandatoryPath;
 	private MandatorySubTarget mandatorySubTarget;
 	private OptionVoid optionVoid;
 	
@@ -50,14 +54,19 @@ public class TargetRepositories implements Target {
 		displayHelper = new TargetHelper(getTargetCall());
 		findHelper = new TargetHelper(getTargetCall());
 		
+		mandatoryPath = new MandatoryPath();
 		mandatorySubTarget = new MandatorySubTarget();
+		
 		optionVoid = new OptionVoid();
 		
+		helper.addMandatory(mandatoryPath);
 		helper.addMandatory(mandatorySubTarget);
 		helper.addOption(optionVoid);
 
+		displayHelper.addMandatory(mandatoryPath);
 		displayHelper.addMandatory(mandatorySubTarget);
 		
+		findHelper.addMandatory(mandatoryPath);
 		findHelper.addMandatory(mandatorySubTarget);
 	}
 	
@@ -65,8 +74,13 @@ public class TargetRepositories implements Target {
 			Parameters parameters) {		
 		helper.perform(parameters);
 		
+		SbsFileAndPathContext context = new SbsFileAndPathContext();
+		context.setSbsXmlPath(mandatoryPath.getPath());
+
+		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
+		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		actionManager.setContext(contextHandler);
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
