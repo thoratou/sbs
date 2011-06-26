@@ -162,7 +162,7 @@ public class SBSCMakeFileGenerator {
 						"${DEFAULT_SHARED_LIB_COMPILE_NAME}" :
 						"${DEFAULT_STATIC_LIB_COMPILE_NAME}"
 						) :
-					"toto"
+					""
 				).getString(additionalVars);
 		fullName = new FieldString(
 				hasLibBuild ? (
