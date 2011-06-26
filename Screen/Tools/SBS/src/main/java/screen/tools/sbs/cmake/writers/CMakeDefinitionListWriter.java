@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -51,19 +52,25 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException {
-		Hashtable<FieldString, FieldString> compileFlags = cmakePack.getCompileFlags();
-		Set<Entry<FieldString, FieldString>> entrySet = compileFlags.entrySet();
-		Iterator<Entry<FieldString, FieldString>> iterator = entrySet.iterator();
+		Hashtable<FieldString, FieldObject> compileFlags = cmakePack.getCompileFlags();
+		Set<Entry<FieldString, FieldObject>> entrySet = compileFlags.entrySet();
+		Iterator<Entry<FieldString, FieldObject>> iterator = entrySet.iterator();
 		while(iterator.hasNext()){
-			Entry<FieldString, FieldString> next = iterator.next();
+			Entry<FieldString, FieldObject> next = iterator.next();
 			FieldString flag = next.getKey();
-			FieldString value = next.getValue();
+			FieldObject value = next.getValue();
 			if(flag.isValid()){
-				cmakeListsWriter.write("ADD_DEFINITIONS(\"-D"+flag.getString());
+				cmakeListsWriter.write("ADD_DEFINITIONS(-D"+flag.getString());
 				if(value.isValid()){
-					cmakeListsWriter.write("="+value.getString());
+					Object object = value.getObject();
+					if(object instanceof String)
+						//http://www.cmake.org/pipermail/cmake/2007-June/014611.html
+						//for string value, we need 2 \\, so here 4 for those 2 and 1 for quote :$
+						cmakeListsWriter.write("=\\\\\""+(String)object+"\\\\\"");
+					else if(object instanceof Number)
+						cmakeListsWriter.write("="+(Number)object);
 				}
-				cmakeListsWriter.write("\")\n");
+				cmakeListsWriter.write(")\n");
 			}
 			else{
 				ErrorList.instance.addError("invalid definition");

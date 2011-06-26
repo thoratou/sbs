@@ -26,7 +26,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.json.simple.JSONObject;
 
 import screen.tools.sbs.cmake.writers.CMakeAddProjectWriter;
 import screen.tools.sbs.cmake.writers.CMakeBuildFolderWriter;
@@ -51,6 +55,7 @@ import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.utils.FieldJSONObject;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Utilities;
@@ -70,7 +75,7 @@ public class SBSCMakeFileGenerator {
 	private String repoRoot;
 	private String compileMode;
 	private String envName;
-	private String[] flags;
+	JSONObject flagsObject;
 	private String defaultIncludePath;
 	private String defaultLibPath;
 	private String packName;
@@ -125,9 +130,9 @@ public class SBSCMakeFileGenerator {
 		//compile flags
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
 		FieldString fieldFlag = variables.getFieldString(flagVar);
-		if(!fieldFlag.isValid()) return;
-		String flagString = fieldFlag.getString();
-		flags = flagString.split(" ");
+		FieldJSONObject jsonFlags = new FieldJSONObject(fieldFlag);
+		if(!jsonFlags.isValid()) return;
+		flagsObject = jsonFlags.getJSONObject();
 		
 		//default paths
 		if(Utilities.isLinux()){
@@ -201,8 +206,12 @@ public class SBSCMakeFileGenerator {
 			cmakePack.setBuildMode(compileMode);
 			cmakePack.setTest(isTest);
 			
-			for(int i=0; i<flags.length; i++){
-				cmakePack.addCompileFlag(flags[i], (String)null);
+			Set<?> keySet = flagsObject.keySet();			
+			Iterator<?> iterator = keySet.iterator();			
+			while(iterator.hasNext()){
+				Object next = iterator.next();
+				String key = (String) next;
+				cmakePack.addCompileFlag(key, flagsObject.get(key));
 			}
 			
 			if(!isTest){

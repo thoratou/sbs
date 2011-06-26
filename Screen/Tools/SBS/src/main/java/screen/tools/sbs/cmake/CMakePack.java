@@ -28,6 +28,7 @@ import java.util.List;
 
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.utils.FieldBuildType;
+import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
@@ -43,7 +44,7 @@ public class CMakePack {
 	private FieldString projectVersion;
 	private FieldString buildMode;
 	private FieldBuildType buildType;
-	private Hashtable<FieldString, FieldString> compileFlags;
+	private Hashtable<FieldString, FieldObject> compileFlags;
 	//private List<FieldString> projectSourceFiles;
 	//private List<FieldString> projectIncludeFiles;
 	private List<FieldPath> includeDirectories;
@@ -57,7 +58,7 @@ public class CMakePack {
 		projectVersion = new FieldString();
 		buildMode = new FieldString();
 		buildType = new FieldBuildType();
-		compileFlags = new Hashtable<FieldString, FieldString>();
+		compileFlags = new Hashtable<FieldString, FieldObject>();
 		//projectSourceFiles = new ArrayList<FieldString>();
 		//projectIncludeFiles = new ArrayList<FieldString>();
 		includeDirectories = new ArrayList<FieldPath>();
@@ -142,34 +143,34 @@ public class CMakePack {
 		return buildType;
 	}
 
-	public void setCompileFlags(Hashtable<FieldString, FieldString> compileFlags) {
+	public void setCompileFlags(Hashtable<FieldString, FieldObject> compileFlags) {
 		this.compileFlags = compileFlags;
 	}
 	
-	public void addCompileFlag(FieldString flag, FieldString value) {
-		if(flag!=null){
-			if(value==null)
-				value = new FieldString();
-			compileFlags.put(flag, value);
+	public void addCompileFlag(FieldString key, FieldObject object) {
+		if(key!=null){
+			if(object == null)
+				object =  new FieldObject();
+			compileFlags.put(key, object);
 		}
 		else
 			ErrorList.instance.addWarning("Null FieldString for compileFlag");
 	}
-	
-	public void addCompileFlag(FieldString flag, String value) {
-		addCompileFlag(flag, new FieldString(value));
+
+	public void addCompileFlag(FieldString flag, Object value) {
+		addCompileFlag(flag, new FieldObject(value));
 	}
-	
-	public void addCompileFlag(String flag, FieldString value) {
+
+	public void addCompileFlag(String flag, FieldObject value) {
 		addCompileFlag(new FieldString(flag), value);
 	}
+
 	
-	public void addCompileFlag(String flag, String value) {
-		addCompileFlag(new FieldString(flag), new FieldString(value));
+	public void addCompileFlag(String flag, Object value) {
+		addCompileFlag(new FieldString(flag), new FieldObject(value));
 	}
 
-
-	public Hashtable<FieldString, FieldString> getCompileFlags() {
+	public Hashtable<FieldString, FieldObject> getCompileFlags() {
 		return compileFlags;
 	}
 
