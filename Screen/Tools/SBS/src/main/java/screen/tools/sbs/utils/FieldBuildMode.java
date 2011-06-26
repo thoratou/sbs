@@ -101,9 +101,9 @@ public class FieldBuildMode {
 	}
 	
 	public boolean isSameMode(boolean isRelease){
-		//if(!isValid)
-		//	return false;
-		/*else*/ if(type == Type.ALL)
+		if(!isValid)
+			return false;
+		else if(type == Type.ALL)
 			return true;
 		else if(type == Type.RELEASE && isRelease)
 			return true;

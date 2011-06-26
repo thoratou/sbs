@@ -219,7 +219,8 @@ public class SBSDomDataFiller {
 						Logger.debug("\t\t\t\tbuild : "+buildMode);
 						
 						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
-						fieldPath.setBuildMode(new FieldBuildMode(buildMode));
+						if(buildMode!=null)
+							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
 						
 						if(fieldPath.getBuildMode().isSameMode(isRelease))
 							newDep.addIncludePath(fieldPath);
@@ -250,7 +251,8 @@ public class SBSDomDataFiller {
 						Logger.debug("\t\t\t\tbuild : "+buildMode);
 						
 						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
-						fieldPath.setBuildMode(new FieldBuildMode(buildMode));
+						if(buildMode!=null)
+							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
 						
 						if(fieldPath.getBuildMode().isSameMode(isRelease))
 							newDep.addLibraryPath(fieldPath);
@@ -363,7 +365,8 @@ public class SBSDomDataFiller {
 				
 				String buildMode = opt.getAttributeValue("build");
 				Logger.debug("\t\t\t\tbuild : "+buildMode);
-				flag.setBuildMode(new FieldBuildMode(buildMode));
+				if(buildMode!=null)
+					flag.setBuildMode(new FieldBuildMode(buildMode));
 				
 				if(flag.getBuildMode().isSameMode(isRelease))
 					pack.addFlag(flag);
@@ -403,7 +406,8 @@ public class SBSDomDataFiller {
 				Logger.debug("\t\t\ttype : "+buildType);
 
 				String buildMode = lib.getAttributeValue("build");
-				description.setBuildMode(buildMode);
+				if(buildMode!=null)
+					description.setBuildMode(buildMode);
 				Logger.debug("\t\t\tbuild : "+buildMode);
 
 				if(description.getBuildMode().isSameMode(isRelease))
@@ -428,7 +432,8 @@ public class SBSDomDataFiller {
 				Import import_ = new Import();
 				
 				String buildMode = imp.getAttributeValue("build");
-				import_.setBuildMode(buildMode);
+				if(buildMode!=null)
+					import_.setBuildMode(buildMode);
 				Logger.debug("\t\tbuild : "+buildMode);
 				
 				//path
