@@ -32,6 +32,7 @@ import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.xml.SBSDomDataFiller;
 
@@ -49,8 +50,9 @@ public class ActionPackLoad implements Action {
 	 * Loads the pack from the global XML Dom.
 	 * The pack is set in global settings.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();

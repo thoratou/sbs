@@ -27,9 +27,9 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldBuildType.Type;
+import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.utils.FieldPath;
 
 /**
  * set LIBRARY_OUTPUT_PATH or EXECUTABLE_OUTPUT_PATH 
@@ -42,22 +42,15 @@ import screen.tools.sbs.utils.FieldBuildType.Type;
  */
 public class CMakeBuildFolderWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		FieldPath output = cmakePack.getOutputPath();
-		if(output.isValid()){
-			if(cmakePack.getBuildType().isValid()){
-				if(cmakePack.getBuildType().get() != Type.EXECUTABLE)
-					cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getCMakeString()+")\n");
-				else
-					cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getCMakeString()+")\n");
-			}
-			else
-				ErrorList.instance.addError("invalid build type");
-		}
+		if(cmakePack.getBuildType().get() != Type.EXECUTABLE)
+			cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getCMakeString()+")\n");
 		else
-			ErrorList.instance.addError("invalid output path");
+			cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getCMakeString()+")\n");
 	}
 }

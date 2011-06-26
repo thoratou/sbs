@@ -55,6 +55,7 @@ import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldJSONObject;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
@@ -109,39 +110,33 @@ public class SBSCMakeFileGenerator {
 		this.isTest = isTest;
 	}
 	
-	private void retrieveContext() throws ContextException{
+	private void retrieveContext() throws ContextException, FieldException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//repository root
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
-		if(!fieldRepoRoot.isValid()) return;
 		repoRoot = fieldRepoRoot.getString();
 		
 		//env name
 		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-		if(!fieldEnvName.isValid()) return;
 		envName = fieldEnvName.getString();
 
 		//compile mode
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		if(!fieldCompileMode.isValid()) return;
 		compileMode = fieldCompileMode.getString();
 		
 		//compile flags
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
 		FieldString fieldFlag = variables.getFieldString(flagVar);
 		FieldJSONObject jsonFlags = new FieldJSONObject(fieldFlag);
-		if(!jsonFlags.isValid()) return;
 		flagsObject = jsonFlags.getJSONObject();
 		
 		//default paths
 		if(Utilities.isLinux()){
 			FieldString fieldIncludePath = variables.getFieldString("DEFAULT_INCLUDE_PATH");
-			if(!fieldIncludePath.isValid()) return;
 			defaultIncludePath = fieldIncludePath.getString();
 			
 			FieldString fieldLibPath = variables.getFieldString("DEFAULT_LIB_PATH");
-			if(!fieldLibPath.isValid()) return;
 			defaultLibPath = fieldLibPath.getString();
 		}
 		
@@ -167,7 +162,7 @@ public class SBSCMakeFileGenerator {
 						"${DEFAULT_SHARED_LIB_COMPILE_NAME}" :
 						"${DEFAULT_STATIC_LIB_COMPILE_NAME}"
 						) :
-					""
+					"toto"
 				).getString(additionalVars);
 		fullName = new FieldString(
 				hasLibBuild ? (
@@ -179,14 +174,14 @@ public class SBSCMakeFileGenerator {
 				).getString(additionalVars);
 	}
 	
-	public void generate() throws ContextException {
+	public void generate() throws ContextException, FieldException {
 		retrieveContext();
 		generateCMakeLists();
 		generateComponentFiles();
 		generateSymbolicLinks();
 	}
 	
-	private void generateCMakeLists(){
+	private void generateCMakeLists() throws FieldException{
 		try {
 			//handler to write CMakeLists.txt file
 			File cmakeListFile = new File(sbsXmlPath + "CMakeLists.txt");
@@ -251,7 +246,7 @@ public class SBSCMakeFileGenerator {
 		}
 	}
 		
-	private void generateComponentFiles(){
+	private void generateComponentFiles() throws FieldException{
 		try{
 			//creation component root folder
 			new File(outputPath).mkdirs();

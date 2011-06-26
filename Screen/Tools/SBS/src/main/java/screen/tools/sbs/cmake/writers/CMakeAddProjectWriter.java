@@ -25,12 +25,12 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 
+import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakePackWriter;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldBuildType.Type;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * write ADD_LIBRARY or ADD_EXECUTABLE part
@@ -48,26 +48,22 @@ import screen.tools.sbs.utils.FieldBuildType.Type;
  */
 public class CMakeAddProjectWriter implements CMakeSegmentWriter{	
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		FieldBuildType typeInst = cmakePack.getBuildType();
-		if(typeInst.isValid()){
-			FieldBuildType.Type type = typeInst.get();
-			if(type == Type.EXECUTABLE)
-				cmakeListsWriter.write("ADD_EXECUTABLE(\n");
-			else
-				cmakeListsWriter.write("ADD_LIBRARY(\n");
-			cmakeListsWriter.write("    ${PROJECT_NAME}\n");
-			if(type != Type.EXECUTABLE)
-				cmakeListsWriter.write("    "+CMakePackWriter.getCmakeBuildType(type)+"\n");
-			cmakeListsWriter.write("    ${SRC_FILES}\n");
-			cmakeListsWriter.write("    ${INC_FILES}\n");
-			cmakeListsWriter.write(")\n");
-		}
-		else{
-			ErrorList.instance.addError("invalid build type");
-		}
+		FieldBuildType.Type type = typeInst.get();
+		if(type == Type.EXECUTABLE)
+			cmakeListsWriter.write("ADD_EXECUTABLE(\n");
+		else
+			cmakeListsWriter.write("ADD_LIBRARY(\n");
+		cmakeListsWriter.write("    ${PROJECT_NAME}\n");
+		if(type != Type.EXECUTABLE)
+			cmakeListsWriter.write("    "+CMakePackWriter.getCmakeBuildType(type)+"\n");
+		cmakeListsWriter.write("    ${SRC_FILES}\n");
+		cmakeListsWriter.write("    ${INC_FILES}\n");
+		cmakeListsWriter.write(")\n");
 	}
 }

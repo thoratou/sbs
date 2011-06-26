@@ -29,7 +29,7 @@ import java.util.List;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 
 /**
@@ -48,21 +48,17 @@ import screen.tools.sbs.utils.FieldPath;
  */
 public class CMakeLinkFolderListWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		List<FieldPath> linkDirectories = cmakePack.getLinkDirectories();
 		Iterator<FieldPath> iterator = linkDirectories.iterator();
 		cmakeListsWriter.write("LINK_DIRECTORIES(\n");
 		while(iterator.hasNext()){
 			FieldPath next = iterator.next();
-			if(next.isValid()){
-				cmakeListsWriter.write("    "+next.getCMakeString()+"\n");
-			}
-			else{
-				ErrorList.instance.addError("invalid link directory");
-			}
+			cmakeListsWriter.write("    "+next.getCMakeString()+"\n");
 		}		
 		cmakeListsWriter.write(")\n");
 	}

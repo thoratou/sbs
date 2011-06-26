@@ -47,19 +47,16 @@ public class ExecLauncher {
 		this.pack = pack;
 	}
 	
-	public void launch() throws ContextException{
+	public void launch() throws ContextException, FieldException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
-		if(!fieldRepoRoot.isValid()) return;
 		String repoRoot = fieldRepoRoot.getString();
 		
 		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-		if(!fieldEnvName.isValid()) return;
 		String envName = fieldEnvName.getString();
 
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		if(!fieldCompileMode.isValid()) return;
 		String compileMode = fieldCompileMode.getString();
 
 		String path = repoRoot+"/"+envName+"/"+compileMode;
@@ -68,37 +65,35 @@ public class ExecLauncher {
 		addVars.put("EXE_NAME", pack.getProperties().getName().getString().replaceAll("/", ""));
 		addVars.put("EXE_VERSION", pack.getProperties().getVersion().getString());
 		FieldString launchCommand = variables.getFieldString("LAUNCH_COMMAND");
-		if(launchCommand.isValid(addVars)){		
-		    try {
-				List<String> command = new ArrayList<String>();
-				command.add(path+"/"+launchCommand.getString(addVars));
-		    	ProcessLauncher p = new ProcessLauncher();
-		    	
-		    	Logger.info(path);
-		    	Iterator<String> iterator = command.iterator();
-		    	while(iterator.hasNext()){
-		    		String next = iterator.next();
-		    		Logger.info(next);
-		    	}
-		    	
-		    	p.execute(command.toArray(new String[command.size()]),null,new File(path));
-				
-				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		
-		        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-		
-		        String s;
-		        while ((s = stdInput.readLine()) != null) {
-		        	Logger.info(s);
-		        }
-		        while ((s = stdError.readLine()) != null) {
-		        	ErrorList.instance.addError(s);
-		        }
-		        
-		    }
-		    catch (IOException e) {
-		    	ErrorList.instance.addError(e.getMessage());
-		    }
-		}
+	    try {
+			List<String> command = new ArrayList<String>();
+			command.add(path+"/"+launchCommand.getString(addVars));
+	    	ProcessLauncher p = new ProcessLauncher();
+	    	
+	    	Logger.info(path);
+	    	Iterator<String> iterator = command.iterator();
+	    	while(iterator.hasNext()){
+	    		String next = iterator.next();
+	    		Logger.info(next);
+	    	}
+	    	
+	    	p.execute(command.toArray(new String[command.size()]),null,new File(path));
+			
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	
+	        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	
+	        String s;
+	        while ((s = stdInput.readLine()) != null) {
+	        	Logger.info(s);
+	        }
+	        while ((s = stdError.readLine()) != null) {
+	        	ErrorList.instance.addError(s);
+	        }
+	        
+	    }
+	    catch (IOException e) {
+	    	ErrorList.instance.addError(e.getMessage());
+	    }
 	}
 }

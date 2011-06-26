@@ -31,6 +31,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to generate CMakeLists.txt from a test pack.
@@ -45,8 +46,9 @@ public class ActionTestCMakeGenerate implements Action {
 	/**
 	 * Performs action to generate test CMakeLists.txt, makefiles and projects
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath()+"test/";
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
 		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(contextHandler, pack, path, true);

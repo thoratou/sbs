@@ -41,6 +41,7 @@ public class FieldBool{
 		return value == null;
 	}
 	
+	@Deprecated
 	public boolean isValid(){
 		return !isEmpty() && ("true".equals(value) || "false".equals(value));
 	}

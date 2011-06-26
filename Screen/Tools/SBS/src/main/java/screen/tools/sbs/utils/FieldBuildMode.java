@@ -33,13 +33,16 @@ public class FieldBuildMode {
 	}
 	
 	Type type;
+	boolean isValid;
 	
 	public FieldBuildMode() {
 		type = Type.ALL;
+		isValid = true;
 	}
 	
 	public FieldBuildMode(FieldBuildMode.Type type){
 		this.type = type;
+		isValid = true;
 	}
 	
 	public FieldBuildMode(String string) {
@@ -49,39 +52,58 @@ public class FieldBuildMode {
 	
 	public void set(FieldBuildMode.Type type){
 		this.type = type;
+		isValid = true;
 	}
 	
 	public void set(String value){
 		FieldString field = new FieldString(value);
-		String string = field.getString();
-		if("release".equals(string)){
-			type = Type.RELEASE;
-		}
-		else if ("debug".equals(string)){
-			type = Type.DEBUG;
-		}
-		else{
+		String string;
+		try {
+			string = field.getString();
+			isValid = true;
+			if("release".equals(string)){
+				type = Type.RELEASE;
+			}
+			else if ("debug".equals(string)){
+				type = Type.DEBUG;
+			}
+			else if ("all".equals(string)){
+				type = Type.ALL;
+			}
+			else{
+				type = Type.ALL;
+				isValid = false;
+			}
+		} catch (FieldException e) {
 			type = Type.ALL;
+			isValid = false;
 		}
+
 	}
 	
-	public Type get() {
+	public Type get() throws FieldException {
+		if(!isValid)
+			throw new FieldException();
 		return type;
 	}
 	
-	public String getAsString() {
+	public String getAsString() throws FieldException {
+		if(!isValid)
+			throw new FieldException();
 		switch (type) {
 		case DEBUG:
 			return "debug";
 		case RELEASE:
-			return "debug";
+			return "release";
 		default:
 			return "all";
 		}
 	}
 	
 	public boolean isSameMode(boolean isRelease){
-		if(type == Type.ALL)
+		//if(!isValid)
+		//	return false;
+		/*else*/ if(type == Type.ALL)
 			return true;
 		else if(type == Type.RELEASE && isRelease)
 			return true;

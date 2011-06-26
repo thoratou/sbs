@@ -27,9 +27,9 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -49,22 +49,18 @@ import screen.tools.sbs.utils.FieldString;
  */
 public class CMakeLibraryListWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		List<FieldString> linkLibraries = cmakePack.getLinkLibraries();
 		Iterator<FieldString> iterator = linkLibraries.iterator();
 		cmakeListsWriter.write("TARGET_LINK_LIBRARIES(\n");
 		cmakeListsWriter.write("    ${PROJECT_NAME}\n");
 		while(iterator.hasNext()){
 			FieldString next = iterator.next();
-			if(next.isValid()){
-				cmakeListsWriter.write("    "+next.getString()+"\n");
-			}
-			else{
-				ErrorList.instance.addError("invalid library");
-			}
+			cmakeListsWriter.write("    "+next.getString()+"\n");
 		}		
 		cmakeListsWriter.write(")\n");
 	}

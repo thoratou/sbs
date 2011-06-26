@@ -36,7 +36,7 @@ import screen.tools.sbs.context.ContextHandler;
  */
 public class ActionCreateFolders implements Action {
 	private String path;
-	private ContextHandler contextHandler;
+	//private ContextHandler contextHandler;
 	
 	/**
 	 * 
@@ -58,7 +58,7 @@ public class ActionCreateFolders implements Action {
 	}
 	
 	public void setContext(ContextHandler contextHandler) {
-		this.contextHandler = contextHandler;
+		//this.contextHandler = contextHandler;
 	}
 
 

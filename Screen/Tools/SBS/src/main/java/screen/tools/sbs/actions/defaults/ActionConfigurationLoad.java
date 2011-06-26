@@ -39,6 +39,7 @@ import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.repositories.RepositoryParser;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -56,11 +57,11 @@ public class ActionConfigurationLoad implements Action {
 	/**
 	 * Performs configuration load
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		EnvironmentVariables environmentVariables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		FieldString fieldRoot = environmentVariables.getFieldString("SBS_ROOT");
-		if(!fieldRoot.isValid()) return;
 		String root = fieldRoot.getString();
 		
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();

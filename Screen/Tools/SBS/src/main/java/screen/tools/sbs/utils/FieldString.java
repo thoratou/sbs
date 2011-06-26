@@ -42,9 +42,7 @@ public class FieldString {
 	}
 	
 	public boolean isEmpty(){
-		if(originalString == null)
-			return true;
-		return "".equals(originalString);
+			return originalString == null;
 	}
 	
 	public boolean isValid(EnvironmentVariables additionalVars){
@@ -66,13 +64,16 @@ public class FieldString {
 		return originalString;
 	}
 	
-	public String getString(EnvironmentVariables additionalVars) {
+	public String getString(EnvironmentVariables additionalVars) throws FieldException {
+		String ret = null;
 		if(!isEmpty())
-			return convertFromOriginalToFinal(originalString,additionalVars);
-		return null;
+			ret = convertFromOriginalToFinal(originalString,additionalVars);
+		if(ret == null)
+			throw new FieldException(originalString);
+		return ret;
 	}
 
-	public String getString(){
+	public String getString() throws FieldException{
 		return getString(null);
 	}
 	
@@ -81,15 +82,19 @@ public class FieldString {
 		FieldString fieldString = (FieldString) arg0;
 		if(arg0==null)
 			return false;
-		return getString().equals(fieldString.getString());
+		try {
+			return getString().equals(fieldString.getString());
+		} catch (FieldException e) {
+			return false;
+		}
 	}
 		
 	@Override
 	public int hashCode() {
-		return getString().hashCode();
+		return getOriginalString().hashCode();
 	}
 	
-	private String convertFromOriginalToFinal(String originalString, EnvironmentVariables additionalVars){
+	public static String convertFromOriginalToFinal(String originalString, EnvironmentVariables additionalVars){
 		if(additionalVars == null)
 			additionalVars = new EnvironmentVariables();
 		
@@ -119,7 +124,10 @@ public class FieldString {
 				{
 					FieldString fieldString = additionalVars.getFieldString(var);
 					if(fieldString.isValid(additionalVars)){
-						String value = fieldString.getString(additionalVars);
+						//String value = fieldString.getString(additionalVars);
+						String value = convertFromOriginalToFinal(
+								fieldString.getOriginalString(),
+								additionalVars);
 						Logger.debug("var value : "+value);
 						finalString = finalString.concat(value);
 						stringOK = true;
@@ -129,7 +137,10 @@ public class FieldString {
 				{
 					FieldString fieldString = env.getFieldString(var);
 					if(fieldString.isValid(additionalVars)){
-						String value = fieldString.getString(additionalVars);
+						//String value = fieldString.getString(additionalVars);
+						String value = convertFromOriginalToFinal(
+								fieldString.getOriginalString(),
+								additionalVars);
 						Logger.debug("var value : "+value);
 						finalString = finalString.concat(value);
 						stringOK = true;

@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 public class RepositoryFilterTable {
@@ -56,7 +57,7 @@ public class RepositoryFilterTable {
 		return filterTable.get(id);
 	}
 	
-	public List<RepositoryData> filterDataItems(RepositoryFilter inputFilter){
+	public List<RepositoryData> filterDataItems(RepositoryFilter inputFilter) throws FieldException{
 		List<RepositoryData> data = new ArrayList<RepositoryData>();
 		Iterator<FieldString> iterator = sortedIdList.iterator();
 		while(iterator.hasNext()){
@@ -68,7 +69,7 @@ public class RepositoryFilterTable {
 		return data;
 	}
 	
-	public List<RepositoryFilter> filter(RepositoryFilter inputFilter){
+	public List<RepositoryFilter> filter(RepositoryFilter inputFilter) throws FieldException{
 		List<RepositoryFilter> data = new ArrayList<RepositoryFilter>();
 		Iterator<FieldString> iterator = sortedIdList.iterator();
 		while(iterator.hasNext()){
@@ -80,7 +81,7 @@ public class RepositoryFilterTable {
 		return data;
 	}
 	
-	public List<RepositoryData> filterUnsortedDataItems(RepositoryFilter inputFilter){
+	public List<RepositoryData> filterUnsortedDataItems(RepositoryFilter inputFilter) throws FieldException{
 		List<RepositoryData> data = new ArrayList<RepositoryData>();
 		Iterator<RepositoryFilter> iterator = filterTable.values().iterator();
 		while(iterator.hasNext()){
@@ -91,7 +92,7 @@ public class RepositoryFilterTable {
 		return data;
 	}
 	
-	public List<RepositoryFilter> filterUnsorted(RepositoryFilter inputFilter){
+	public List<RepositoryFilter> filterUnsorted(RepositoryFilter inputFilter) throws FieldException{
 		List<RepositoryFilter> data = new ArrayList<RepositoryFilter>();
 		Iterator<RepositoryFilter> iterator = filterTable.values().iterator();
 		while(iterator.hasNext()){

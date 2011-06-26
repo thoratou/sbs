@@ -25,9 +25,9 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -41,14 +41,12 @@ import screen.tools.sbs.utils.FieldString;
  */
 public class CMakeProjectNameWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		FieldString projectName = cmakePack.getProjectName();
-		if(projectName.isValid())
-			cmakeListsWriter.write("PROJECT("+projectName.getString()+")\n");
-		else
-			ErrorList.instance.addError("invalid project name");
+		cmakeListsWriter.write("PROJECT("+projectName.getString()+")\n");
 	}
 }

@@ -35,6 +35,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessLauncher;
@@ -52,21 +53,14 @@ public class SBSCMakeLauncher {
 		this.contextHandler = contextHandler;
 	}
 	
-	public void launch(String sbsXmlPath) throws ContextException{
+	public void launch(String sbsXmlPath) throws ContextException, FieldException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		FieldString fieldTargetEnv = variables.getFieldString("TARGET_ENV");
-		fieldTargetEnv.isValid();
 		FieldString fieldMakeProg = variables.getFieldString("MAKE_PROGRAM");
-		fieldMakeProg.isValid();
 		FieldString fieldCCompiler = variables.getFieldString("C_COMPILER");
-		fieldCCompiler.isValid();
 		FieldString fieldCppCompiler = variables.getFieldString("CPP_COMPILER");
-		fieldCppCompiler.isValid();
-		
-		if(ErrorList.instance.hasErrors())
-			return;
-		
+				
 		String targetEnv = fieldTargetEnv.getString();
 		String makeProg = fieldMakeProg.getString();
 		String cCompiler = fieldCCompiler.getString();

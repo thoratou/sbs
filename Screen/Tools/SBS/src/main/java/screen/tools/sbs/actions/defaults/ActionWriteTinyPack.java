@@ -30,6 +30,7 @@ import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.TinyPackContext;
 import screen.tools.sbs.objects.TinyPack;
 //import screen.tools.sbs.pack.PackXmlWriter;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.xml.PackDomWriter;
 
 /**
@@ -44,8 +45,9 @@ public class ActionWriteTinyPack implements Action {
 	/**
 	 * Performs create action.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		TinyPack pack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).getPack();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();

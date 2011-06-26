@@ -101,8 +101,8 @@ public class Description {
 		setBuildType(new FieldBuildType(type));
 	}
 
-	public FieldBuildType.Type getBuildType() {
-		return buildType.get();
+	public FieldBuildType getBuildType() {
+		return buildType;
 	}
 	
 	public void setBuildMode(FieldBuildMode buildMode) {

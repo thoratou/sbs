@@ -32,6 +32,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to display repository list into standard output
@@ -45,8 +46,9 @@ public class ActionRepositoryFilterDisplay implements Action {
 	/**
 	 * Print repository filter list
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		//retrieve repository filter list
 		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
 		List<RepositoryFilter> list = repositoryFilterTable.getSortedList();

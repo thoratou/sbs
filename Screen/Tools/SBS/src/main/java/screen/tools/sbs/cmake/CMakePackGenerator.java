@@ -34,6 +34,7 @@ import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.utils.FieldBuildType;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
@@ -60,8 +61,9 @@ public class CMakePackGenerator {
 	
 	/**
 	 * performs the generation
+	 * @throws FieldException 
 	 */
-	public void generate(){
+	public void generate() throws FieldException{
 		convertFromProperties(pack.getProperties());
 		convertFromDependencies(pack.getDependencyList(), pack.getDescriptionMap());
 		convertFromFlags(pack.getFlagList());
@@ -75,28 +77,17 @@ public class CMakePackGenerator {
 	 *  - component build type
 	 *  
 	 *  @param properties Component properties
+	 * @throws FieldException 
 	 */
-	protected void convertFromProperties(ProjectProperties properties) {
+	protected void convertFromProperties(ProjectProperties properties) throws FieldException {
 		FieldString name = pack.getProperties().getName();
-		if(name.isValid())
-			cmakePack.setProjectName(name.getString().replaceAll("/", ""));
-		else
-			ErrorList.instance.addError("invalid name into the pack");
+		cmakePack.setProjectName(name.getString().replaceAll("/", ""));
 		cmakePack.setProjectVersion(pack.getProperties().getVersion());
 
 		FieldString buildType = pack.getProperties().getBuildType();
 		FieldBuildType type = new FieldBuildType();
-		if(buildType.isValid()){
-			type.set(buildType.getString());
-			if(type.isValid()){
-				cmakePack.setBuildType(type);
-			}
-			else{
-				ErrorList.instance.addError("Internal error : invalid build type into the pack");
-			}
-		}
-		else
-			ErrorList.instance.addError("invalid build type into the pack");
+		type.set(buildType.getString());
+		cmakePack.setBuildType(type);
 	}
 	
 	/**
@@ -108,10 +99,11 @@ public class CMakePackGenerator {
 	 * 
 	 * @param dependencyList 
 	 * @param descriptionMap
+	 * @throws FieldException 
 	 */
 
 	protected void convertFromDependencies(List<Dependency> dependencyList,
-			Hashtable<String, Description> descriptionMap) {
+			Hashtable<String, Description> descriptionMap) throws FieldException {
 		Iterator<Dependency> iterator = dependencyList.iterator();
 		while (iterator.hasNext()) {
 			Dependency dependency = iterator.next();
@@ -125,15 +117,13 @@ public class CMakePackGenerator {
 	 * Convert include path list
 	 * 
 	 * @param includePathList
+	 * @throws FieldException 
 	 */
-	protected void convertFromIncludePathList(List<FieldPath> includePathList) {
+	protected void convertFromIncludePathList(List<FieldPath> includePathList) throws FieldException {
 		Iterator<FieldPath> iterator = includePathList.iterator();
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
-			if(fieldPath.isValid())
-				cmakePack.addIncludeDirectory(fieldPath.getCMakeString());
-			else
-				ErrorList.instance.addError("invalid include path into the pack");
+			cmakePack.addIncludeDirectory(fieldPath.getCMakeString());
 		}
 	}
 
@@ -141,15 +131,13 @@ public class CMakePackGenerator {
 	 * Convert library path list
 	 * 
 	 * @param libraryPathList
+	 * @throws FieldException 
 	 */
-	protected void convertFromLibraryPathList(List<FieldPath> libraryPathList) {
+	protected void convertFromLibraryPathList(List<FieldPath> libraryPathList) throws FieldException {
 		Iterator<FieldPath> iterator = libraryPathList.iterator();
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
-			if(fieldPath.isValid())
-				cmakePack.addLinkDirectory(fieldPath.getCMakeString());
-			else
-				ErrorList.instance.addError("invalid link path into the pack");
+			cmakePack.addLinkDirectory(fieldPath.getCMakeString());
 		}
 	}
 
@@ -158,24 +146,21 @@ public class CMakePackGenerator {
 	 * 
 	 * @param libraryList
 	 * @param descriptionMap
+	 * @throws FieldException 
 	 */
 	protected void convertFromLibraryList(List<Library> libraryList,
-			Hashtable<String, Description> descriptionMap) {
+			Hashtable<String, Description> descriptionMap) throws FieldException {
 		Iterator<Library> iterator = libraryList.iterator();
 		while (iterator.hasNext()) {
 			Library library = iterator.next();
 			FieldString fieldName = library.getName();
-			if(fieldName.isValid()){
-				String name = fieldName.getString();
-				Description description = descriptionMap.get(name);
-				if(description != null){
-					cmakePack.addLinkLibraries(description.getCompileName().getString());
-				}
-				else
-					ErrorList.instance.addError("no description for library "+name+" into the pack");
+			String name = fieldName.getString();
+			Description description = descriptionMap.get(name);
+			if(description != null){
+				cmakePack.addLinkLibraries(description.getCompileName().getString());
 			}
 			else
-				ErrorList.instance.addError("invalid library into the pack");
+				ErrorList.instance.addError("no description for library "+name+" into the pack");
 		}
 	}
 

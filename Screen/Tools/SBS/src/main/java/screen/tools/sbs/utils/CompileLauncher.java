@@ -44,7 +44,7 @@ public class CompileLauncher {
 		isTest = test;
 	}
 	
-	public void launch() throws ContextException{
+	public void launch() throws ContextException, FieldException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		String path = null;
 		if(isTest)
@@ -53,7 +53,6 @@ public class CompileLauncher {
 			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		FieldString fieldCompileCommand = variables.getFieldString("COMPILE_COMMAND");
-		if(!fieldCompileCommand.isValid()) return;
 		String compileCommand = fieldCompileCommand.getString();
 
         try {

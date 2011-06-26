@@ -23,16 +23,17 @@
 package screen.tools.sbs.objects;
 
 import screen.tools.sbs.utils.FieldBuildMode;
+import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldString;
 
 public class Flag {
 	private FieldString flag;
-	private FieldString value;
+	private FieldObject value;
 	private FieldBuildMode buildMode;
 	
 	public Flag() {
 		flag = new FieldString();
-		value = new FieldString();
+		value = new FieldObject();
 		buildMode = new FieldBuildMode();
 	}
 	
@@ -51,18 +52,18 @@ public class Flag {
 		return flag;
 	}
 	
-	public void setValue(FieldString value) {
+	public void setValue(FieldObject value) {
 		if(value!=null)
 			this.value = value;
 		else
-			ErrorList.instance.addWarning("Null FieldString for flag value");
+			this.value = new FieldObject();
 	}
 
-	public void setValue(String value) {
-		setValue(new FieldString(value));
+	public void setValue(Object value) {
+		setValue(new FieldObject(value));
 	}
 		
-	public FieldString getValue() {
+	public FieldObject getValue() {
 		return value;
 	}
 	

@@ -34,6 +34,7 @@ import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.Flag;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.Logger;
 
@@ -49,8 +50,9 @@ public class ActionPackCheck implements Action {
 	/**
 	 * Verifies pack content. 
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
 		checkFields(pack);
@@ -66,8 +68,9 @@ public class ActionPackCheck implements Action {
 	 * Also used by ActionTestPackCheck class.
 	 * 
 	 * @param pack
+	 * @throws FieldException 
 	 */
-	public static void checkFields(Pack pack){
+	public static void checkFields(Pack pack) throws FieldException{
 		Logger.debug("Properties :");
 		Logger.debug("pack = " + pack.getProperties().getName().getString());
 		Logger.debug("version = " + pack.getProperties().getVersion().getString());
@@ -110,7 +113,7 @@ public class ActionPackCheck implements Action {
 		for (int i=0; i<flags.size(); i++){
 			Logger.debug("Flag{");
 			Logger.debug("    flag = "+flags.get(i).getFlag().getString());
-			Logger.debug("    value = "+flags.get(i).getValue().getString());
+			Logger.debug("    value = "+flags.get(i).getValue().getObject());
 			Logger.debug("}");
 		}
 		
@@ -120,8 +123,9 @@ public class ActionPackCheck implements Action {
 			Logger.debug("Description{");
 			Logger.debug("    name = "+descs.get(i).getName().getString());
 			Logger.debug("    compileName = "+descs.get(i).getCompileName().getString());
+			if(!descs.get(i).getFullName().isEmpty())
 			Logger.debug("    fullName = "+descs.get(i).getFullName().getString());
-			Logger.debug("    buildType = "+descs.get(i).getBuildType());
+			Logger.debug("    buildType = "+descs.get(i).getBuildType().getString());
 			Logger.debug("}");
 		}
 	}

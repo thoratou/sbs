@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
@@ -43,7 +44,7 @@ public class RepositoryComponent {
 		this.compiler = compiler;
 	}
 	
-	public RepositoryFilter retrieve(RepositoryFilterTable table){
+	public RepositoryFilter retrieve(RepositoryFilterTable table) throws FieldException{
 		RepositoryFilter inputFilter = new RepositoryFilter();
 		inputFilter.setComponentName(componentName);
 		inputFilter.setComponentVersion(componentVersion);
@@ -67,7 +68,7 @@ public class RepositoryComponent {
 		return null;
 	}
 	
-	public FieldPath getComponentPath(RepositoryFilter filter){
+	public FieldPath getComponentPath(RepositoryFilter filter) throws FieldException{
 		return new FieldPath(filter.getData().getPath().getString()
 		+"/"
 		+componentName.getString()

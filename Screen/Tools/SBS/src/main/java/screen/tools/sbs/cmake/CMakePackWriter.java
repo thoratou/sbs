@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.utils.FieldBuildType;
+import screen.tools.sbs.utils.FieldException;
 
 
 /**
@@ -80,8 +81,9 @@ public class CMakePackWriter {
 	
 	/**
 	 * Performs the writing
+	 * @throws FieldException 
 	 */
-	public void write(){
+	public void write() throws FieldException{
 		try {
 			for(int i=0; i<writers.size(); i++){
 				writers.get(i).write(cmakePack,cmakeListsWriter);

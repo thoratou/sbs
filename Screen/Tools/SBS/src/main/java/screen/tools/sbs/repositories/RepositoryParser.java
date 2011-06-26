@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
@@ -58,7 +59,7 @@ public class RepositoryParser {
 		this.filterTable = filterTable;
 	}
 	
-	public void fill(){
+	public void fill() throws FieldException{
 		Document doc = parseFile(inputFile);
 		
 		XPathFactory xFactory = XPathFactory.newInstance();
@@ -78,29 +79,28 @@ public class RepositoryParser {
 				    data.setPath(new FieldPath(element.getAttribute("path")));
 				    
 				    FieldString fieldString = new FieldString(element.getAttribute("type"));
-				    if(fieldString.isValid()){
-				    	String string = fieldString.getString();
-				    	String[] split = string.split(",");
-				    					    	
-				    	int flags = 0;
-				    	for(int j=0; j<split.length; j++){
-				    		String string2 = split[j];
-				    		if("empty".equals(string2))
-				    			flags |= RepositoryType.NO_TYPE_FLAG;
-				    		else if("remote".equals(string2))
-				    			flags |= RepositoryType.REMOTE_LOCAL_FLAG;
-				    		else if("release".equals(string2))
-				    			flags |= RepositoryType.RELEASE_SNAPSHOT_FLAG;
-				    		else if("external".equals(string2))
-				    			flags |= RepositoryType.EXTERNAL_INTERNAL_FLAG;
-				    		else if(!"local".equals(string2) &&
-				    				!"snapshot".equals(string2) &&
-				    				!"internal".equals(string2))
-				    			ErrorList.instance.addWarning("unknown repository type : "+string2);
-				    	}
-				    	data.setType(new RepositoryType(flags));
-				    }
-				    dataTable.add(data);
+			    	String string = fieldString.getString();
+			    	String[] split = string.split(",");
+			    					    	
+			    	int flags = 0;
+			    	for(int j=0; j<split.length; j++){
+			    		String string2 = split[j];
+			    		if("empty".equals(string2))
+			    			flags |= RepositoryType.NO_TYPE_FLAG;
+			    		else if("remote".equals(string2))
+			    			flags |= RepositoryType.REMOTE_LOCAL_FLAG;
+			    		else if("release".equals(string2))
+			    			flags |= RepositoryType.RELEASE_SNAPSHOT_FLAG;
+			    		else if("external".equals(string2))
+			    			flags |= RepositoryType.EXTERNAL_INTERNAL_FLAG;
+			    		else if(!"local".equals(string2) &&
+			    				!"snapshot".equals(string2) &&
+			    				!"internal".equals(string2))
+			    			ErrorList.instance.addWarning("unknown repository type : "+string2);
+			    	}
+			    	data.setType(new RepositoryType(flags));
+
+			    	dataTable.add(data);
 				}
 			}			
 			

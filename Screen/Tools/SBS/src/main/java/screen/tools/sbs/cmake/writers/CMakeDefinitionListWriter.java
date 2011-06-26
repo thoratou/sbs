@@ -26,12 +26,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.cmake.CMakeSegmentWriter;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldString;
 
@@ -48,10 +48,11 @@ import screen.tools.sbs.utils.FieldString;
  */
 public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		Hashtable<FieldString, FieldObject> compileFlags = cmakePack.getCompileFlags();
 		Set<Entry<FieldString, FieldObject>> entrySet = compileFlags.entrySet();
 		Iterator<Entry<FieldString, FieldObject>> iterator = entrySet.iterator();
@@ -59,22 +60,17 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 			Entry<FieldString, FieldObject> next = iterator.next();
 			FieldString flag = next.getKey();
 			FieldObject value = next.getValue();
-			if(flag.isValid()){
-				cmakeListsWriter.write("ADD_DEFINITIONS(-D"+flag.getString());
-				if(value.isValid()){
-					Object object = value.getObject();
-					if(object instanceof String)
-						//http://www.cmake.org/pipermail/cmake/2007-June/014611.html
-						//for string value, we need 2 \\, so here 4 for those 2 and 1 for quote :$
-						cmakeListsWriter.write("=\\\\\""+(String)object+"\\\\\"");
-					else if(object instanceof Number)
-						cmakeListsWriter.write("="+(Number)object);
-				}
-				cmakeListsWriter.write(")\n");
+			cmakeListsWriter.write("ADD_DEFINITIONS(-D"+flag.getString());
+			if(value.isValid()){
+				Object object = value.getObject();
+				if(object instanceof String)
+					//http://www.cmake.org/pipermail/cmake/2007-June/014611.html
+					//for string value, we need 2 \\, so here 4 for those 2 and 1 for quote :$
+					cmakeListsWriter.write("=\\\\\""+(String)object+"\\\\\"");
+				else if(object instanceof Number)
+					cmakeListsWriter.write("="+(Number)object);
 			}
-			else{
-				ErrorList.instance.addError("invalid definition");
-			}
+			cmakeListsWriter.write(")\n");
 		}		
 	}
 }

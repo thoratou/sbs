@@ -27,7 +27,7 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 /**
@@ -40,14 +40,12 @@ import screen.tools.sbs.utils.FieldString;
  *
  */public class CMakeVersionWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		FieldString version = cmakePack.getVersion();
-		if(version.isValid())
-			cmakeListsWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION "+version.getString()+")\n");
-		else
-			ErrorList.instance.addError("invalid CMake version");
+		cmakeListsWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION "+version.getString()+")\n");
 	}
 }

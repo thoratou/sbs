@@ -29,13 +29,16 @@ public class FieldPathType {
 	}
 	
 	Type position;
+	boolean valid;
 	
 	public FieldPathType() {
 		position = Type.RELATIVE;
+		valid = true;
 	}
 	
 	public void set(Type position){
 		this.position = position;
+		valid = true;
 	}
 	
 	public Type get(){
@@ -44,14 +47,23 @@ public class FieldPathType {
 	
 	public void set(String pos){
 		FieldString fs = new FieldString(pos);
-		if(fs.isValid()){
+		try {
 			String pos2 = fs.getString();
 			if("absolute".equals(pos2)){
 				position = Type.ABSOLUTE;
+				valid = true;
 			}
 			else if("relative".equals(pos2)){
 				position = Type.RELATIVE;
+				valid = true;
 			}
+			else{
+				position = Type.RELATIVE;
+				valid = false;
+			}
+		} catch (FieldException e) {
+			position = Type.RELATIVE;
+			valid = false;
 		}
 	}
 	

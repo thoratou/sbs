@@ -56,27 +56,48 @@ public class FieldBuildType {
 	
 	public void set(String value){
 		FieldString field = new FieldString(value);
-		String string = field.getString();
-		if("static".equals(string)){
-			type = Type.STATIC_LIBRARY;
-			valid = true;
-		}
-		else if ("shared".equals(string)){
-			type = Type.SHARED_LIBRARY;
-			valid = true;
-		}
-		else if ("executable".equals(string)){
-			type = Type.EXECUTABLE;
-			valid = true;
-		}
-		else{
+		try {
+			String string = field.getString();
+			if("static".equals(string)){
+				type = Type.STATIC_LIBRARY;
+				valid = true;
+			}
+			else if ("shared".equals(string)){
+				type = Type.SHARED_LIBRARY;
+				valid = true;
+			}
+			else if ("executable".equals(string)){
+				type = Type.EXECUTABLE;
+				valid = true;
+			}
+			else{
+				type = Type.EXECUTABLE;
+				valid = false;
+			}
+		} catch (FieldException e) {
 			type = Type.EXECUTABLE;
 			valid = false;
 		}
 	}
 	
-	public Type get() {
+	public Type get() throws FieldException {
+		if(!valid)
+			throw new FieldException();
 		return type;
+	}
+	
+	public String getString() throws FieldException {
+		if(!valid)
+			throw new FieldException();
+		switch (type) {
+		case EXECUTABLE:
+			return "executable";
+		case SHARED_LIBRARY:
+			return "shared";
+		case STATIC_LIBRARY:
+			return "static";
+		}
+		return "";
 	}
 	
 	public boolean isValid() {

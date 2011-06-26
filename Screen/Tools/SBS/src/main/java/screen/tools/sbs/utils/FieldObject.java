@@ -20,45 +20,32 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package screen.tools.sbs.actions.defaults;
+package screen.tools.sbs.utils;
 
-import screen.tools.sbs.actions.Action;
-import screen.tools.sbs.cmake.SBSCMakeFileGenerator;
-import screen.tools.sbs.cmake.SBSCMakeLauncher;
-import screen.tools.sbs.context.ContextException;
-import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.utils.FieldException;
+public class FieldObject{
+	Object object;
 
-/**
- * Action to generate CMakeLists.txt from a pack.
- * and generate makefile and/or project from this CMakeLists.txt.
- * 
- * @author Ratouit Thomas
- *
- */
-public class ActionCMakeGenerate implements Action {
-	private ContextHandler contextHandler;
-
-	/**
-	 * Performs action to generate CMakeLists.txt, makefiles and projects
-	 * @throws ContextException 
-	 * @throws FieldException 
-	 */
-	public void perform() throws ContextException, FieldException {
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
-		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
-		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(contextHandler, pack, path, false);
-		generator.generate();
-		SBSCMakeLauncher launcher = new SBSCMakeLauncher(contextHandler);
-		launcher.launch(path);
+	public FieldObject(Object object) {
+		this.object = object;
 	}
 
-	public void setContext(ContextHandler contextHandler) {
-		this.contextHandler = contextHandler;
+	public FieldObject() {
+		object = null;
 	}
-
+	
+	public boolean isEmpty(){
+		return object == null;
+	}
+		
+	public boolean isValid(){
+		return !isEmpty();
+	}
+	
+	public Object getObject() {
+		return object;
+	}
+	
+	public void setObject(Object object) {
+		this.object = object;
+	}
 }

@@ -25,6 +25,7 @@ package screen.tools.sbs.repositories;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 public class RepositoryFilter {
@@ -74,7 +75,7 @@ public class RepositoryFilter {
 		return compiler;
 	}
 
-	public boolean match(RepositoryFilter inputFilter) {
+	public boolean match(RepositoryFilter inputFilter) throws FieldException {
 		Pattern namePattern = Pattern.compile(componentName.getString());
 		Pattern versionPattern = Pattern.compile(componentVersion.getString());
 		Pattern compilerPattern = Pattern.compile(compiler.getString());

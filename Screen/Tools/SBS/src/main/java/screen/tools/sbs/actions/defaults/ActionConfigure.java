@@ -32,6 +32,7 @@ import java.util.List;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldFile;
 import screen.tools.sbs.utils.Logger;
 
@@ -97,8 +98,9 @@ public class ActionConfigure implements Action {
 
 	/**
 	 * Saves configuration files to load.
+	 * @throws FieldException 
 	 */
-	public void perform() {
+	public void perform() throws FieldException {
 		//select the file to write
 		if(!isGlobal && projects.isEmpty()){
 			ErrorList.instance.addError("\"configure\" action without target to configure");
@@ -130,8 +132,9 @@ public class ActionConfigure implements Action {
 	 * Suppress .sbsconfig file
 	 * 
 	 * @param file
+	 * @throws FieldException 
 	 */
-	private void clean(FieldFile fieldFile) {
+	private void clean(FieldFile fieldFile) throws FieldException {
 		if(new File(fieldFile.getString()).delete())
 			Logger.info("configuration cleaned : "+fieldFile.getString());
 		else
@@ -142,8 +145,9 @@ public class ActionConfigure implements Action {
 	 * Writes .sbsconfig file
 	 * 
 	 * @param file
+	 * @throws FieldException 
 	 */
-	private void write(FieldFile file){
+	private void write(FieldFile file) throws FieldException{
 		File outFile = new File(file.getString());
 		try {
 			FileWriter outWriter = new FileWriter(outFile,false);

@@ -25,6 +25,8 @@ package screen.tools.sbs.cmake;
 import java.io.IOException;
 import java.io.Writer;
 
+import screen.tools.sbs.utils.FieldException;
+
 
 /**
  * Interface for CMake segment writer
@@ -40,6 +42,7 @@ public interface CMakeSegmentWriter {
 	/**
 	 * @param cmakePack
 	 * @param cmakeListsWriter
+	 * @throws FieldException 
 	 */
-	void write(CMakePack cmakePack, Writer cmakeListsWriter) throws IOException;
+	void write(CMakePack cmakePack, Writer cmakeListsWriter) throws IOException, FieldException;
 }

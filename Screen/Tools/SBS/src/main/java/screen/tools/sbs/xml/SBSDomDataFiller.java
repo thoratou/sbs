@@ -52,6 +52,7 @@ import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.utils.FieldBool;
 import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldBuildType;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldFile;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldPathType;
@@ -79,12 +80,11 @@ public class SBSDomDataFiller {
 		this.testPack = testPack;
 	}
 	
-	public void fill(Document doc, boolean isTest) throws ContextException{
+	public void fill(Document doc, boolean isTest) throws ContextException, FieldException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		if(!fieldCompileMode.isValid()) return;
 		String compileMode = fieldCompileMode.getString();
 		isRelease = "Release".equals(compileMode);
 		
@@ -149,7 +149,7 @@ public class SBSDomDataFiller {
 
 	}
 
-	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
+	private void processAll(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
 		//main
 		List<?> main = root.getChildren("main");
 		Iterator<?> iterator = main.iterator();
@@ -166,7 +166,7 @@ public class SBSDomDataFiller {
 		processImports(root, pack, xmlPath);
 	}
 
-	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
+	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
 		//dependencies
@@ -186,15 +186,12 @@ public class SBSDomDataFiller {
 				Dependency newDep = new Dependency();
 				
 				String name = dep.getAttributeValue("name");
-				name = ("".equals(name)) ? null : name;
 				newDep.setName(new FieldString(name));
 
 				String version = dep.getAttributeValue("version");
-				version = ("".equals(version)) ? null : version;
 				newDep.setVersion(new FieldString(version));
 				
 				String export = dep.getAttributeValue("export");
-				export = ("".equals(export)) ? null : export;
 				newDep.setExport(new FieldBool(export));
 				
 				// includes
@@ -268,7 +265,6 @@ public class SBSDomDataFiller {
 						Logger.debug("\t\t\t\ttext : "+libString);
 
 						String libVersion = lib.getAttributeValue("version");
-						libVersion = ("".equals(libVersion)) ? null : libVersion;
 						
 						Library library = new Library();
 						library.setName(new FieldString(libString));
@@ -285,7 +281,6 @@ public class SBSDomDataFiller {
 					String packVersion = newDep.getVersion().getString();
 					
 					FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-					if(!fieldEnvName.isValid()) return;
 					String envName = fieldEnvName.getString();
 					
 					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), fieldEnvName);
@@ -363,7 +358,7 @@ public class SBSDomDataFiller {
 				Logger.debug("\t\t\tflag : "+flagValue);
 				
 				String value = opt.getAttributeValue("value");
-				flag.setValue(new FieldString(value));
+				flag.setValue(value);
 				Logger.debug("\t\t\tvalue : "+value);
 				
 				String buildMode = opt.getAttributeValue("build");
@@ -417,7 +412,7 @@ public class SBSDomDataFiller {
 		}
 	}
 	
-	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {		
+	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {		
 		//descriptions
 		Logger.debug("imports");
 		List<?> importRoot = root.getChildren("imports");

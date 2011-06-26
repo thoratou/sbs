@@ -29,6 +29,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.ExecLauncher;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to launch tests associated to a component
@@ -42,8 +43,9 @@ public class ActionTestLaunch implements Action {
 	/**
 	 * Launches the test
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		//Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
 		ExecLauncher launcher = new ExecLauncher(contextHandler, pack);

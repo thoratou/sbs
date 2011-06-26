@@ -26,6 +26,7 @@ import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.utils.CompileLauncher;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to compile component tests from a makefile.
@@ -39,8 +40,9 @@ public class ActionTestCMakeCompile implements Action {
 	/**
 	 * Performs compile action on component tests.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		CompileLauncher launcher = new CompileLauncher(contextHandler, true);
 		launcher.launch();
 	}

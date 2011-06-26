@@ -29,6 +29,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 public class RepositoryDataTable {
@@ -65,7 +66,7 @@ public class RepositoryDataTable {
 		return idList;
 	}
 	
-	public List<RepositoryData> getSorterByIDList(){
+	public List<RepositoryData> getSorterByIDList() throws FieldException{
 		List<FieldString> idList = getIDList();
 		List<String> strList = new ArrayList<String>();
 		

@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import screen.tools.sbs.utils.FieldException;
+
 public class Pack {
 	private ProjectProperties properties;
 	private List<Dependency> dependencyList;
@@ -88,10 +90,14 @@ public class Pack {
 	}
 	
 	public void addDescription(Description desc) {
+		try {
 		if(desc!=null)
-			descriptionList.put(desc.getName().getString(),desc);
+				descriptionList.put(desc.getName().getString(),desc);
 		else
 			ErrorList.instance.addWarning("Null FieldString for pack description");
+		} catch (FieldException e) {
+			ErrorList.instance.addWarning("Can't add invalid description");
+		}
 	}
 
 	public void setDescriptionMap(Hashtable<String, Description> descriptionList) {

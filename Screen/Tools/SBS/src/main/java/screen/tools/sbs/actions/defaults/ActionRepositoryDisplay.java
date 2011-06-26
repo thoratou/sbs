@@ -32,6 +32,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.repositories.RepositoryData;
 import screen.tools.sbs.repositories.RepositoryDataTable;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to display repository list into standard output
@@ -45,8 +46,9 @@ public class ActionRepositoryDisplay implements Action {
 	/**
 	 * Print repository list.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		//retrieve repository list
 		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
 		List<RepositoryData> list = repositoryDataTable.getSorterByIDList();

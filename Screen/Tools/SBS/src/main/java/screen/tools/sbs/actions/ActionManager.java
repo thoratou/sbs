@@ -28,6 +28,7 @@ import java.util.List;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Class to handler, register and launch actions.
@@ -69,10 +70,31 @@ public class ActionManager {
 			for(int i=0; i<actions.size(); i++){
 				Action action = actions.get(i);
 				action.setContext(contextHandler);
-					action.perform();
+				action.perform();
+				if(ErrorList.instance.hasErrors())
+					break;
 			}
 		} catch (ContextException e) {
 			ErrorList.instance.addError("Internal error : " + e.getMessage());
+			StackTraceElement[] stackTrace = e.getStackTrace();
+			ErrorList.instance.addError("Stack = ");
+			for(int i=0; i<stackTrace.length; i++){
+				ErrorList.instance.addError(stackTrace[i].getClassName()+"."+
+											stackTrace[i].getMethodName()+" / "+
+											stackTrace[i].getFileName()+":"+
+											stackTrace[i].getLineNumber());
+			}
+		} catch (FieldException e) {
+			ErrorList.instance.addError("Unable to complete actions successfully : "+
+										e.getMessage());
+			StackTraceElement[] stackTrace = e.getStackTrace();
+			ErrorList.instance.addError("Stack = ");
+			for(int i=0; i<stackTrace.length; i++){
+				ErrorList.instance.addError(stackTrace[i].getClassName()+"."+
+											stackTrace[i].getMethodName()+" / "+
+											stackTrace[i].getFileName()+":"+
+											stackTrace[i].getLineNumber());
+			}
 		}
 	}
 

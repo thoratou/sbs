@@ -58,7 +58,7 @@ public class FieldPath {
 		return fieldString.getOriginalString();
 	}
 	
-	public String getString(EnvironmentVariables additionalVars) {
+	public String getString(EnvironmentVariables additionalVars) throws FieldException {
 		String ret = fieldString.getString(additionalVars);
 		if(ret == null)
 			return null;
@@ -69,15 +69,15 @@ public class FieldPath {
 		return ret;
 	}
 
-	public String getString(){
+	public String getString() throws FieldException{
 		return getString(null);
 	}
 	
-	public String getCMakeString(EnvironmentVariables additionalVars){
+	public String getCMakeString(EnvironmentVariables additionalVars) throws FieldException{
 		return getString(additionalVars).replaceAll(" ", "\\\\ ");
 	}
 	
-	public String getCMakeString(){
+	public String getCMakeString() throws FieldException{
 		return getCMakeString(null);
 	}
 

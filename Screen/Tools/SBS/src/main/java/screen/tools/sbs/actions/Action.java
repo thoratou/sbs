@@ -24,6 +24,7 @@ package screen.tools.sbs.actions;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * Common interface to SBS Actions.
@@ -36,8 +37,9 @@ public interface Action {
 	/**
 	 * Abstract method called to perform an action.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	void perform() throws ContextException;
+	void perform() throws ContextException, FieldException;
 	
 	/**
 	 * Abstract method called to register the current context.

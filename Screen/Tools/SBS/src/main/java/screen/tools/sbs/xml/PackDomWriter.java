@@ -34,17 +34,18 @@ import org.jdom.output.XMLOutputter;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.objects.TinyPack;
+import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldString;
 
 public class PackDomWriter {
 
-	private final ContextHandler contextHandler;
+	//private final ContextHandler contextHandler;
 
 	public PackDomWriter(ContextHandler contextHandler) {
-		this.contextHandler = contextHandler;
+		//this.contextHandler = contextHandler;
 	}
 
-	public void write(TinyPack pack, String path, String file) {
+	public void write(TinyPack pack, String path, String file) throws FieldException {
 		Element root = new Element("pack");
 		Document document = new Document(root);
 		
@@ -54,38 +55,26 @@ public class PackDomWriter {
 		writeDom(document,path,file);
 	}
 
-	private void writeProperties(ProjectProperties properties, Element root) {
+	private void writeProperties(ProjectProperties properties, Element root) throws FieldException {
 		FieldString name = properties.getName();
 		FieldString version = properties.getVersion();
 		FieldString buildType = properties.getBuildType();
+				
+		Element propertiesElt = new Element("properties");
+
+		Element nameElt = new Element("name");
+		nameElt.setText(name.getString());
+		propertiesElt.addContent(nameElt);
 		
-		boolean nameValid = name.isValid();
-		boolean versionValid = version.isValid();
-		boolean buildTypeValid = buildType.isValid();
+		Element versionElt = new Element("version");
+		versionElt.setText(version.getString());
+		propertiesElt.addContent(versionElt);
 		
-		if(nameValid || versionValid || buildTypeValid){
-			Element propertiesElt = new Element("properties");
-			
-			if(nameValid){
-				Element nameElt = new Element("name");
-				nameElt.setText(name.getString());
-				propertiesElt.addContent(nameElt);
-			}
-			
-			if(versionValid){
-				Element versionElt = new Element("version");
-				versionElt.setText(version.getString());
-				propertiesElt.addContent(versionElt);
-			}
-			
-			if(buildTypeValid){
-				Element buildTypeElt = new Element("buildtype");
-				buildTypeElt.setText(buildType.getString());
-				propertiesElt.addContent(buildTypeElt);
-			}
-			
-			root.addContent(propertiesElt);
-		}
+		Element buildTypeElt = new Element("buildtype");
+		buildTypeElt.setText(buildType.getString());
+		propertiesElt.addContent(buildTypeElt);
+	
+		root.addContent(propertiesElt);
 	}
 
 	private void writeDom(Document document, String path, String file) {

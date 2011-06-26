@@ -27,9 +27,9 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldBuildType.Type;
+import screen.tools.sbs.utils.FieldException;
 
 /**
  * set BUILD_SHARED_LIBS
@@ -42,20 +42,16 @@ import screen.tools.sbs.utils.FieldBuildType.Type;
  */
 public class CMakeBuildTypeWriter implements CMakeSegmentWriter{
 	/**
+	 * @throws FieldException 
 	 * @see screen.tools.sbs.cmake.CMakeSegmentWriter#write(screen.tools.sbs.cmake.CMakePack, java.io.Writer)
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
-			throws IOException {
+			throws IOException, FieldException {
 		FieldBuildType typeInst = cmakePack.getBuildType();
-		if(typeInst.isValid()){
-			FieldBuildType.Type type = typeInst.get();
-			if(type != Type.EXECUTABLE){
-				String on = (type == Type.SHARED_LIBRARY ? "ON" : "OFF");
-				cmakeListsWriter.write("SET(BUILD_SHARED_LIBS "+on+")\n");
-			}
-		}
-		else{
-			ErrorList.instance.addError("invalid build type");
+		FieldBuildType.Type type = typeInst.get();
+		if(type != Type.EXECUTABLE){
+			String on = (type == Type.SHARED_LIBRARY ? "ON" : "OFF");
+			cmakeListsWriter.write("SET(BUILD_SHARED_LIBS "+on+")\n");
 		}
 	}
 }
