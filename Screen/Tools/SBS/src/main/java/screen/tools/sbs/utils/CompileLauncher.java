@@ -52,11 +52,10 @@ public class CompileLauncher {
 		else
 			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
-		if(!variables.contains("COMPILE_COMMAND")){
-			ErrorList.instance.addError("undefined variable : COMPILE_COMMAND");
-		}
-		String compileCommand = variables.getValue("COMPILE_COMMAND");
-		
+		FieldString fieldCompileCommand = variables.getFieldString("COMPILE_COMMAND");
+		if(!fieldCompileCommand.isValid()) return;
+		String compileCommand = fieldCompileCommand.getString();
+
         try {
         	String[] cmd = compileCommand.split(" ");
         	//Logger.info("command : "+command);

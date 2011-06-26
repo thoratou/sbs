@@ -82,11 +82,11 @@ public class SBSDomDataFiller {
 	public void fill(Document doc, boolean isTest) throws ContextException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-
-		isRelease = true;
-		if(variables.contains("_COMPILE_MODE")){
-			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
-		}
+		
+		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
+		if(!fieldCompileMode.isValid()) return;
+		String compileMode = fieldCompileMode.getString();
+		isRelease = "Release".equals(compileMode);
 		
 		Element root = doc.getRootElement();
 		
@@ -284,19 +284,17 @@ public class SBSDomDataFiller {
 					String packName = newDep.getName().getString();
 					String packVersion = newDep.getVersion().getString();
 					
-					if(!variables.contains("ENV_NAME")){
-						ErrorList.instance.addError("undefined variable : ENV_NAME");
-					}
-					String compiler = variables.getValue("ENV_NAME");
-					FieldString compilerField = new FieldString(compiler);
+					FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
+					if(!fieldEnvName.isValid()) return;
+					String envName = fieldEnvName.getString();
 					
-					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), compilerField);
+					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), fieldEnvName);
 					RepositoryFilter retrieved = finder.retrieve(contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable());
 					if(retrieved == null){
 						ErrorList.instance.addError("Unable to retrieve component into repositories :\n"+
 									"- component name : "+packName+"\n"+
 									"- component version : "+packVersion+"\n"+
-									"- compiler : "+compiler);
+									"- compiler : "+envName);
 						return;
 					}
 					String fullPath = retrieved.getData().getPath().getString()+"/"+packName+"/"+packVersion;
@@ -378,13 +376,7 @@ public class SBSDomDataFiller {
 		}
 	}
 		
-	void processDescriptions(Element root, Pack pack, FieldPath xmlPath) throws ContextException{
-		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		boolean isRelease = true;
-		if(variables.contains("_COMPILE_MODE")){
-			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
-		}
-		
+	void processDescriptions(Element root, Pack pack, FieldPath xmlPath) throws ContextException{		
 		//descriptions
 		Logger.debug("descriptions");
 		List<?> descRoot = root.getChildren("descriptions");
@@ -425,13 +417,7 @@ public class SBSDomDataFiller {
 		}
 	}
 	
-	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {
-		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		boolean isRelease = true;
-		if(variables.contains("_COMPILE_MODE")){
-			isRelease = "Release".equals(variables.getValue("_COMPILE_MODE"));
-		}
-		
+	private void processImports(Element root, Pack pack, FieldPath xmlPath) throws ContextException {		
 		//descriptions
 		Logger.debug("imports");
 		List<?> importRoot = root.getChildren("imports");

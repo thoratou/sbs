@@ -107,43 +107,37 @@ public class SBSCMakeFileGenerator {
 	private void retrieveContext() throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
-		//repoRoot
-		if(!variables.contains("REPOSITORY_ROOT")){
-			ErrorList.instance.addError("undefined variable : REPOSITORY_ROOT");
-		}
-		repoRoot = variables.getValue("REPOSITORY_ROOT");
+		//repository root
+		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
+		if(!fieldRepoRoot.isValid()) return;
+		repoRoot = fieldRepoRoot.getString();
 		
+		//env name
+		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
+		if(!fieldEnvName.isValid()) return;
+		envName = fieldEnvName.getString();
+
 		//compile mode
-		if(!variables.contains("_COMPILE_MODE")){
-			ErrorList.instance.addError("Internal error : undefined variable : _COMPILE_MODE");
-		}
-		compileMode = variables.getValue("_COMPILE_MODE");
-		
-		//envName
-		if(!variables.contains("ENV_NAME")){
-			ErrorList.instance.addError("undefined variable : ENV_NAME");
-		}
-		envName = variables.getValue("ENV_NAME");
+		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
+		if(!fieldCompileMode.isValid()) return;
+		compileMode = fieldCompileMode.getString();
 		
 		//compile flags
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
-		if(!variables.contains(flagVar)){
-			ErrorList.instance.addError("undefined variable : "+flagVar);
-		}
-		String flagString = variables.getValue(flagVar);
+		FieldString fieldFlag = variables.getFieldString(flagVar);
+		if(!fieldFlag.isValid()) return;
+		String flagString = fieldFlag.getString();
 		flags = flagString.split(" ");
 		
 		//default paths
 		if(Utilities.isLinux()){
-			if(!variables.contains("DEFAULT_INCLUDE_PATH")){
-				ErrorList.instance.addError("undefined variable : DEFAULT_INCLUDE_PATH");
-			}
-			defaultIncludePath = variables.getValue("DEFAULT_INCLUDE_PATH");
+			FieldString fieldIncludePath = variables.getFieldString("DEFAULT_INCLUDE_PATH");
+			if(!fieldIncludePath.isValid()) return;
+			defaultIncludePath = fieldIncludePath.getString();
 			
-			if(!variables.contains("DEFAULT_LIB_PATH")){
-				ErrorList.instance.addError("undefined variable : DEFAULT_LIB_PATH");
-			}
-			defaultLibPath = variables.getValue("DEFAULT_LIB_PATH");
+			FieldString fieldLibPath = variables.getFieldString("DEFAULT_LIB_PATH");
+			if(!fieldLibPath.isValid()) return;
+			defaultLibPath = fieldLibPath.getString();
 		}
 		
 		//pack properties		

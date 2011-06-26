@@ -34,10 +34,12 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.repositories.RepositoryParser;
+import screen.tools.sbs.utils.FieldString;
 
 /**
  * Action to load local or global configuration.
@@ -56,7 +58,11 @@ public class ActionConfigurationLoad implements Action {
 	 * @throws ContextException 
 	 */
 	public void perform() throws ContextException {
-		String root = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().getValue("SBS_ROOT");
+		EnvironmentVariables environmentVariables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
+		FieldString fieldRoot = environmentVariables.getFieldString("SBS_ROOT");
+		if(!fieldRoot.isValid()) return;
+		String root = fieldRoot.getString();
+		
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		//searches local .sbsconfig
@@ -99,10 +105,8 @@ public class ActionConfigurationLoad implements Action {
 		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
 		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
 		
-		String sbsRoot = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().getValue("SBS_ROOT");
-		
 		RepositoryParser parser = new RepositoryParser(
-									new File(sbsRoot+"/repositories/repositories.xml"),
+									new File(root+"/repositories/repositories.xml"),
 									repositoryDataTable,
 									repositoryFilterTable);
 		parser.fill();

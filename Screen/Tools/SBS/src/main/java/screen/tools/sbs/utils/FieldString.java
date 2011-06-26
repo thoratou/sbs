@@ -114,17 +114,28 @@ public class FieldString {
 			else{
 				String var = originalString.substring(returnedIndex+2, endVarIndex);
 				Logger.debug("var : "+var);
-				if(additionalVars.contains(var)){
-					String value = additionalVars.getValue(var,additionalVars);
-					Logger.debug("var value : "+value);
-					finalString = finalString.concat(value);
+				boolean stringOK = false;
+				if(!stringOK)
+				{
+					FieldString fieldString = additionalVars.getFieldString(var);
+					if(fieldString.isValid(additionalVars)){
+						String value = fieldString.getString(additionalVars);
+						Logger.debug("var value : "+value);
+						finalString = finalString.concat(value);
+						stringOK = true;
+					}
 				}
-				else if(env.contains(var)){
-					String value = env.getValue(var,additionalVars);
-					Logger.debug("var value : "+value);
-					finalString = finalString.concat(value);
+				if(!stringOK)
+				{
+					FieldString fieldString = env.getFieldString(var);
+					if(fieldString.isValid(additionalVars)){
+						String value = fieldString.getString(additionalVars);
+						Logger.debug("var value : "+value);
+						finalString = finalString.concat(value);
+						stringOK = true;
+					}
 				}
-				else {
+				if(!stringOK){
 					ErrorList.instance.addError("undefined variable : "+var);
 					isValid = false;
 				}

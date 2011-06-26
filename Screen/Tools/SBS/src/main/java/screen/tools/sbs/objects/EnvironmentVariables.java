@@ -64,21 +64,28 @@ public class EnvironmentVariables {
 		variableTable.put(variable, new FieldString(value));
 	}
 	
+	@Deprecated
 	public boolean contains (String variable){
 		if(!variableTable.containsKey(variable))
 			return false;
 		return getFieldString(variable).getOriginalString() != null;
 	}
 	
+	@Deprecated
 	public String getValue(String variable){
 		return variableTable.get(variable).getString();
 	}
 	
+	@Deprecated
 	public String getValue(String variable, EnvironmentVariables addVars){
 		return variableTable.get(variable).getString(addVars);
 	}
 	
 	public FieldString getFieldString(String variable){
-		return variableTable.get(variable);
+		FieldString fieldString = variableTable.get(variable);
+		if(fieldString == null){
+			fieldString = new FieldString();
+		}
+		return fieldString;
 	}
 }

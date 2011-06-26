@@ -50,61 +50,55 @@ public class ExecLauncher {
 	public void launch() throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
-		if(!variables.contains("REPOSITORY_ROOT")){
-			ErrorList.instance.addError("undefined variable : REPOSITORY_ROOT");
-		}
-		String repoRoot = variables.getValue("REPOSITORY_ROOT");
+		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
+		if(!fieldRepoRoot.isValid()) return;
+		String repoRoot = fieldRepoRoot.getString();
 		
-		if(!variables.contains("ENV_NAME")){
-			ErrorList.instance.addError("undefined variable : ENV_NAME");
-		}
-		String envName = variables.getValue("ENV_NAME");
+		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
+		if(!fieldEnvName.isValid()) return;
+		String envName = fieldEnvName.getString();
 
-		if(!variables.contains("_COMPILE_MODE")){
-			ErrorList.instance.addError("undefined variable : _COMPILE_MODE");
-		}
-		String compileMode = variables.getValue("_COMPILE_MODE");
+		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
+		if(!fieldCompileMode.isValid()) return;
+		String compileMode = fieldCompileMode.getString();
 
 		String path = repoRoot+"/"+envName+"/"+compileMode;
 
-		if(!variables.contains("LAUNCH_COMMAND")){
-			ErrorList.instance.addError("undefined variable : LAUNCH_COMMAND");
-		}
-		
 		EnvironmentVariables addVars = new EnvironmentVariables();
 		addVars.put("EXE_NAME", pack.getProperties().getName().getString().replaceAll("/", ""));
 		addVars.put("EXE_VERSION", pack.getProperties().getVersion().getString());
-		String launchCommand = variables.getValue("LAUNCH_COMMAND",addVars);
+		FieldString launchCommand = variables.getFieldString("LAUNCH_COMMAND");
+		if(launchCommand.isValid(addVars)){		
+		    try {
+				List<String> command = new ArrayList<String>();
+				command.add(path+"/"+launchCommand.getString(addVars));
+		    	ProcessLauncher p = new ProcessLauncher();
+		    	
+		    	Logger.info(path);
+		    	Iterator<String> iterator = command.iterator();
+		    	while(iterator.hasNext()){
+		    		String next = iterator.next();
+		    		Logger.info(next);
+		    	}
+		    	
+		    	p.execute(command.toArray(new String[command.size()]),null,new File(path));
+				
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		
-        try {
-			List<String> command = new ArrayList<String>();
-			command.add(path+"/"+launchCommand);
-        	ProcessLauncher p = new ProcessLauncher();
-        	
-        	Logger.info(path);
-        	Iterator<String> iterator = command.iterator();
-        	while(iterator.hasNext()){
-        		String next = iterator.next();
-        		Logger.info(next);
-        	}
-        	
-        	p.execute(command.toArray(new String[command.size()]),null,new File(path));
-			
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-	        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            String s;
-	        while ((s = stdInput.readLine()) != null) {
-            	Logger.info(s);
-            }
-            while ((s = stdError.readLine()) != null) {
-            	ErrorList.instance.addError(s);
-            }
-            
-        }
-        catch (IOException e) {
-        	ErrorList.instance.addError(e.getMessage());
-        }
+		        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		
+		        String s;
+		        while ((s = stdInput.readLine()) != null) {
+		        	Logger.info(s);
+		        }
+		        while ((s = stdError.readLine()) != null) {
+		        	ErrorList.instance.addError(s);
+		        }
+		        
+		    }
+		    catch (IOException e) {
+		    	ErrorList.instance.addError(e.getMessage());
+		    }
+		}
 	}
 }

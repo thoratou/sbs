@@ -35,6 +35,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessLauncher;
 
@@ -54,35 +55,27 @@ public class SBSCMakeLauncher {
 	public void launch(String sbsXmlPath) throws ContextException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
-		if(!variables.contains("TARGET_ENV")){
-			ErrorList.instance.addError("undefined variable : TARGET_ENV");
-		}
-		if(!variables.contains("MAKE_PROGRAM")){
-			ErrorList.instance.addError("undefined variable : MAKE_PROGRAM");
-		}
-		if(!variables.contains("C_COMPILER")){
-			ErrorList.instance.addError("undefined variable : C_COMPILER");
-		}
-		if(!variables.contains("CPP_COMPILER")){
-			ErrorList.instance.addError("undefined variable : CPP_COMPILER");
-		}
+		FieldString fieldTargetEnv = variables.getFieldString("TARGET_ENV");
+		fieldTargetEnv.isValid();
+		FieldString fieldMakeProg = variables.getFieldString("MAKE_PROGRAM");
+		fieldMakeProg.isValid();
+		FieldString fieldCCompiler = variables.getFieldString("C_COMPILER");
+		fieldCCompiler.isValid();
+		FieldString fieldCppCompiler = variables.getFieldString("CPP_COMPILER");
+		fieldCppCompiler.isValid();
 		
 		if(ErrorList.instance.hasErrors())
 			return;
 		
-		String targetEnv = variables.getValue("TARGET_ENV");
-		String makeProg = variables.getValue("MAKE_PROGRAM");
-		makeProg = (makeProg == null) ? "" : makeProg;
-		String cCompiler = variables.getValue("C_COMPILER");
-		cCompiler = (cCompiler == null) ? "" : cCompiler;
-		String cppCompiler = variables.getValue("CPP_COMPILER");
-		cppCompiler = (cppCompiler == null) ? "" : cppCompiler;
+		String targetEnv = fieldTargetEnv.getString();
+		String makeProg = fieldMakeProg.getString();
+		String cCompiler = fieldCCompiler.getString();
+		String cppCompiler = fieldCppCompiler.getString();
 		
 		if("/".equals(sbsXmlPath))
 			sbsXmlPath=".";
 		
         try {
-
 			List<String> command = new ArrayList<String>();
 			command.add("cmake");
 			command.add(".");
