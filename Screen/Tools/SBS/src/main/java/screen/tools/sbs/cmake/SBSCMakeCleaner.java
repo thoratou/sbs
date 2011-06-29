@@ -51,7 +51,7 @@ public class SBSCMakeCleaner {
 	    	String root = System.getProperty("SBS_ROOT");
 	    	
 	    	if(Utilities.isWindows())
-	    		command = new String[]{"cmd.exe", "/C", "/Q", "/E:off", root+"/clean.bat"};
+	    		command = new String[]{"cmd.exe", "/C", root+"\\clean.bat"};
 	    	else if(Utilities.isLinux())
 	    		command = new String[]{"/bin/sh", root+"/clean.sh"};
 	    	

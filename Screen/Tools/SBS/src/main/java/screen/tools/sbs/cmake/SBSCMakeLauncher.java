@@ -27,7 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.json.simple.JSONObject;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -36,6 +40,7 @@ import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.utils.FieldJSONObject;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessLauncher;
@@ -61,11 +66,11 @@ public class SBSCMakeLauncher {
 		FieldString fieldCCompiler = variables.getFieldString("C_COMPILER");
 		FieldString fieldCppCompiler = variables.getFieldString("CPP_COMPILER");
 		FieldString fieldRcCompiler = variables.getFieldString("RC_COMPILER");
+		
+		FieldString fieldAddVarSetString = variables.getFieldString("CMAKE_ADD_VAR_SET");
+		FieldJSONObject fieldAddVarSet = new FieldJSONObject(fieldAddVarSetString);
 				
 		String targetEnv = fieldTargetEnv.getString();
-		String makeProg = fieldMakeProg.getString();
-		String cCompiler = fieldCCompiler.getString();
-		String cppCompiler = fieldCppCompiler.getString();
 		
 		if("/".equals(sbsXmlPath))
 			sbsXmlPath=".";
@@ -76,17 +81,64 @@ public class SBSCMakeLauncher {
 			command.add(".");
 			command.add("-G");
 			command.add(targetEnv);
-        	if(!makeProg.equals(""))
-        		command.add("-DCMAKE_MAKE_PROGRAM=\""+makeProg+"\"");
-        	if(!cCompiler.equals(""))
-        		command.add("-DCMAKE_C_COMPILER=\""+cCompiler+"\"");
-        	if(!cppCompiler.equals(""))
-        		command.add("-DCMAKE_CXX_COMPILER=\""+cppCompiler+"\"");
+        	
+        	if(!fieldMakeProg.isEmpty()){
+        		String makeProg = fieldMakeProg.getString();
+				if(!makeProg.equals(""))
+	        		command.add("-DCMAKE_MAKE_PROGRAM=\""+makeProg+"\"");
+			}
+        	
+        	if(!fieldCCompiler.isEmpty()){
+        		String cCompiler = fieldCCompiler.getString();
+	        	if(!cCompiler.equals(""))
+	        		command.add("-DCMAKE_C_COMPILER=\""+cCompiler+"\"");
+        	}
+        	
+        	if(!fieldCppCompiler.isEmpty()){
+        		String cppCompiler = fieldCppCompiler.getString();
+		    	if(!cppCompiler.equals(""))
+		    		command.add("-DCMAKE_CXX_COMPILER=\""+cppCompiler+"\"");
+		    }
+        	
         	if(!fieldRcCompiler.isEmpty()){
         		String rcCompiler = fieldRcCompiler.getString();
             	if(!rcCompiler.equals(""))
             		command.add("-DCMAKE_RC_COMPILER=\""+rcCompiler+"\"");        		
         	}
+        	
+        	if(!fieldAddVarSet.isEmpty()){
+        		JSONObject jsonObject = fieldAddVarSet.getJSONObject();
+        		Set<?> keySet = jsonObject.keySet();			
+        		Iterator<?> iterator = keySet.iterator();			
+        		while(iterator.hasNext()){
+					Object next = iterator.next();
+					if(next instanceof String){
+						String key = (String) next;
+						Object object = jsonObject.get(key);
+						if(object == null){
+							command.add("-D"+key);
+						}
+						if(object instanceof String){
+							String value = (String)object;
+							command.add("-D"+key+"=\""+value+"\"");							
+						}
+						else if(object instanceof Number){
+							Number value = (Number)object;
+							command.add("-D"+key+"="+value);							
+						}
+					}
+        		}
+			}
+        	
+        	StringBuffer buffer = new StringBuffer();
+        	Iterator<String> iterator = command.iterator();
+        	while(iterator.hasNext()){
+        		buffer.append(iterator.next());
+        		if(iterator.hasNext())
+        			buffer.append(" ");
+        	}
+        	Logger.info("Cmake command : ");
+        	Logger.info(buffer.toString());
 
 			String [] cmd = new String[command.size()];
         	//Logger.info("command : "+command);
