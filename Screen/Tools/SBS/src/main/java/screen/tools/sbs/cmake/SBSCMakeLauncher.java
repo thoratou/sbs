@@ -60,6 +60,7 @@ public class SBSCMakeLauncher {
 		FieldString fieldMakeProg = variables.getFieldString("MAKE_PROGRAM");
 		FieldString fieldCCompiler = variables.getFieldString("C_COMPILER");
 		FieldString fieldCppCompiler = variables.getFieldString("CPP_COMPILER");
+		FieldString fieldRcCompiler = variables.getFieldString("RC_COMPILER");
 				
 		String targetEnv = fieldTargetEnv.getString();
 		String makeProg = fieldMakeProg.getString();
@@ -81,6 +82,11 @@ public class SBSCMakeLauncher {
         		command.add("-DCMAKE_C_COMPILER=\""+cCompiler+"\"");
         	if(!cppCompiler.equals(""))
         		command.add("-DCMAKE_CXX_COMPILER=\""+cppCompiler+"\"");
+        	if(!fieldRcCompiler.isEmpty()){
+        		String rcCompiler = fieldRcCompiler.getString();
+            	if(!rcCompiler.equals(""))
+            		command.add("-DCMAKE_RC_COMPILER=\""+rcCompiler+"\"");        		
+        	}
 
 			String [] cmd = new String[command.size()];
         	//Logger.info("command : "+command);
