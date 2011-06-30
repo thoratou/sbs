@@ -58,25 +58,56 @@ public class CompileLauncher {
         try {
         	String[] cmd = compileCommand.split(" ");
         	//Logger.info("command : "+command);
-        	ProcessLauncher p = new ProcessLauncher();
+        	final ProcessLauncher p = new ProcessLauncher();
 			p.execute(cmd,null,new File(path));
 			
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	Thread outThread = new Thread() {
+	    		public void run() {
+	    			try {
+	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    				String line = "";
+	    				try {
+	    					while((line = reader.readLine()) != null) {
+	    			        	Logger.info(line);
+	    					}
+	    				} finally {
+	    					reader.close();
+	    				}
+	    			} catch(IOException e) {
+	    	        	ErrorList.instance.addError(e.getMessage());
+	    			}
+	    		}
+	    	};
+	
+	    	Thread errThread = new Thread() {
+	    		public void run() {
+	    			try {
+	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	    				String line = "";
+	    				try {
+	    					while((line = reader.readLine()) != null) {
+	    		            	if(line.contains("Creating library file"))
+	    		            		//Wascana and MSYS log error just for .a files associated to a .dll
+	    		            		Logger.info(line);
+	    		            	else{
+		    						Logger.error(line);
+		    			        	ErrorList.instance.addError(line);
+	    		            	}
+	    					}
+	    				} finally {
+	    					reader.close();
+	    				}
+	    			} catch(IOException e) {
+	    	        	ErrorList.instance.addError(e.getMessage());
+	    			}
+	    		}
+	    	};
+	    	
+	    	outThread.start();
+	    	errThread.start();
+	    	
+	    	while(outThread.isAlive() || errThread.isAlive());
 
-	        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            String s;
-	        while ((s = stdInput.readLine()) != null) {
-            	Logger.info(s);
-            }
-            while ((s = stdError.readLine()) != null) {
-            	if(s.contains("Creating library file"))
-            		//Wascana and MSYS log error just for .a files associated to a .dll
-            		Logger.info(s);
-            	else
-            		ErrorList.instance.addError(s);
-            }
-            
         }
         catch (IOException e) {
         	ErrorList.instance.addError(e.getMessage());

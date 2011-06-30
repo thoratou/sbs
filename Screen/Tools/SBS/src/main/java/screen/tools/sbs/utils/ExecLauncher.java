@@ -68,7 +68,7 @@ public class ExecLauncher {
 	    try {
 			List<String> command = new ArrayList<String>();
 			command.add(path+"/"+launchCommand.getString(addVars));
-	    	ProcessLauncher p = new ProcessLauncher();
+	    	final ProcessLauncher p = new ProcessLauncher();
 	    	
 	    	Logger.info(path);
 	    	Iterator<String> iterator = command.iterator();
@@ -79,18 +79,47 @@ public class ExecLauncher {
 	    	
 	    	p.execute(command.toArray(new String[command.size()]),null,new File(path));
 			
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	Thread outThread = new Thread() {
+	    		public void run() {
+	    			try {
+	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    				String line = "";
+	    				try {
+	    					while((line = reader.readLine()) != null) {
+	    			        	Logger.info(line);
+	    					}
+	    				} finally {
+	    					reader.close();
+	    				}
+	    			} catch(IOException e) {
+	    	        	ErrorList.instance.addError(e.getMessage());
+	    			}
+	    		}
+	    	};
 	
-	        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-	
-	        String s;
-	        while ((s = stdInput.readLine()) != null) {
-	        	Logger.info(s);
-	        }
-	        while ((s = stdError.readLine()) != null) {
-	        	ErrorList.instance.addError(s);
-	        }
-	        
+	    	Thread errThread = new Thread() {
+	    		public void run() {
+	    			try {
+	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	    				String line = "";
+	    				try {
+	    					while((line = reader.readLine()) != null) {
+	    						Logger.error(line);
+	    			        	ErrorList.instance.addError(line);
+	    					}
+	    				} finally {
+	    					reader.close();
+	    				}
+	    			} catch(IOException e) {
+	    	        	ErrorList.instance.addError(e.getMessage());
+	    			}
+	    		}
+	    	};
+	    	
+	    	outThread.start();
+	    	errThread.start();
+	    	
+	    	while(outThread.isAlive() || errThread.isAlive());
 	    }
 	    catch (IOException e) {
 	    	ErrorList.instance.addError(e.getMessage());
