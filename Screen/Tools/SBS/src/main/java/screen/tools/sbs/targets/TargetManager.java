@@ -31,6 +31,7 @@ import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.targets.defaults.TargetBuild;
 import screen.tools.sbs.targets.defaults.TargetCheck;
 import screen.tools.sbs.targets.defaults.TargetClean;
+import screen.tools.sbs.targets.defaults.TargetCompile;
 import screen.tools.sbs.targets.defaults.TargetConfigure;
 import screen.tools.sbs.targets.defaults.TargetCreateComponent;
 import screen.tools.sbs.targets.defaults.TargetGenerate;
@@ -57,6 +58,7 @@ public class TargetManager {
 		registerTarget(new TargetCheck());
 		registerTarget(new TargetGenerate());
 		registerTarget(new TargetBuild());
+		registerTarget(new TargetCompile());
 		registerTarget(new TargetTest());
 		registerTarget(new TargetRun());
 		registerTarget(new TargetRepositories());
