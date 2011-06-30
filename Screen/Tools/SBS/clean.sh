@@ -7,4 +7,4 @@ rm cmake_install.cmake
 rm CMakeLists.txt
 
 #remove Linux Makefile
-rm Makefile
+#rm Makefile
