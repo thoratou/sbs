@@ -81,6 +81,7 @@ public class SBSCMakeLauncher {
 			command.add(".");
 			command.add("-G");
 			command.add(targetEnv);
+			command.add("--no-warn-unused-cli");
         	
         	if(!fieldMakeProg.isEmpty()){
         		String makeProg = fieldMakeProg.getString();
