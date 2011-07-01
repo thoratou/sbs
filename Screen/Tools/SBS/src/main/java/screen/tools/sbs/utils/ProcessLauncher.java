@@ -22,14 +22,10 @@
 
 package screen.tools.sbs.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-
-import screen.tools.sbs.objects.ErrorList;
 
 public class ProcessLauncher {
 
@@ -101,20 +97,5 @@ public class ProcessLauncher {
 		        }
 		    }
 		}.start();
-	}
-
-	public void processOutputs() throws IOException {
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(getInputStream()));
-        BufferedReader stdError = new BufferedReader(new InputStreamReader(getErrorStream()));
-
-        String s;
-		while ((s = stdInput.readLine()) != null) {
-			Logger.info(s);
-		}
-        while ((s = stdError.readLine()) != null) {
-        	ErrorList.instance.addError(s);
-        }		
-	}
-	
-	
+	}	
 }

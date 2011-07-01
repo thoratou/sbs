@@ -22,10 +22,7 @@
 
 package screen.tools.sbs.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,64 +62,29 @@ public class ExecLauncher {
 		addVars.put("EXE_NAME", pack.getProperties().getName().getString().replaceAll("/", ""));
 		addVars.put("EXE_VERSION", pack.getProperties().getVersion().getString());
 		FieldString launchCommand = variables.getFieldString("LAUNCH_COMMAND");
-	    try {
-			List<String> command = new ArrayList<String>();
-			command.add(path+"/"+launchCommand.getString(addVars));
-	    	final ProcessLauncher p = new ProcessLauncher();
-	    	
-	    	Logger.info(path);
-	    	Iterator<String> iterator = command.iterator();
-	    	while(iterator.hasNext()){
-	    		String next = iterator.next();
-	    		Logger.info(next);
-	    	}
-	    	
-	    	p.execute(command.toArray(new String[command.size()]),null,new File(path));
+	    List<String> command = new ArrayList<String>();
+		command.add(path+"/"+launchCommand.getString(addVars));
+		
+		Logger.debug(path);
+		Iterator<String> iterator = command.iterator();
+		while(iterator.hasNext()){
+			String next = iterator.next();
+			Logger.debug(next);
+		}
+
+		
+		new ProcessHandler() {
 			
-	    	Thread outThread = new Thread() {
-	    		public void run() {
-	    			try {
-	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    				String line = "";
-	    				try {
-	    					while((line = reader.readLine()) != null) {
-	    			        	Logger.info(line);
-	    					}
-	    				} finally {
-	    					reader.close();
-	    				}
-	    			} catch(IOException e) {
-	    	        	ErrorList.instance.addError(e.getMessage());
-	    			}
-	    		}
-	    	};
-	
-	    	Thread errThread = new Thread() {
-	    		public void run() {
-	    			try {
-	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-	    				String line = "";
-	    				try {
-	    					while((line = reader.readLine()) != null) {
-	    						Logger.error(line);
-	    			        	ErrorList.instance.addError(line);
-	    					}
-	    				} finally {
-	    					reader.close();
-	    				}
-	    			} catch(IOException e) {
-	    	        	ErrorList.instance.addError(e.getMessage());
-	    			}
-	    		}
-	    	};
-	    	
-	    	outThread.start();
-	    	errThread.start();
-	    	
-	    	while(outThread.isAlive() || errThread.isAlive());
-	    }
-	    catch (IOException e) {
-	    	ErrorList.instance.addError(e.getMessage());
-	    }
+			@Override
+			public void processOutLine(String line) {
+				Logger.info(line);					
+			}
+			
+			@Override
+			public void processErrLine(String line) {
+				Logger.error(line);
+		    	ErrorList.instance.addError(line);					
+			}
+		}.exec(command.toArray(new String[command.size()]),new File(path));
 	}
 }

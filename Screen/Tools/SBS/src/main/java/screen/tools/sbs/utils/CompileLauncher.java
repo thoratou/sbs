@@ -22,10 +22,7 @@
 
 package screen.tools.sbs.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -55,62 +52,25 @@ public class CompileLauncher {
 		FieldString fieldCompileCommand = variables.getFieldString("COMPILE_COMMAND");
 		String compileCommand = fieldCompileCommand.getString();
 
-        try {
-        	String[] cmd = compileCommand.split(" ");
-        	//Logger.info("command : "+command);
-        	final ProcessLauncher p = new ProcessLauncher();
-			p.execute(cmd,null,new File(path));
+        String[] cmd = compileCommand.split(" ");
+		
+		new ProcessHandler() {
 			
-	    	Thread outThread = new Thread() {
-	    		public void run() {
-	    			try {
-	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    				String line = "";
-	    				try {
-	    					while((line = reader.readLine()) != null) {
-	    			        	Logger.info(line);
-	    					}
-	    				} finally {
-	    					reader.close();
-	    				}
-	    			} catch(IOException e) {
-	    	        	ErrorList.instance.addError(e.getMessage());
-	    			}
-	    		}
-	    	};
-	
-	    	Thread errThread = new Thread() {
-	    		public void run() {
-	    			try {
-	    				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-	    				String line = "";
-	    				try {
-	    					while((line = reader.readLine()) != null) {
-	    		            	if(line.contains("Creating library file"))
-	    		            		//Wascana and MSYS log error just for .a files associated to a .dll
-	    		            		Logger.info(line);
-	    		            	else{
-		    						Logger.error(line);
-		    			        	ErrorList.instance.addError(line);
-	    		            	}
-	    					}
-	    				} finally {
-	    					reader.close();
-	    				}
-	    			} catch(IOException e) {
-	    	        	ErrorList.instance.addError(e.getMessage());
-	    			}
-	    		}
-	    	};
-	    	
-	    	outThread.start();
-	    	errThread.start();
-	    	
-	    	while(outThread.isAlive() || errThread.isAlive());
-
-        }
-        catch (IOException e) {
-        	ErrorList.instance.addError(e.getMessage());
-        }
+			@Override
+			public void processOutLine(String line) {
+				Logger.info(line);					
+			}
+			
+			@Override
+			public void processErrLine(String line) {
+		    	if(line.contains("Creating library file"))
+		    		//Wascana and MSYS log error just for .a files associated to a .dll
+		    		Logger.info(line);
+		    	else{
+					Logger.error(line);
+		        	ErrorList.instance.addError(line);
+		    	}
+			}
+		}.exec(cmd,new File(path));
 	}
 }
