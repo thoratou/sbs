@@ -79,7 +79,8 @@
                     <archive>
                         <manifest>
                             <mainClass>screen.tools.sbs.Main</mainClass>
-                            <addClasspath>false</addClasspath>
+                            <addClasspath>true</addClasspath>
+							<classpathPrefix>lib</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
