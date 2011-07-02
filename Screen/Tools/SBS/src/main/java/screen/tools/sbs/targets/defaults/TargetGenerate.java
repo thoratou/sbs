@@ -25,10 +25,8 @@ package screen.tools.sbs.targets.defaults;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionCMakeGenerate;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
-import screen.tools.sbs.actions.defaults.ActionPackCheck;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
 import screen.tools.sbs.actions.defaults.ActionTestCMakeGenerate;
-import screen.tools.sbs.actions.defaults.ActionTestPackCheck;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextException;
@@ -97,12 +95,10 @@ public class TargetGenerate implements Target {
 		actionManager.pushAction(new ActionXmlLoad());
 		if(optionIsTest.isMain()){
 			actionManager.pushAction(new ActionPackLoad());
-			actionManager.pushAction(new ActionPackCheck());
 			actionManager.pushAction(new ActionCMakeGenerate());
 		}
 		if(optionIsTest.isTest()){
 			actionManager.pushAction(new ActionTestPackLoad());
-			actionManager.pushAction(new ActionTestPackCheck());
 			actionManager.pushAction(new ActionTestCMakeGenerate());
 		}		
 	}

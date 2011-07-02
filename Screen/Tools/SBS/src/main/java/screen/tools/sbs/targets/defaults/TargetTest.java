@@ -25,7 +25,6 @@ package screen.tools.sbs.targets.defaults;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionTestLaunch;
-import screen.tools.sbs.actions.defaults.ActionTestPackCheck;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextException;
@@ -89,7 +88,6 @@ public class TargetTest implements Target {
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionXmlLoad());
 		actionManager.pushAction(new ActionTestPackLoad());
-		actionManager.pushAction(new ActionTestPackCheck());
 		actionManager.pushAction(new ActionTestLaunch());
 	}
 

@@ -71,62 +71,62 @@ public class ActionPackCheck implements Action {
 	 * @throws FieldException 
 	 */
 	public static void checkFields(Pack pack) throws FieldException{
-		Logger.debug("Properties :");
-		Logger.debug("pack = " + pack.getProperties().getName().getString());
-		Logger.debug("version = " + pack.getProperties().getVersion().getString());
-		Logger.debug("build = " + pack.getProperties().getBuildType().getString());
+		Logger.info("Properties :");
+		Logger.info("pack = " + pack.getProperties().getName().getString());
+		Logger.info("version = " + pack.getProperties().getVersion().getString());
+		Logger.info("build = " + pack.getProperties().getBuildType().getString());
 		
-		Logger.debug("Dependencies :");
+		Logger.info("Dependencies :");
 		List<Dependency> deps = pack.getDependencyList();
 		for (int i=0; i<deps.size(); i++){
-			Logger.debug("Dependency{");
+			Logger.info("Dependency{");
 			
 			Dependency dep = deps.get(i);
 			if(!dep.getName().isEmpty())
-				Logger.debug("    name = " + dep.getName().getString());
+				Logger.info("    name = " + dep.getName().getString());
 			if(!dep.getVersion().isEmpty())
-				Logger.debug("    version = " + dep.getVersion().getString());
+				Logger.info("    version = " + dep.getVersion().getString());
 			
 			List<FieldPath> incs = dep.getIncludePathList();
 			for(int j=0; j<incs.size(); j++){
-				Logger.debug("    include path = " + incs.get(j).getString());
+				Logger.info("    include path = " + incs.get(j).getString());
 			}
 			
 			List<FieldPath> libPaths = dep.getLibraryPathList();
 			for(int j=0; j<libPaths.size(); j++){
-				Logger.debug("    library path = " + libPaths.get(j).getString());
+				Logger.info("    library path = " + libPaths.get(j).getString());
 			}
 			
 			List<Library> libs = dep.getLibraryList();
 			for(int j=0; j<libs.size(); j++){
 				if(!libs.get(j).getName().isEmpty())
-					Logger.debug("    library name = " + libs.get(j).getName().getString());
+					Logger.info("    library name = " + libs.get(j).getName().getString());
 				if(!libs.get(j).getVersion().isEmpty())
-					Logger.debug("    library version = " + libs.get(j).getVersion().getString());
+					Logger.info("    library version = " + libs.get(j).getVersion().getString());
 			}
 			
-			Logger.debug("}");
+			Logger.info("}");
 		}
 		
-		Logger.debug("Flags :");
+		Logger.info("Flags :");
 		List<Flag> flags = pack.getFlagList();
 		for (int i=0; i<flags.size(); i++){
-			Logger.debug("Flag{");
-			Logger.debug("    flag = "+flags.get(i).getFlag().getString());
-			Logger.debug("    value = "+flags.get(i).getValue().getObject());
-			Logger.debug("}");
+			Logger.info("Flag{");
+			Logger.info("    flag = "+flags.get(i).getFlag().getString());
+			Logger.info("    value = "+flags.get(i).getValue().getObject());
+			Logger.info("}");
 		}
 		
-		Logger.debug("Descriptions :");
+		Logger.info("Descriptions :");
 		List<Description> descs = pack.getDescriptionList();
 		for (int i=0; i<descs.size(); i++){
-			Logger.debug("Description{");
-			Logger.debug("    name = "+descs.get(i).getName().getString());
-			Logger.debug("    compileName = "+descs.get(i).getCompileName().getString());
+			Logger.info("Description{");
+			Logger.info("    name = "+descs.get(i).getName().getString());
+			Logger.info("    compileName = "+descs.get(i).getCompileName().getString());
 			if(!descs.get(i).getFullName().isEmpty())
-			Logger.debug("    fullName = "+descs.get(i).getFullName().getString());
-			Logger.debug("    buildType = "+descs.get(i).getBuildType().getString());
-			Logger.debug("}");
+			Logger.info("    fullName = "+descs.get(i).getFullName().getString());
+			Logger.info("    buildType = "+descs.get(i).getBuildType().getString());
+			Logger.info("}");
 		}
 	}
 }

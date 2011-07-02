@@ -25,7 +25,6 @@ package screen.tools.sbs.targets.defaults;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionLaunch;
-import screen.tools.sbs.actions.defaults.ActionPackCheck;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextException;
@@ -88,7 +87,6 @@ public class TargetRun implements Target {
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionXmlLoad());
 		actionManager.pushAction(new ActionPackLoad());
-		actionManager.pushAction(new ActionPackCheck());
 		actionManager.pushAction(new ActionLaunch());
 	}
 
