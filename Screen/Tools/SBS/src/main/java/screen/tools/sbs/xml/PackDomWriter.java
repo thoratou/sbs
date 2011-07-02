@@ -41,7 +41,9 @@ import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.objects.TinyPack;
 import screen.tools.sbs.utils.FieldBuildMode;
+import screen.tools.sbs.utils.FieldBuildMode.Type;
 import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.FieldString;
 
@@ -183,9 +185,47 @@ public class PackDomWriter {
 		pathRoot.addContent(pathElt);
 	}
 	
-	private void writeFlags(List<Flag> flagList, Element root) {
-		// TODO Auto-generated method stub
+	private void writeFlags(List<Flag> flagList, Element root) throws FieldException {
+		if(!flagList.isEmpty()){
+			Element flagRoot = new Element("flags");
+			
+			Iterator<Flag> iterator = flagList.iterator();
+			while(iterator.hasNext()){
+				Flag next = iterator.next();
+				writeFlag(next,flagRoot);
+			}
+			root.addContent(flagRoot);
+		}
+	}
+
+	private void writeFlag(Flag flag, Element flagRoot) throws FieldException {
+		Element flagElt = new Element("flag");
 		
+		FieldString fieldFlag = flag.getFlag();
+		FieldObject fieldValue = flag.getValue();
+		FieldBuildMode fieldBuildMode = flag.getBuildMode();
+		
+		flagElt.setAttribute("flag",fieldFlag.getString());
+		
+		if(!fieldValue.isEmpty()){
+			Object value = fieldValue.getObject();			
+			if(value instanceof Number){
+				Number number = (Number) value;
+				flagElt.setAttribute("value",""+number);
+			}
+			else if(value instanceof String){
+				String string = (String) value;
+				flagElt.setAttribute("value",string);
+				flagElt.setAttribute("type","string");
+			}
+		}
+		
+		Type type = fieldBuildMode.get();
+		if(type != Type.ALL){
+			flagElt.setAttribute("config",fieldBuildMode.getAsString());
+		}
+		
+		flagRoot.addContent(flagElt);
 	}
 
 	private void writeDescriptions(List<Description> descriptionList,
