@@ -24,7 +24,6 @@ package screen.tools.sbs.utils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import screen.tools.sbs.context.ContextException;
@@ -65,13 +64,7 @@ public class ExecLauncher {
 	    List<String> command = new ArrayList<String>();
 		command.add(path+"/"+launchCommand.getString(addVars));
 		
-		Logger.debug(path);
-		Iterator<String> iterator = command.iterator();
-		while(iterator.hasNext()){
-			String next = iterator.next();
-			Logger.debug(next);
-		}
-
+		Logger.info(ProcessLauncher.getCommand(command));
 		
 		new ProcessHandler() {
 			

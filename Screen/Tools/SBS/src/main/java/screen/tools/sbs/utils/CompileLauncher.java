@@ -53,6 +53,7 @@ public class CompileLauncher {
 		String compileCommand = fieldCompileCommand.getString();
 
         String[] cmd = compileCommand.split(" ");
+        Logger.info(ProcessLauncher.getCommand(cmd));
 		
 		new ProcessHandler() {
 			

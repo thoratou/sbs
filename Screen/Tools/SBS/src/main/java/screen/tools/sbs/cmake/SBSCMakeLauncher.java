@@ -41,6 +41,7 @@ import screen.tools.sbs.utils.FieldJSONObject;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessHandler;
+import screen.tools.sbs.utils.ProcessLauncher;
 
 /**
  * Class to launch CMake to generate makefiles and environment files
@@ -128,15 +129,7 @@ public class SBSCMakeLauncher {
 			}
 		}
 		
-		StringBuffer buffer = new StringBuffer();
-		Iterator<String> iterator = command.iterator();
-		while(iterator.hasNext()){
-			buffer.append(iterator.next());
-			if(iterator.hasNext())
-				buffer.append(" ");
-		}
-		Logger.info("Cmake command : ");
-		Logger.info(buffer.toString());
+		Logger.info(ProcessLauncher.getCommand(command));
 
 		String [] cmd = new String[command.size()];
 		

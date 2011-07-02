@@ -26,19 +26,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.List;
 
 public class ProcessLauncher {
 
 	private Process process;
 	
 	public static String getCommand(String[] command){
-		String comStr = "";
+		StringBuffer buffer = new StringBuffer();
     	for(int i = 0; i<command.length; i++){
-    		comStr+=command[i];
+    		buffer.append(command[i]);
     		if(i+1<command.length)
-    			comStr+=" ";
+    			buffer.append(" ");
     	}
-		return comStr;
+		return buffer.toString();
+	}
+	
+	public static String getCommand(List<String> command){
+		StringBuffer buffer = new StringBuffer();
+		Iterator<String> iterator = command.iterator();
+		while(iterator.hasNext()){
+			buffer.append(iterator.next());
+			if(iterator.hasNext())
+				buffer.append(" ");
+		}
+		return buffer.toString();
 	}
 	
 	public ProcessLauncher() {
