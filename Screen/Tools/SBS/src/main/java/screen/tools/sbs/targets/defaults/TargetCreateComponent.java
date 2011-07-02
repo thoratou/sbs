@@ -80,6 +80,7 @@ public class TargetCreateComponent implements Target {
 		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.TINY_PACK, new TinyPackContext());
+		contextHandler.addContext(ContextKeys.TINY_TEST_PACK, new TinyPackContext());
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		actionManager.setContext(contextHandler);

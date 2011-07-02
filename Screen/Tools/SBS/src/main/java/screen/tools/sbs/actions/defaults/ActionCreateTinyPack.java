@@ -59,8 +59,8 @@ public class ActionCreateTinyPack implements Action {
 		pack.getProperties().getName().setString(name);
 		pack.getProperties().getVersion().setString(version);
 		pack.getProperties().getBuildType().setString(buildType);
-		//GlobalSettings.getGlobalSettings().setPack(pack);
 		contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).setPack(pack);
+		contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).setPack(new TinyPack());
 	}
 	
 	public void setContext(ContextHandler contextHandler) {

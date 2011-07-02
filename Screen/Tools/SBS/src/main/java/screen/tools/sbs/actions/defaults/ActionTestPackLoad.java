@@ -57,7 +57,7 @@ public class ActionTestPackLoad implements Action {
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();
 		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,new FieldPath(path));
-		dataFiller.fill(doc,true);
+		dataFiller.fill(doc);
 		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);
 	}
 

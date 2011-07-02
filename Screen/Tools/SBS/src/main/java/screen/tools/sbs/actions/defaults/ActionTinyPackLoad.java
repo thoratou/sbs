@@ -56,9 +56,11 @@ public class ActionTinyPackLoad implements Action {
 		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		TinyPack pack = new TinyPack();
-		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler, pack,null,new FieldPath(path));
-		dataFiller.fill(doc,false);
+		TinyPack testPack = new TinyPack();
+		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler, pack,testPack,new FieldPath(path));
+		dataFiller.fill(doc);
 		contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).setPack(pack);
+		contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).setPack(testPack);
 	}
 
 	public void setContext(ContextHandler contextHandler) {

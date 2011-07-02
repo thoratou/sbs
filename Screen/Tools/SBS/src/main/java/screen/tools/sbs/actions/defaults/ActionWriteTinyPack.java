@@ -49,10 +49,11 @@ public class ActionWriteTinyPack implements Action {
 	 */
 	public void perform() throws ContextException, FieldException {
 		TinyPack pack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).getPack();
+		TinyPack testPack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).getPack();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();
 		PackDomWriter writer = new PackDomWriter(contextHandler);
-		writer.write(pack,path,file);
+		writer.write(pack,testPack,path,file);
 	}
 
 	public void setContext(ContextHandler contextHandler) {

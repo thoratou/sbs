@@ -55,7 +55,7 @@ public class PackDomWriter {
 		//this.contextHandler = contextHandler;
 	}
 
-	public void write(TinyPack pack, String path, String file) throws FieldException {
+	public void write(TinyPack pack, TinyPack testPack, String path, String file) throws FieldException {
 		Element root = new Element("pack");
 		Document document = new Document(root);
 		

@@ -79,7 +79,7 @@ public class SBSDomDataFiller {
 		this.testPack = testPack;
 	}
 	
-	public void fill(Document doc, boolean isTest) throws ContextException, FieldException{
+	public void fill(Document doc) throws ContextException, FieldException{
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();		
 		Element root = doc.getRootElement();
 		
@@ -114,26 +114,24 @@ public class SBSDomDataFiller {
 				pack.getProperties().setBuildType(new FieldString(propertyBuildType));
 			}
 			
-			if(isTest){
-				//test
-				List<?> test = root.getChildren("test");
-				Iterator<?> iterator = test.iterator();
-				while(iterator.hasNext()){
-					testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
-					testPack.getProperties().setVersion(new FieldString(propertyVersion));
-					testPack.getProperties().setBuildType(new FieldString("executable"));
-					FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
-					processDependencies((Element) iterator.next(), testPack, path);
-					
-					//descriptions
-					processDescriptions(root, testPack, path);
-					
-					//imports
-					processImports(root, testPack, path);
-				}
-			}
-			else{
-				processAll(root, pack, sbsXmlPath);
+			//main
+			processAll(root, pack, sbsXmlPath);
+
+			//test
+			List<?> test = root.getChildren("test");
+			Iterator<?> iterator = test.iterator();
+			while(iterator.hasNext()){
+				testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
+				testPack.getProperties().setVersion(new FieldString(propertyVersion));
+				testPack.getProperties().setBuildType(new FieldString("executable"));
+				FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
+				processDependencies((Element) iterator.next(), testPack, path);
+				
+				//descriptions
+				processDescriptions(root, testPack, path);
+				
+				//imports
+				processImports(root, testPack, path);
 			}
 			
 		} catch (JDOMException e) {
