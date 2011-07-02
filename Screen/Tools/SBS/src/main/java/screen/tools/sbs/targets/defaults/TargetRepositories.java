@@ -44,8 +44,8 @@ public class TargetRepositories implements Target {
 	private TargetHelper displayHelper;
 	private TargetHelper findHelper;
 	
-	private MandatoryPath mandatoryPath;
 	private MandatorySubTarget mandatorySubTarget;
+	private MandatoryPath mandatoryPath;
 	private OptionVoid optionVoid;
 	
 	public TargetRepositories() {
@@ -53,20 +53,20 @@ public class TargetRepositories implements Target {
 		displayHelper = new TargetHelper(getTargetCall());
 		findHelper = new TargetHelper(getTargetCall());
 		
-		mandatoryPath = new MandatoryPath();
 		mandatorySubTarget = new MandatorySubTarget();
+		mandatoryPath = new MandatoryPath();
 		
 		optionVoid = new OptionVoid();
 		
-		helper.addMandatory(mandatoryPath);
 		helper.addMandatory(mandatorySubTarget);
+		helper.addMandatory(mandatoryPath);
 		helper.addOption(optionVoid);
 
-		displayHelper.addMandatory(mandatoryPath);
 		displayHelper.addMandatory(mandatorySubTarget);
+		displayHelper.addMandatory(mandatoryPath);
 		
-		findHelper.addMandatory(mandatoryPath);
 		findHelper.addMandatory(mandatorySubTarget);
+		findHelper.addMandatory(mandatoryPath);
 	}
 	
 	public void registerActions(ActionManager actionManager,
