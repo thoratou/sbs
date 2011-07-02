@@ -24,6 +24,7 @@ package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionAddFlagsTinyPack;
+import screen.tools.sbs.actions.defaults.ActionAddFlagsTinyTestPack;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionTinyPackLoad;
 import screen.tools.sbs.actions.defaults.ActionWriteTinyPack;
@@ -115,7 +116,9 @@ public class TargetFlags implements Target {
 				
 			}
 			if(optionIsTest.isTest()){
-				
+				ActionAddFlagsTinyTestPack actionAddFlagsTinyTestPack = new ActionAddFlagsTinyTestPack();
+				actionAddFlagsTinyTestPack.setField(mandatoryField.getField());
+				actionManager.pushAction(actionAddFlagsTinyTestPack);				
 			}		
 			
 			actionManager.pushAction(new ActionWriteTinyPack());

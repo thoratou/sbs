@@ -125,7 +125,9 @@ public class SBSDomDataFiller {
 				testPack.getProperties().setVersion(new FieldString(propertyVersion));
 				testPack.getProperties().setBuildType(new FieldString("executable"));
 				FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
-				processDependencies((Element) iterator.next(), testPack, path);
+				Element next = (Element) iterator.next();
+				processDependencies(next, testPack, path);
+				processFlags(next,testPack,path);
 				
 				//descriptions
 				processDescriptions(root, testPack, path);

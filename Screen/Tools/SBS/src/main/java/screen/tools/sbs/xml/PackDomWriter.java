@@ -62,18 +62,42 @@ public class PackDomWriter {
 		ProjectProperties properties = pack.getProperties();
 		writeProperties(properties,root);
 		
-		List<Dependency> dependencyList = pack.getDependencyList();
-		writeDependencies(dependencyList,root);
+		//main
+		{
+			List<Dependency> dependencyList = pack.getDependencyList();
+			List<Description> descriptionList = pack.getDescriptionList();
+			List<Flag> flagList = pack.getFlagList();
+			if(!dependencyList.isEmpty() ||
+					!descriptionList.isEmpty() ||
+					!flagList.isEmpty()){
+				Element main = new Element("main");
+				
+				writeDependencies(dependencyList,main);
+				writeDescriptions(descriptionList,main);
+				writeFlags(flagList,main);
+				
+				root.addContent(main);
+			}
+		}
 		
-		List<Description> descriptionList = pack.getDescriptionList();
-		writeDescriptions(descriptionList,root);
-		
-		List<Flag> flagList = pack.getFlagList();
-		writeFlags(flagList,root);
-		
-		//List<Import> importList = pack.getImportList();
-		//writeImports(importList,root);
-		
+		//test
+		{
+			List<Dependency> dependencyList = testPack.getDependencyList();
+			List<Description> descriptionList = testPack.getDescriptionList();
+			List<Flag> flagList = testPack.getFlagList();
+			if(!dependencyList.isEmpty() ||
+					!descriptionList.isEmpty() ||
+					!flagList.isEmpty()){
+				Element test = new Element("test");
+				
+				writeDependencies(dependencyList,test);
+				writeDescriptions(descriptionList,test);
+				writeFlags(flagList,test);
+				
+				root.addContent(test);
+			}
+		}
+				
 		writeDom(document,path,file);
 	}
 
