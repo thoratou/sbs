@@ -71,7 +71,6 @@ public class SBSDomDataFiller {
 	private String propertyName;
 	private String propertyVersion;
 	private String propertyBuildType;
-	private boolean isRelease;
 	
 	public SBSDomDataFiller(ContextHandler contextHandler, Pack pack, Pack testPack, FieldPath sbsXmlPath) {
 		this.contextHandler = contextHandler;
@@ -81,13 +80,7 @@ public class SBSDomDataFiller {
 	}
 	
 	public void fill(Document doc, boolean isTest) throws ContextException, FieldException{
-		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();
-		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		
-		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		String compileMode = fieldCompileMode.getString();
-		isRelease = "Release".equals(compileMode);
-		
+		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();		
 		Element root = doc.getRootElement();
 		
 		try {
@@ -222,8 +215,7 @@ public class SBSDomDataFiller {
 						if(buildMode!=null)
 							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
 						
-						if(fieldPath.getBuildMode().isSameMode(isRelease))
-							newDep.addIncludePath(fieldPath);
+						newDep.addIncludePath(fieldPath);
 					}
 				}
 				
@@ -254,8 +246,7 @@ public class SBSDomDataFiller {
 						if(buildMode!=null)
 							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
 						
-						if(fieldPath.getBuildMode().isSameMode(isRelease))
-							newDep.addLibraryPath(fieldPath);
+						newDep.addLibraryPath(fieldPath);
 					}
 					List<?> libs = libsRootNext.getChildren("lib");
 					Iterator<?> libsIterator = libs.iterator();
@@ -368,8 +359,7 @@ public class SBSDomDataFiller {
 				if(buildMode!=null)
 					flag.setBuildMode(new FieldBuildMode(buildMode));
 				
-				if(flag.getBuildMode().isSameMode(isRelease))
-					pack.addFlag(flag);
+				pack.addFlag(flag);
 			}
 		}
 	}
@@ -410,8 +400,7 @@ public class SBSDomDataFiller {
 					description.setBuildMode(buildMode);
 				Logger.debug("\t\t\tbuild : "+buildMode);
 
-				if(description.getBuildMode().isSameMode(isRelease))
-					pack.addDescription(description);
+				pack.addDescription(description);
 			}
 		}
 	}
@@ -448,19 +437,27 @@ public class SBSDomDataFiller {
 				FieldFile fieldFile = pType.getFieldFile(xmlPath.getOriginalString(), file);
 				import_.setFile(fieldFile);
 				
-				if(import_.getBuildMode().isSameMode(isRelease) && !(pack instanceof TinyPack)){
-					String file2 = import_.getFile().getString();
-					File importFile = new File(file2);
-					if(importFile.exists()){
-						//if component.xml exists, retrieve contents into pack
-						Document doc = SBSDomParser.parserFile(importFile);
-						Element root2 = doc.getRootElement();
-						Logger.debug("import "+file2);
-						
-						processAll(root2, pack, new FieldPath(importFile.getParent()));
-					}
-					else{
-						
+				if(!(pack instanceof TinyPack)){
+					EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
+					
+					FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
+					String compileMode = fieldCompileMode.getString();
+					boolean isRelease = "Release".equals(compileMode);
+	
+					if(import_.getBuildMode().isSameMode(isRelease)){
+						String file2 = import_.getFile().getString();
+						File importFile = new File(file2);
+						if(importFile.exists()){
+							//if component.xml exists, retrieve contents into pack
+							Document doc = SBSDomParser.parserFile(importFile);
+							Element root2 = doc.getRootElement();
+							Logger.debug("import "+file2);
+							
+							processAll(root2, pack, new FieldPath(importFile.getParent()));
+						}
+						else{
+							
+						}
 					}
 				}
 			}
