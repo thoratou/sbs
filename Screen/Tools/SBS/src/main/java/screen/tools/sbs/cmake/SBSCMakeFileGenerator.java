@@ -126,10 +126,16 @@ public class SBSCMakeFileGenerator {
 		compileMode = fieldCompileMode.getString();
 		
 		//compile flags
+		
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
 		FieldString fieldFlag = variables.getFieldString(flagVar);
-		FieldJSONObject jsonFlags = new FieldJSONObject(fieldFlag);
-		flagsObject = jsonFlags.getJSONObject();
+		if(!fieldFlag.isEmpty()){
+			FieldJSONObject jsonFlags = new FieldJSONObject(fieldFlag);
+			flagsObject = jsonFlags.getJSONObject();
+		}
+		else{
+			flagsObject = null;
+		}
 		
 		//default paths
 		if(Utilities.isLinux()){
@@ -201,12 +207,14 @@ public class SBSCMakeFileGenerator {
 			cmakePack.setBuildMode(compileMode);
 			cmakePack.setTest(isTest);
 			
-			Set<?> keySet = flagsObject.keySet();			
-			Iterator<?> iterator = keySet.iterator();			
-			while(iterator.hasNext()){
-				Object next = iterator.next();
-				String key = (String) next;
-				cmakePack.addCompileFlag(key, flagsObject.get(key));
+			if(flagsObject!=null){
+				Set<?> keySet = flagsObject.keySet();			
+				Iterator<?> iterator = keySet.iterator();			
+				while(iterator.hasNext()){
+					Object next = iterator.next();
+					String key = (String) next;
+					cmakePack.addCompileFlag(key, flagsObject.get(key));
+				}
 			}
 			
 			if(!isTest){
