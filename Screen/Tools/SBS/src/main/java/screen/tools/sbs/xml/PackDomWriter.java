@@ -37,6 +37,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.Flag;
+import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Library;
 import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.objects.TinyPack;
@@ -44,8 +45,10 @@ import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldBuildMode.Type;
 import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.utils.FieldFile;
 import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.utils.FieldPathType;
 import screen.tools.sbs.utils.FieldString;
 
 public class PackDomWriter {
@@ -68,14 +71,17 @@ public class PackDomWriter {
 			List<Dependency> dependencyList = pack.getDependencyList();
 			List<Description> descriptionList = pack.getDescriptionList();
 			List<Flag> flagList = pack.getFlagList();
+			List<Import> importList = pack.getImportList();
 			if(!dependencyList.isEmpty() ||
 					!descriptionList.isEmpty() ||
-					!flagList.isEmpty()){
+					!flagList.isEmpty() ||
+					!importList.isEmpty()){
 				Element main = new Element("main");
 				
 				writeDependencies(dependencyList,main);
 				writeDescriptions(descriptionList,main);
 				writeFlags(flagList,main);
+				writeImports(importList,main);
 				
 				root.addContent(main);
 			}
@@ -86,14 +92,17 @@ public class PackDomWriter {
 			List<Dependency> dependencyList = testPack.getDependencyList();
 			List<Description> descriptionList = testPack.getDescriptionList();
 			List<Flag> flagList = testPack.getFlagList();
+			List<Import> importList = testPack.getImportList();
 			if(!dependencyList.isEmpty() ||
 					!descriptionList.isEmpty() ||
-					!flagList.isEmpty()){
+					!flagList.isEmpty() ||
+					!importList.isEmpty()){
 				Element test = new Element("test");
 				
 				writeDependencies(dependencyList,test);
 				writeDescriptions(descriptionList,test);
 				writeFlags(flagList,test);
+				writeImports(importList,test);
 				
 				root.addContent(test);
 			}
@@ -106,22 +115,28 @@ public class PackDomWriter {
 		FieldString name = properties.getName();
 		FieldString version = properties.getVersion();
 		FieldString buildType = properties.getBuildType();
-				
-		Element propertiesElt = new Element("properties");
-
-		Element nameElt = new Element("name");
-		nameElt.setText(name.getString());
-		propertiesElt.addContent(nameElt);
 		
-		Element versionElt = new Element("version");
-		versionElt.setText(version.getString());
-		propertiesElt.addContent(versionElt);
-		
-		Element buildTypeElt = new Element("buildtype");
-		buildTypeElt.setText(buildType.getString());
-		propertiesElt.addContent(buildTypeElt);
+		if(!name.isEmpty() || !version.isEmpty() || !buildType.isEmpty()){
+			Element propertiesElt = new Element("properties");
 	
-		root.addContent(propertiesElt);
+			if(!name.isEmpty()){
+				Element nameElt = new Element("name");
+				nameElt.setText(name.getString());
+				propertiesElt.addContent(nameElt);
+			}
+			if(!version.isEmpty()){
+				Element versionElt = new Element("version");
+				versionElt.setText(version.getString());
+				propertiesElt.addContent(versionElt);
+			}
+			if(!buildType.isEmpty()){
+				Element buildTypeElt = new Element("buildtype");
+				buildTypeElt.setText(buildType.getString());
+				propertiesElt.addContent(buildTypeElt);
+			}
+			
+			root.addContent(propertiesElt);
+		}
 	}
 
 	private void writeDependencies(List<Dependency> dependencyList, Element root) throws FieldException {
@@ -140,8 +155,14 @@ public class PackDomWriter {
 	
 	private void writeDependency(Dependency dependency, Element dependencyRoot) throws FieldException {
 		Element dependencyElt = new Element("dependency");
-		dependencyElt.setAttribute("name", dependency.getName().getString());
-		dependencyElt.setAttribute("version", dependency.getVersion().getString());
+
+		FieldString name = dependency.getName();
+		FieldString version = dependency.getVersion();
+		
+		if(!name.isEmpty())
+			dependencyElt.setAttribute("name", dependency.getName().getString());
+		if(!version.isEmpty())
+			dependencyElt.setAttribute("version", dependency.getVersion().getString());
 		if(dependency.getExport().getBool())
 			dependencyElt.setAttribute("export", "true");
 		
@@ -205,6 +226,8 @@ public class PackDomWriter {
 		FieldBuildMode buildMode = fieldPath.getBuildMode();
 		if(buildMode.get() != FieldBuildMode.Type.ALL)
 			pathElt.setAttribute("build", buildMode.getAsString());
+		if(fieldPath.getPathType() == FieldPathType.Type.ABSOLUTE)
+			pathElt.setAttribute("type","absolute");
 		pathElt.setText(fieldPath.getString());
 		
 		pathRoot.addContent(pathElt);
@@ -301,6 +324,41 @@ public class PackDomWriter {
 		
 		descriptionRoot.addContent(descriptionElt);
 	}
+	
+	private void writeImports(List<Import> importList, Element root) throws FieldException {
+		if(!importList.isEmpty()){
+			Element importRoot = new Element("imports");
+			
+			Iterator<Import> iterator = importList.iterator();
+			while(iterator.hasNext()){
+				Import next = iterator.next();
+				writeImport(next,importRoot);
+			}
+			
+			root.addContent(importRoot);
+		}
+	}
+
+	private void writeImport(Import import_, Element importRoot) throws FieldException {
+		Element importElt = new Element("import");
+		
+		FieldFile file = import_.getFile();
+		FieldBuildMode buildMode = import_.getBuildMode();
+		
+		if(!file.isEmpty()){
+			String originalString = file.getOriginalString();
+			importElt.setAttribute("file",originalString);
+		}
+
+		FieldBuildMode.Type mode = buildMode.get();
+		if(mode!=FieldBuildMode.Type.ALL){
+			String modeString = buildMode.getAsString();
+			importElt.setAttribute("build",modeString);
+		}
+		
+		importRoot.addContent(importElt);
+	}
+
 
 	private void writeDom(Document document, String path, String file) {
 		Format prettyFormat = Format.getPrettyFormat();
