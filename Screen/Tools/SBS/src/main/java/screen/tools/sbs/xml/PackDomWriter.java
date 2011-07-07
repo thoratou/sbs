@@ -42,6 +42,7 @@ import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.objects.TinyPack;
 import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldBuildMode.Type;
+import screen.tools.sbs.utils.FieldBuildType;
 import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldObject;
 import screen.tools.sbs.utils.FieldPath;
@@ -253,9 +254,52 @@ public class PackDomWriter {
 	}
 
 	private void writeDescriptions(List<Description> descriptionList,
-			Element root) {
-		// TODO Auto-generated method stub
+			Element root) throws FieldException {
+		if(!descriptionList.isEmpty()){
+			Element descriptionRoot = new Element("descriptions");
+			
+			Iterator<Description> iterator = descriptionList.iterator();
+			while(iterator.hasNext()){
+				Description next = iterator.next();
+				writeDescription(next,descriptionRoot);
+			}
+			
+			root.addContent(descriptionRoot);
+		}
+	}
+
+	private void writeDescription(Description description, Element descriptionRoot) throws FieldException {
+		Element descriptionElt = new Element("library");
 		
+		FieldString nameField = description.getName();
+		FieldString compileNameField = description.getCompileName();
+		FieldString fullNameField = description.getFullName();
+		FieldBuildType buildTypeField = description.getBuildType();
+		FieldBuildMode buildModeField = description.getBuildMode();
+		
+		String name = nameField.getString();
+		descriptionElt.setAttribute("name",name);
+		
+		if(!compileNameField.isEmpty()){
+			String compileName = compileNameField.getString();
+			descriptionElt.setAttribute("compile-name",compileName);
+		}
+
+		if(!fullNameField.isEmpty()){
+			String fullName = fullNameField.getString();
+			descriptionElt.setAttribute("full-name",fullName);
+		}
+		
+		String type = buildTypeField.getString();
+		descriptionElt.setAttribute("type",type);
+		
+		FieldBuildMode.Type mode = buildModeField.get();
+		if(mode!=FieldBuildMode.Type.ALL){
+			String modeString = buildModeField.getAsString();
+			descriptionElt.setAttribute("build",modeString);
+		}
+		
+		descriptionRoot.addContent(descriptionElt);
 	}
 
 	private void writeDom(Document document, String path, String file) {
