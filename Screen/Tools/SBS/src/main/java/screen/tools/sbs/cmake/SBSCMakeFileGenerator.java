@@ -51,15 +51,21 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.objects.Dependency;
+import screen.tools.sbs.objects.Description;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Library;
+import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.objects.ProjectProperties;
+import screen.tools.sbs.objects.TinyPack;
+import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldJSONObject;
 import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.utils.FieldPathType;
 import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Utilities;
+import screen.tools.sbs.xml.PackDomWriter;
 
 /**
  * Generates CMakeLists.txt and SBS files for global repository from a pack
@@ -255,123 +261,81 @@ public class SBSCMakeFileGenerator {
 	}
 		
 	private void generateComponentFiles() throws FieldException{
-		try{
-			//creation component root folder
-			new File(outputPath).mkdirs();
-			
-			//self component description file writing
-			if(hasLibBuild){
-				File sbsComponentFile = new File(componentPath+"/component.xml");
-				FileWriter sbsComponentWriter = null;
-				try {
-					sbsComponentWriter = new FileWriter(sbsComponentFile,false);
-				} catch (FileNotFoundException e) {
-					ErrorList.instance.addError("Can't create file component.xml");
-					return;
-				}
-				sbsComponentWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-				sbsComponentWriter.write("<pack>\n");
-				sbsComponentWriter.write("\t<properties>\n");
-				sbsComponentWriter.write("\t\t<name>"+packPath+"</name>\n");
-				sbsComponentWriter.write("\t\t<version>"+packVersion+"</version>\n");
-				sbsComponentWriter.write("\t\t<buildtype>"+packBuildType+"</buildtype>\n");
-				sbsComponentWriter.write("\t</properties>\n");
-				sbsComponentWriter.write("\t<main>\n");
-				sbsComponentWriter.write("\t\t<dependencies>\n");
-				sbsComponentWriter.write("\t\t\t<dependency>\n");
-				sbsComponentWriter.write("\t\t\t\t<includes>\n");
-				sbsComponentWriter.write("\t\t\t\t\t<path type=\"absolute\">"+new File(sbsXmlPath).getAbsolutePath()+"/include</path>\n");
-				sbsComponentWriter.write("\t\t\t\t</includes>\n");
-				sbsComponentWriter.write("\t\t\t\t<libraries>\n");
-				sbsComponentWriter.write("\t\t\t\t\t<lib>"+packPath+"</lib>\n");
-				sbsComponentWriter.write("\t\t\t\t</libraries>\n");
-				sbsComponentWriter.write("\t\t\t</dependency>\n");
+		//creation component root folder
+		new File(outputPath).mkdirs();
+		
+		//self component description file writing
+		if(hasLibBuild){
+			{
+				TinyPack componentPack = new TinyPack();
 				
-				//add exported dependencies
+				//set properties
+				ProjectProperties properties = new ProjectProperties();
+				properties.setName(packPath);
+				properties.setVersion(packVersion);
+				properties.setBuildType(packBuildType);
+				componentPack.setProperties(properties);
+	
+				//component paths
+				Dependency dependency = new Dependency();
+				FieldPath includePath = new FieldPath(new File(sbsXmlPath).getAbsolutePath()+"/include");
+				includePath.setPathType(FieldPathType.Type.ABSOLUTE);
+				dependency.addIncludePath(includePath);
+				dependency.addLibrary(packPath);
+				componentPack.addDependency(dependency);
+				
+				//exported dependencies
 				List<Dependency> depList = pack.getDependencyList();
 				for(int i=0; i<depList.size(); i++){
 					Dependency dep = depList.get(i);
-					if(dep.getExport().getBool()){
-						if(dep.getName().isValid()){
-							if(dep.getVersion().isValid()){
-								sbsComponentWriter.write("\t\t\t<dependency name=\""+dep.getName().getString()+"\" version=\""+dep.getVersion().getString()+"\">\n");
-							}
-							else{
-								sbsComponentWriter.write("\t\t\t<dependency name=\""+dep.getName().getString()+"\">\n");
-							}
+					if(!dep.getExport().isEmpty()){
+						if(dep.getExport().getBool()){
+							Dependency componentDependency = new Dependency();
+							componentDependency.setName(dep.getName());
+							componentDependency.setVersion(dep.getVersion());
+							componentDependency.setIncludePathList(dep.getIncludePathList());
+							componentDependency.setLibraryPathList(dep.getLibraryPathList());
+							componentDependency.setLibraryNameList(dep.getLibraryList());
+							componentPack.addDependency(componentDependency);
 						}
-						else{
-							if(dep.getVersion().isValid()){
-								sbsComponentWriter.write("\t\t\t<dependency version=\""+dep.getVersion().getString()+"\">\n");
-							}
-							else{
-								sbsComponentWriter.write("\t\t\t<dependency>\n");
-							}
-						}
-						if(dep.getIncludePathList().size() > 0){
-							sbsComponentWriter.write("\t\t\t\t<includes>\n");
-							List<FieldPath> incs = dep.getIncludePathList();
-							for(int j=0; j<incs.size(); j++){
-								sbsComponentWriter.write("\t\t\t\t\t<path type=\"absolute\" build=\""+incs.get(j).getBuildMode().getAsString()+"\">"+incs.get(j).getString()+"</path>\n");
-							}
-							sbsComponentWriter.write("\t\t\t\t</includes>\n");
-						}
-						if(dep.getLibraryPathList().size() > 0 || dep.getLibraryList().size() > 0){
-							sbsComponentWriter.write("\t\t\t\t<libraries>\n");
-							List<FieldPath> libPaths = dep.getLibraryPathList();
-							for(int j=0; j<libPaths.size(); j++){
-								sbsComponentWriter.write("\t\t\t\t\t<path type=\"absolute\" build=\""+libPaths.get(j).getBuildMode().getAsString()+"\">"+libPaths.get(j).getString()+"</path>\n");
-							}
-							List<Library> libs = dep.getLibraryList();
-							for(int j=0; j<libs.size(); j++){
-								if(libs.get(j).getVersion().isValid())
-									sbsComponentWriter.write("\t\t\t\t\t<lib version=\""+libs.get(j).getVersion().getString()+"\">"+libs.get(j).getName().getString()+"</lib>\n");
-								else	
-									sbsComponentWriter.write("\t\t\t\t\t<lib>"+libs.get(j).getName().getString()+"</lib>\n");
-							}
-							sbsComponentWriter.write("\t\t\t\t</libraries>\n");
-						}
-						sbsComponentWriter.write("\t\t\t</dependency>\n");
 					}
 				}
 				
-				sbsComponentWriter.write("\t\t</dependencies>\n");
-				sbsComponentWriter.write("\t</main>\n");
-				sbsComponentWriter.write("\t<imports>\n");
-				sbsComponentWriter.write("\t\t<import build=\"release\" file=\"lib/${ENV_NAME}/Release/library-description.xml\"/>\n");
-				sbsComponentWriter.write("\t\t<import build=\"debug\" file=\"lib/${ENV_NAME}/Debug/library-description.xml\"/>\n");
-				sbsComponentWriter.write("\t</imports>\n");
-				sbsComponentWriter.write("</pack>\n");
-				sbsComponentWriter.close();
+				//imports
+				Import releaseImport = new Import();
+				releaseImport.setBuildMode(FieldBuildMode.Type.RELEASE);
+				releaseImport.setFile("lib/${ENV_NAME}/Release/library-description.xml");
+				componentPack.addImport(releaseImport);
 				
-				File sbsLibraryFile = new File(outputPath+"/library-description.xml");
-				FileWriter sbsLibraryWriter = null;
-				try {
-					sbsLibraryWriter = new FileWriter(sbsLibraryFile,false);
-				} catch (FileNotFoundException e) {
-					ErrorList.instance.addError("Can't create file component.xml");
-					return;
-				}
-				
-				sbsLibraryWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-				sbsLibraryWriter.write("<pack>\n");
-				sbsLibraryWriter.write("\t<main>\n");
-				sbsLibraryWriter.write("\t\t<dependencies>\n");
-				sbsLibraryWriter.write("\t\t\t<dependency>\n");
-				sbsLibraryWriter.write("\t\t\t\t<libraries>\n");
-				sbsLibraryWriter.write("\t\t\t\t\t<path>.</path>\n");
-				sbsLibraryWriter.write("\t\t\t\t</libraries>\n");
-				sbsLibraryWriter.write("\t\t\t</dependency>\n");
-				sbsLibraryWriter.write("\t\t</dependencies>\n");
-				sbsLibraryWriter.write("\t</main>\n");
-				sbsLibraryWriter.write("\t<descriptions>\n");
-				sbsLibraryWriter.write("\t\t<library name=\""+packPath+"\" path=\".\" full-name=\""+fullName+"\" compile-name=\""+compileName+"\" type=\""+packBuildType+"\" />\n");
-				sbsLibraryWriter.write("\t</descriptions>\n");
-				sbsLibraryWriter.write("</pack>\n");
-				sbsLibraryWriter.close();
+				Import debugImport = new Import();
+				debugImport.setBuildMode(FieldBuildMode.Type.DEBUG);
+				debugImport.setFile("lib/${ENV_NAME}/Debug/library-description.xml");
+				componentPack.addImport(debugImport);
+
+				//write component pack
+				PackDomWriter writer = new PackDomWriter(contextHandler);
+				writer.write(componentPack, new TinyPack(), componentPath, "component.xml");
 			}
-		} catch (IOException e) {
-			ErrorList.instance.addError(e.getMessage());
+			{
+				TinyPack libraryPack = new TinyPack();
+				
+				//library path
+				Dependency dependency = new Dependency();
+				dependency.addLibraryPath(".");
+				libraryPack.addDependency(dependency);
+				
+				Description description = new Description();
+				description.setName(packPath);
+				description.setCompileName(compileName);
+				description.setFullName(fullName);
+				description.setBuildType(packBuildType);
+				description.setBuildMode(FieldBuildMode.Type.ALL);
+				libraryPack.addDescription(description);
+
+				//write component pack
+				PackDomWriter writer = new PackDomWriter(contextHandler);
+				writer.write(libraryPack, new TinyPack(), outputPath, "library-description.xml");
+			}
 		}
 	}
 	
