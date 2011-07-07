@@ -22,6 +22,9 @@
 
 package screen.tools.sbs.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author Ratouit Thomas
@@ -32,5 +35,29 @@ package screen.tools.sbs.objects;
  *
  */
 public class TinyPack extends Pack{
+	List<Import> importList;
+	
+	public TinyPack() {
+		super();
+		importList = new ArrayList<Import>();
+	}
+	
+	public void addImport(Import import_) {
+		if(import_!=null)
+			importList.add(import_);
+		else
+			ErrorList.instance.addWarning("Null field for pack import");
+	}
+
+	public void setImportList(List<Import> importList) {
+		if(importList!=null)
+			this.importList = importList;
+		else
+			ErrorList.instance.addWarning("Null field for pack import list");
+	}
+
+	public List<Import> getImportList() {
+		return importList;
+	}
 
 }

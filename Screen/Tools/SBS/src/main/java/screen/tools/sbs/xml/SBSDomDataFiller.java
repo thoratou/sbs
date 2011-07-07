@@ -437,7 +437,11 @@ public class SBSDomDataFiller {
 				FieldFile fieldFile = pType.getFieldFile(xmlPath.getOriginalString(), file);
 				import_.setFile(fieldFile);
 				
-				if(!(pack instanceof TinyPack)){
+				if(pack instanceof TinyPack){
+					TinyPack tinyPack = (TinyPack) pack;
+					tinyPack.addImport(import_);
+				}
+				else{
 					EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 					
 					FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
