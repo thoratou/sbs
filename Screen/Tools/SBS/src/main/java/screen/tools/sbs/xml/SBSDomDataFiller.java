@@ -128,12 +128,8 @@ public class SBSDomDataFiller {
 				Element next = (Element) iterator.next();
 				processDependencies(next, testPack, path);
 				processFlags(next,testPack,path);
-				
-				//descriptions
-				processDescriptions(root, testPack, path);
-				
-				//imports
-				processImports(root, testPack, path);
+				processDescriptions(next, testPack, path);								
+				processImports(next, testPack, path);
 			}
 			
 		} catch (JDOMException e) {
@@ -150,13 +146,9 @@ public class SBSDomDataFiller {
 			Element next = (Element) iterator.next();
 			processDependencies(next,pack,xmlPath);
 			processFlags(next,pack,xmlPath);
+			processDescriptions(next, pack, xmlPath);
+			processImports(next, pack, xmlPath);
 		}
-		
-		//descriptions
-		processDescriptions(root, pack, xmlPath);
-		
-		//imports
-		processImports(root, pack, xmlPath);
 	}
 
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
