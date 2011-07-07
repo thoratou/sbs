@@ -68,20 +68,26 @@ public class FieldPathType {
 	}
 	
 	public FieldPath getFieldPath(String root, String relative){
+		FieldPath fieldPath = null;
 		if(position == Type.ABSOLUTE){
-			return new FieldPath(relative);
+			fieldPath = new FieldPath(relative);
+			fieldPath.setPathType(Type.ABSOLUTE);
 		}
 		else{
-			return new FieldPath(root+"/"+relative);
+			fieldPath =  new FieldPath(root+"/"+relative);
 		}
+		return fieldPath;
 	}
 	
 	public FieldFile getFieldFile(String root, String relative){
+		FieldFile fieldFile = null;
 		if(position == Type.ABSOLUTE){
-			return new FieldFile(relative);
+			fieldFile = new FieldFile(relative);
+			fieldFile.setPathType(Type.ABSOLUTE);
 		}
 		else{
-			return new FieldFile(root+"/"+relative);
+			fieldFile =  new FieldFile(root+"/"+relative);
 		}
+		return fieldFile;
 	}
 }

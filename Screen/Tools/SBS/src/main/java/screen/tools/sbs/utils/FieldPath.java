@@ -23,19 +23,23 @@
 package screen.tools.sbs.utils;
 
 import screen.tools.sbs.objects.EnvironmentVariables;
+import screen.tools.sbs.utils.FieldPathType.Type;
 
 public class FieldPath {
 	FieldString fieldString;
-	FieldBuildMode fieldBuildMode; 
+	FieldBuildMode fieldBuildMode;
+	FieldPathType.Type fieldPathType;
 	
 	public FieldPath() {
 		fieldString = new FieldString();
 		fieldBuildMode = new FieldBuildMode();
+		fieldPathType = Type.RELATIVE;
 	}
 	
 	public FieldPath(String path) {
 		fieldString = new FieldString(path);
 		fieldBuildMode =  new FieldBuildMode();
+		fieldPathType = Type.RELATIVE;
 	}
 	
 	public boolean isEmpty(){
@@ -88,5 +92,13 @@ public class FieldPath {
 	
 	public FieldBuildMode getBuildMode(){
 		return fieldBuildMode;
+	}
+	
+	public void setPathType(FieldPathType.Type fieldPathType) {
+		this.fieldPathType = fieldPathType;
+	}
+
+	public FieldPathType.Type getPathType() {
+		return fieldPathType;
 	}
 }
