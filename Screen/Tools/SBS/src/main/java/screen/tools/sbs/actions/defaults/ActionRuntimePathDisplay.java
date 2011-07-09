@@ -22,60 +22,56 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import org.jdom.Document;
+import java.util.Iterator;
+import java.util.List;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.XmlDocumentContext;
+import screen.tools.sbs.objects.Dependency;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
-import screen.tools.sbs.xml.SBSDomDataFiller;
+import screen.tools.sbs.utils.Logger;
 
 /**
- * Action to load test pack from an XML Dom.
+ * Action to generate CMakeLists.txt from a test pack.
+ * and generate test makefile and/or project from this CMakeLists.txt.
  * 
  * @author Ratouit Thomas
  *
  */
-public class ActionTestPackLoad implements Action {
-
+public class ActionRuntimePathDisplay implements Action {
 	private ContextHandler contextHandler;
-	private boolean isRuntime;
-	
-	public ActionTestPackLoad() {
-		contextHandler = null;
-		isRuntime = false;
-	}
-
 
 	/**
-	 * Loads the test pack from the global XML Dom.
-	 * The test pack is set in global settings.
+	 * Performs action to generate test CMakeLists.txt, makefiles and projects
 	 * @throws ContextException 
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
-		Pack pack = new Pack();
-		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,new FieldPath(path));
-		dataFiller.useRuntimes(isRuntime);
-		dataFiller.fill(doc);
-		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);
+		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
+		List<Dependency> dependencyList = pack.getDependencyList();
+		Iterator<Dependency> iterator = dependencyList.iterator();
+		StringBuffer buffer = new StringBuffer();
+		while(iterator.hasNext()){
+			Dependency dependency = iterator.next();
+			List<FieldPath> libraryPathList = dependency.getLibraryPathList();
+			Iterator<FieldPath> pathIterator = libraryPathList.iterator();
+			while(pathIterator.hasNext()){
+				FieldPath fieldPath = pathIterator.next();
+				buffer.append(fieldPath.getString());
+				buffer.append("\n");
+			}
+		}
+		Logger.info("runtime paths : \n"+buffer);
 	}
 	
-	public void processRuntime(boolean isRuntime){
-		this.isRuntime = isRuntime;
-	}
-
-
 	public void setContext(ContextHandler contextHandler) {
 		this.contextHandler = contextHandler;
 	}
+
 
 }

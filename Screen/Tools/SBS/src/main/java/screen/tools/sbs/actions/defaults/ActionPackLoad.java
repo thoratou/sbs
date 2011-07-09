@@ -45,6 +45,12 @@ import screen.tools.sbs.xml.SBSDomDataFiller;
 public class ActionPackLoad implements Action {
 
 	private ContextHandler contextHandler;
+	private boolean isRuntime;
+	
+	public ActionPackLoad() {
+		contextHandler = null;
+		isRuntime = false;
+	}
 
 	/**
 	 * Loads the pack from the global XML Dom.
@@ -57,8 +63,13 @@ public class ActionPackLoad implements Action {
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();
 		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler, pack,null,new FieldPath(path));
+		dataFiller.useRuntimes(isRuntime);
 		dataFiller.fill(doc);
 		contextHandler.<PackContext>get(ContextKeys.PACK).setPack(pack);
+	}
+	
+	public void processRuntime(boolean isRuntime){
+		this.isRuntime = isRuntime;
 	}
 
 	public void setContext(ContextHandler contextHandler) {

@@ -39,6 +39,7 @@ import screen.tools.sbs.targets.defaults.TargetGenerate;
 import screen.tools.sbs.targets.defaults.TargetHelp;
 import screen.tools.sbs.targets.defaults.TargetRepositories;
 import screen.tools.sbs.targets.defaults.TargetRun;
+import screen.tools.sbs.targets.defaults.TargetRuntimePaths;
 import screen.tools.sbs.targets.defaults.TargetTest;
 import screen.tools.sbs.utils.Logger;
 
@@ -63,11 +64,12 @@ public class TargetManager {
 		registerTarget(new TargetTest());
 		registerTarget(new TargetRun());
 		registerTarget(new TargetRepositories());
-		registerTarget(new TargetFlags());		
+		registerTarget(new TargetRuntimePaths());		
 		registerTarget(new TargetHelp());
 		
 		//specific sbs file handling targets
 		registerTarget(new TargetCreateComponent());
+		registerTarget(new TargetFlags());		
 	}
 	
 	public void call(TargetCall targetCall, Parameters parameters){
