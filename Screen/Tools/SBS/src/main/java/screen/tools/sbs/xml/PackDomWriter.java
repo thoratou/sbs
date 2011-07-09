@@ -69,16 +69,19 @@ public class PackDomWriter {
 		//main
 		{
 			List<Dependency> dependencyList = pack.getDependencyList();
+			List<Dependency> runtimeList = pack.getRuntimeList();
 			List<Description> descriptionList = pack.getDescriptionList();
 			List<Flag> flagList = pack.getFlagList();
 			List<Import> importList = pack.getImportList();
 			if(!dependencyList.isEmpty() ||
 					!descriptionList.isEmpty() ||
 					!flagList.isEmpty() ||
-					!importList.isEmpty()){
+					!importList.isEmpty() ||
+					!runtimeList.isEmpty()){
 				Element main = new Element("main");
 				
-				writeDependencies(dependencyList,main);
+				writeDependencies(dependencyList,main,"dependencies");
+				writeDependencies(runtimeList, main, "runtime");
 				writeDescriptions(descriptionList,main);
 				writeFlags(flagList,main);
 				writeImports(importList,main);
@@ -90,16 +93,19 @@ public class PackDomWriter {
 		//test
 		{
 			List<Dependency> dependencyList = testPack.getDependencyList();
+			List<Dependency> runtimeList = testPack.getRuntimeList();
 			List<Description> descriptionList = testPack.getDescriptionList();
 			List<Flag> flagList = testPack.getFlagList();
 			List<Import> importList = testPack.getImportList();
 			if(!dependencyList.isEmpty() ||
 					!descriptionList.isEmpty() ||
 					!flagList.isEmpty() ||
-					!importList.isEmpty()){
+					!importList.isEmpty() ||
+					!runtimeList.isEmpty()){
 				Element test = new Element("test");
 				
-				writeDependencies(dependencyList,test);
+				writeDependencies(dependencyList,test,"dependencies");
+				writeDependencies(runtimeList,test,"runtime");
 				writeDescriptions(descriptionList,test);
 				writeFlags(flagList,test);
 				writeImports(importList,test);
@@ -139,9 +145,9 @@ public class PackDomWriter {
 		}
 	}
 
-	private void writeDependencies(List<Dependency> dependencyList, Element root) throws FieldException {
+	private void writeDependencies(List<Dependency> dependencyList, Element root, String elementName) throws FieldException {
 		if(!dependencyList.isEmpty()){
-			Element dependencyElt = new Element("dependencies");
+			Element dependencyElt = new Element(elementName);
 
 			Iterator<Dependency> iterator = dependencyList.iterator();
 			while(iterator.hasNext()){

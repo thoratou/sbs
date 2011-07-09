@@ -71,12 +71,21 @@ public class SBSDomDataFiller {
 	private String propertyName;
 	private String propertyVersion;
 	private String propertyBuildType;
+	private boolean isRuntime;
 	
 	public SBSDomDataFiller(ContextHandler contextHandler, Pack pack, Pack testPack, FieldPath sbsXmlPath) {
 		this.contextHandler = contextHandler;
-		this.sbsXmlPath = sbsXmlPath;
 		this.pack = pack;
 		this.testPack = testPack;
+		this.sbsXmlPath = sbsXmlPath;
+		propertyName = null;
+		propertyVersion = null;
+		propertyBuildType = null;
+		isRuntime = false;
+	}
+	
+	public void useRuntimes(boolean isRuntimes){
+		this.isRuntime = isRuntimes;
 	}
 	
 	public void fill(Document doc) throws ContextException, FieldException{
@@ -127,8 +136,10 @@ public class SBSDomDataFiller {
 				FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
 				Element next = (Element) iterator.next();
 				processDependencies(next, testPack, path);
+				if(isRuntime)
+					processRuntime(next, testPack, path);
 				processFlags(next,testPack,path);
-				processDescriptions(next, testPack, path);								
+				processDescriptions(next, testPack, path);
 				processImports(next, testPack, path);
 			}
 			
@@ -145,6 +156,8 @@ public class SBSDomDataFiller {
 		while(iterator.hasNext()){
 			Element next = (Element) iterator.next();
 			processDependencies(next,pack,xmlPath);
+			if(isRuntime)
+				processRuntime(next, pack, xmlPath);
 			processFlags(next,pack,xmlPath);
 			processDescriptions(next, pack, xmlPath);
 			processImports(next, pack, xmlPath);
@@ -152,174 +165,188 @@ public class SBSDomDataFiller {
 	}
 
 	private void processDependencies(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
-		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		
 		//dependencies
 		Logger.debug("dependencies");
 		List<?> depsRoot = root.getChildren("dependencies");
 		Iterator<?> rootIterator = depsRoot.iterator();
-		if(rootIterator.hasNext()){
+		while(rootIterator.hasNext()){
 			Element next = (Element) rootIterator.next();
-			List<?> deps = (next).getChildren("dependency");
-			Iterator<?> iterator = deps.iterator();
-			while(iterator.hasNext()){
-				Element dep = (Element) iterator.next();
-				List<Library> tmpLibList = new ArrayList<Library>();
-				
-				//dependency
-				Logger.debug("\tdependency");
-				Dependency newDep = new Dependency();
-				
-				String name = dep.getAttributeValue("name");
-				newDep.setName(new FieldString(name));
+			processDependencyRoot(next,pack,xmlPath);
+		}
+	}
+	
+	private void processRuntime(Element root, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
+		//runtime
+		Logger.debug("runtime");
+		List<?> depsRoot = root.getChildren("runtime");
+		Iterator<?> rootIterator = depsRoot.iterator();
+		while(rootIterator.hasNext()){
+			Element next = (Element) rootIterator.next();
+			processDependencyRoot(next,pack,xmlPath);
+		}		
+	}
+		
+	private void processDependencyRoot(Element depsRoot, Pack pack, FieldPath xmlPath) throws ContextException, FieldException {
+		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
+		List<?> deps = depsRoot.getChildren("dependency");
+		Iterator<?> iterator = deps.iterator();
+		while(iterator.hasNext()){
+			Element dep = (Element) iterator.next();
+			List<Library> tmpLibList = new ArrayList<Library>();
+			
+			//dependency
+			Logger.debug("\tdependency");
+			Dependency newDep = new Dependency();
+			
+			String name = dep.getAttributeValue("name");
+			newDep.setName(new FieldString(name));
 
-				String version = dep.getAttributeValue("version");
-				newDep.setVersion(new FieldString(version));
-				
-				String export = dep.getAttributeValue("export");
-				newDep.setExport(new FieldBool(export));
-				
-				// includes
-				List<?> inclRoot = dep.getChildren("includes");
-				Iterator<?> inclIterator = inclRoot.iterator();
-				while(inclIterator.hasNext()){
-					Element inclNext = (Element) inclIterator.next();
-					Logger.debug("\t\tincludes");
-					List<?> paths = inclNext.getChildren("path");
-					Iterator<?> pathIterator = paths.iterator();
-					while(pathIterator.hasNext()){
-						//path
-						Logger.debug("\t\t\tpath");
-						Element path = (Element) pathIterator.next();
-						
-						String pathString = path.getTextTrim();
-						Logger.debug("\t\t\t\ttext : "+pathString);
-						
-						String type = path.getAttributeValue("type");
-						FieldPathType pType = new FieldPathType();
-						pType.set(type);
-						Logger.debug("\t\t\t\ttype : "+type);
-						
-						String buildMode = path.getAttributeValue("build");
-						Logger.debug("\t\t\t\tbuild : "+buildMode);
-						
-						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
-						if(buildMode!=null)
-							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
-						
-						newDep.addIncludePath(fieldPath);
-					}
+			String version = dep.getAttributeValue("version");
+			newDep.setVersion(new FieldString(version));
+			
+			String export = dep.getAttributeValue("export");
+			newDep.setExport(new FieldBool(export));
+			
+			// includes
+			List<?> inclRoot = dep.getChildren("includes");
+			Iterator<?> inclIterator = inclRoot.iterator();
+			while(inclIterator.hasNext()){
+				Element inclNext = (Element) inclIterator.next();
+				Logger.debug("\t\tincludes");
+				List<?> paths = inclNext.getChildren("path");
+				Iterator<?> pathIterator = paths.iterator();
+				while(pathIterator.hasNext()){
+					//path
+					Logger.debug("\t\t\tpath");
+					Element path = (Element) pathIterator.next();
+					
+					String pathString = path.getTextTrim();
+					Logger.debug("\t\t\t\ttext : "+pathString);
+					
+					String type = path.getAttributeValue("type");
+					FieldPathType pType = new FieldPathType();
+					pType.set(type);
+					Logger.debug("\t\t\t\ttype : "+type);
+					
+					String buildMode = path.getAttributeValue("build");
+					Logger.debug("\t\t\t\tbuild : "+buildMode);
+					
+					FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
+					if(buildMode!=null)
+						fieldPath.setBuildMode(new FieldBuildMode(buildMode));
+					
+					newDep.addIncludePath(fieldPath);
 				}
-				
-				//libraries
-				List<?> libsRoot = dep.getChildren("libraries");
-				Iterator<?> libsRootIterator = libsRoot.iterator();
-				if(libsRootIterator.hasNext()){
-					Element libsRootNext = (Element) libsRootIterator.next();
-					Logger.debug("\t\tlibraries");
-					List<?> paths = libsRootNext.getChildren("path");
-					Iterator<?> pathsIterator = paths.iterator();
-					while(pathsIterator.hasNext()){
-						//path
-						Logger.debug("\t\t\tpath");
-						Element path = (Element) pathsIterator.next();
-						String pathString = path.getTextTrim();
-						Logger.debug("\t\t\t\ttext : "+pathString);
-						
-						String type = path.getAttributeValue("type");
-						FieldPathType pType = new FieldPathType();
-						pType.set(type);
-						Logger.debug("\t\t\t\ttype : "+type);
-						
-						String buildMode = path.getAttributeValue("build");
-						Logger.debug("\t\t\t\tbuild : "+buildMode);
-						
-						FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
-						if(buildMode!=null)
-							fieldPath.setBuildMode(new FieldBuildMode(buildMode));
-						
-						newDep.addLibraryPath(fieldPath);
-					}
-					List<?> libs = libsRootNext.getChildren("lib");
-					Iterator<?> libsIterator = libs.iterator();
-					while(libsIterator.hasNext()){
-						//lib
-						Logger.debug("\t\t\tlib");
-						Element lib = (Element) libsIterator.next();
-						String libString = lib.getTextTrim();
-						Logger.debug("\t\t\t\ttext : "+libString);
+			}
+			
+			//libraries
+			List<?> libsRoot = dep.getChildren("libraries");
+			Iterator<?> libsRootIterator = libsRoot.iterator();
+			if(libsRootIterator.hasNext()){
+				Element libsRootNext = (Element) libsRootIterator.next();
+				Logger.debug("\t\tlibraries");
+				List<?> paths = libsRootNext.getChildren("path");
+				Iterator<?> pathsIterator = paths.iterator();
+				while(pathsIterator.hasNext()){
+					//path
+					Logger.debug("\t\t\tpath");
+					Element path = (Element) pathsIterator.next();
+					String pathString = path.getTextTrim();
+					Logger.debug("\t\t\t\ttext : "+pathString);
+					
+					String type = path.getAttributeValue("type");
+					FieldPathType pType = new FieldPathType();
+					pType.set(type);
+					Logger.debug("\t\t\t\ttype : "+type);
+					
+					String buildMode = path.getAttributeValue("build");
+					Logger.debug("\t\t\t\tbuild : "+buildMode);
+					
+					FieldPath fieldPath = pType.getFieldPath(xmlPath.getOriginalString(), pathString);
+					if(buildMode!=null)
+						fieldPath.setBuildMode(new FieldBuildMode(buildMode));
+					
+					newDep.addLibraryPath(fieldPath);
+				}
+				List<?> libs = libsRootNext.getChildren("lib");
+				Iterator<?> libsIterator = libs.iterator();
+				while(libsIterator.hasNext()){
+					//lib
+					Logger.debug("\t\t\tlib");
+					Element lib = (Element) libsIterator.next();
+					String libString = lib.getTextTrim();
+					Logger.debug("\t\t\t\ttext : "+libString);
 
-						String libVersion = lib.getAttributeValue("version");
-						
-						Library library = new Library();
-						library.setName(new FieldString(libString));
-						library.setVersion(new FieldString(libVersion));
-						
-						newDep.addLibrary(library);
-						tmpLibList.add(library);
-					}
+					String libVersion = lib.getAttributeValue("version");
+					
+					Library library = new Library();
+					library.setName(new FieldString(libString));
+					library.setVersion(new FieldString(libVersion));
+					
+					newDep.addLibrary(library);
+					tmpLibList.add(library);
 				}
+			}
+			
+			if(newDep.getSbs() && !(pack instanceof TinyPack)){
+				//retrieve dependency file in SBS repository
+				String packName = newDep.getName().getString();
+				String packVersion = newDep.getVersion().getString();
 				
-				if(newDep.getSbs() && !(pack instanceof TinyPack)){
-					//retrieve dependency file in SBS repository
-					String packName = newDep.getName().getString();
-					String packVersion = newDep.getVersion().getString();
+				FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
+				String envName = fieldEnvName.getString();
+				
+				RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), fieldEnvName);
+				RepositoryFilter retrieved = finder.retrieve(contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable());
+				if(retrieved == null){
+					ErrorList.instance.addError("Unable to retrieve component into repositories :\n"+
+								"- component name : "+packName+"\n"+
+								"- component version : "+packVersion+"\n"+
+								"- compiler : "+envName);
+					return;
+				}
+				String fullPath = retrieved.getData().getPath().getString()+"/"+packName+"/"+packVersion;
+				
+				//String fullPath = repoRoot +"/"+packName+"/"+packVersion;					
+				
+				if(new File(fullPath+"/component.xml").exists()){
+					//if component.xml exists, retrieve contents into pack
+					Document doc = SBSDomParser.parserFile(new File(fullPath+"/component.xml"));
+					Element root2 = doc.getRootElement();
+					Logger.debug("import "+fullPath+"/component.xml");
 					
-					FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-					String envName = fieldEnvName.getString();
-					
-					RepositoryComponent finder = new RepositoryComponent(newDep.getName(), newDep.getVersion(), fieldEnvName);
-					RepositoryFilter retrieved = finder.retrieve(contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable());
-					if(retrieved == null){
-						ErrorList.instance.addError("Unable to retrieve component into repositories :\n"+
-									"- component name : "+packName+"\n"+
-									"- component version : "+packVersion+"\n"+
-									"- compiler : "+envName);
-						return;
-					}
-					String fullPath = retrieved.getData().getPath().getString()+"/"+packName+"/"+packVersion;
-					
-					//String fullPath = repoRoot +"/"+packName+"/"+packVersion;					
-					
-					if(new File(fullPath+"/component.xml").exists()){
-						//if component.xml exists, retrieve contents into pack
-						Document doc = SBSDomParser.parserFile(new File(fullPath+"/component.xml"));
-						Element root2 = doc.getRootElement();
-						Logger.debug("import "+fullPath+"/component.xml");
-						
-						processAll(root2, pack, new FieldPath(fullPath));
-					}
-					else { 
-						if(Utilities.isWindows())
-							ErrorList.instance.addError("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist");
-						else {
-							ErrorList.instance.addWarning("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist => Uses default settings");
-							Iterator<Library> libIterator = tmpLibList.iterator();
-							while(libIterator.hasNext()){
-								//add default library description
-								Description description = new Description();
-								Library lib = libIterator.next();
-								description.setName(lib.getName().getString());
-								
-								EnvironmentVariables additionalVars = new EnvironmentVariables();
-								additionalVars.put("LIB_NAME", lib.getName().getOriginalString().replaceAll("/", ""));
-								
-								FieldString fs = new FieldString("${DEFAULT_SHARED_LIB_COMPILE_NAME}");
-								description.setCompileName(fs.getString(additionalVars));
-								
-								fs = new FieldString("${DEFAULT_SHARED_LIB_FULL_NAME}");
-								description.setFullName(fs.getString(additionalVars));
-								
-								description.setBuildMode(FieldBuildMode.Type.ALL);
-								description.setBuildType(FieldBuildType.Type.SHARED_LIBRARY);
-								pack.addDescription(description);
-							}
+					processAll(root2, pack, new FieldPath(fullPath));
+				}
+				else { 
+					if(Utilities.isWindows())
+						ErrorList.instance.addError("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist");
+					else {
+						ErrorList.instance.addWarning("Can't retrieve file component.xml in "+fullPath+" folder : component "+packName+" with version "+packVersion+" doesn't exist => Uses default settings");
+						Iterator<Library> libIterator = tmpLibList.iterator();
+						while(libIterator.hasNext()){
+							//add default library description
+							Description description = new Description();
+							Library lib = libIterator.next();
+							description.setName(lib.getName().getString());
+							
+							EnvironmentVariables additionalVars = new EnvironmentVariables();
+							additionalVars.put("LIB_NAME", lib.getName().getOriginalString().replaceAll("/", ""));
+							
+							FieldString fs = new FieldString("${DEFAULT_SHARED_LIB_COMPILE_NAME}");
+							description.setCompileName(fs.getString(additionalVars));
+							
+							fs = new FieldString("${DEFAULT_SHARED_LIB_FULL_NAME}");
+							description.setFullName(fs.getString(additionalVars));
+							
+							description.setBuildMode(FieldBuildMode.Type.ALL);
+							description.setBuildType(FieldBuildType.Type.SHARED_LIBRARY);
+							pack.addDescription(description);
 						}
 					}
 				}
-				
-				pack.addDependency(newDep);
 			}
+			
+			pack.addDependency(newDep);
 		}
 	}
 

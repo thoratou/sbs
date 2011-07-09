@@ -70,7 +70,7 @@ public class Pack {
 	public List<Dependency> getDependencyList() {
 		return dependencyList;
 	}
-	
+
 	public void addFlag(Flag flag) {
 		if(flag!=null)
 			flagList.add(flag);

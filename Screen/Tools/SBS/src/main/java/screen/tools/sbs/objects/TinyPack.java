@@ -35,11 +35,31 @@ import java.util.List;
  *
  */
 public class TinyPack extends Pack{
-	List<Import> importList;
+	private List<Dependency> runtimeList;
+	private List<Import> importList;
 	
 	public TinyPack() {
 		super();
+		runtimeList = new ArrayList<Dependency>();
 		importList = new ArrayList<Import>();
+	}
+	
+	public void addRuntime(Dependency dependency) {
+		if(dependency!=null)
+			runtimeList.add(dependency);
+		else
+			ErrorList.instance.addWarning("Null FieldString for pack dependency");
+	}
+
+	public void setRuntimeList(List<Dependency> runtimeList) {
+		if(runtimeList!=null)
+			this.runtimeList = runtimeList;
+		else
+			ErrorList.instance.addWarning("Null FieldString for pack dependency list");
+	}
+
+	public List<Dependency> getRuntimeList() {
+		return runtimeList;
 	}
 	
 	public void addImport(Import import_) {

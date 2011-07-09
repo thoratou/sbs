@@ -58,6 +58,7 @@ import screen.tools.sbs.objects.Import;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.objects.ProjectProperties;
 import screen.tools.sbs.objects.TinyPack;
+import screen.tools.sbs.utils.FieldBool;
 import screen.tools.sbs.utils.FieldBuildMode;
 import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldJSONObject;
@@ -190,7 +191,6 @@ public class SBSCMakeFileGenerator {
 		retrieveContext();
 		generateCMakeLists();
 		generateComponentFiles();
-		generateSymbolicLinks();
 	}
 	
 	private void generateCMakeLists() throws FieldException{
@@ -265,123 +265,90 @@ public class SBSCMakeFileGenerator {
 		new File(outputPath).mkdirs();
 		
 		//self component description file writing
-		if(hasLibBuild){
-			{
-				TinyPack componentPack = new TinyPack();
-				
-				//set properties
-				ProjectProperties properties = new ProjectProperties();
-				properties.setName(packPath);
-				properties.setVersion(packVersion);
-				properties.setBuildType(packBuildType);
-				componentPack.setProperties(properties);
-	
-				//component paths
-				Dependency dependency = new Dependency();
-				FieldPath includePath = new FieldPath(new File(sbsXmlPath).getAbsolutePath()+"/include");
-				includePath.setPathType(FieldPathType.Type.ABSOLUTE);
-				dependency.addIncludePath(includePath);
-				dependency.addLibrary(packPath);
-				componentPack.addDependency(dependency);
-				
-				//exported dependencies
-				List<Dependency> depList = pack.getDependencyList();
-				for(int i=0; i<depList.size(); i++){
-					Dependency dep = depList.get(i);
-					if(!dep.getExport().isEmpty()){
-						if(dep.getExport().getBool()){
-							Dependency componentDependency = new Dependency();
-							componentDependency.setName(dep.getName());
-							componentDependency.setVersion(dep.getVersion());
-							componentDependency.setIncludePathList(dep.getIncludePathList());
-							componentDependency.setLibraryPathList(dep.getLibraryPathList());
-							componentDependency.setLibraryNameList(dep.getLibraryList());
-							componentPack.addDependency(componentDependency);
-						}
+		{
+			TinyPack componentPack = new TinyPack();
+			
+			//set properties
+			ProjectProperties properties = new ProjectProperties();
+			properties.setName(packPath);
+			properties.setVersion(packVersion);
+			properties.setBuildType(packBuildType);
+			componentPack.setProperties(properties);
+
+			//component paths
+			Dependency dependency = new Dependency();
+			FieldPath includePath = new FieldPath(new File(sbsXmlPath).getAbsolutePath()+"/include");
+			includePath.setPathType(FieldPathType.Type.ABSOLUTE);
+			dependency.addIncludePath(includePath);
+			dependency.addLibrary(packPath);
+			componentPack.addDependency(dependency);
+			
+			//exported dependencies
+			List<Dependency> depList = pack.getDependencyList();
+			for(int i=0; i<depList.size(); i++){
+				Dependency dep = depList.get(i);
+				if(!dep.getExport().isEmpty()){
+					if(dep.getExport().getBool()){
+						Dependency componentDependency = new Dependency();
+						componentDependency.setName(dep.getName());
+						componentDependency.setVersion(dep.getVersion());
+						componentDependency.setIncludePathList(dep.getIncludePathList());
+						componentDependency.setLibraryPathList(dep.getLibraryPathList());
+						componentDependency.setLibraryNameList(dep.getLibraryList());
+						componentPack.addDependency(componentDependency);
 					}
 				}
-				
-				//imports
-				Import releaseImport = new Import();
-				releaseImport.setBuildMode(FieldBuildMode.Type.RELEASE);
-				releaseImport.setFile("lib/${ENV_NAME}/Release/library-description.xml");
-				componentPack.addImport(releaseImport);
-				
-				Import debugImport = new Import();
-				debugImport.setBuildMode(FieldBuildMode.Type.DEBUG);
-				debugImport.setFile("lib/${ENV_NAME}/Debug/library-description.xml");
-				componentPack.addImport(debugImport);
-
-				//write component pack
-				PackDomWriter writer = new PackDomWriter(contextHandler);
-				writer.write(componentPack, new TinyPack(), componentPath, "component.xml");
 			}
-			{
-				TinyPack libraryPack = new TinyPack();
-				
-				//library path
-				Dependency dependency = new Dependency();
-				dependency.addLibraryPath(".");
-				libraryPack.addDependency(dependency);
-				
-				Description description = new Description();
-				description.setName(packPath);
-				description.setCompileName(compileName);
-				description.setFullName(fullName);
-				description.setBuildType(packBuildType);
-				description.setBuildMode(FieldBuildMode.Type.ALL);
-				libraryPack.addDescription(description);
-
-				//write component pack
-				PackDomWriter writer = new PackDomWriter(contextHandler);
-				writer.write(libraryPack, new TinyPack(), outputPath, "library-description.xml");
+			
+			//runtime dependencies
+			List<Dependency> runList = pack.getDependencyList();
+			for(int i=0; i<runList.size(); i++){
+				Dependency run = runList.get(i);
+				if(run.getSbs()){
+					FieldBool export = run.getExport();
+					if(export.isEmpty() || !export.getBool()){
+						Dependency componentRunDependency = new Dependency();
+						componentRunDependency.setName(run.getName());
+						componentRunDependency.setVersion(run.getVersion());
+						componentPack.addRuntime(componentRunDependency);
+					}
+				}
 			}
+			
+			//imports
+			Import releaseImport = new Import();
+			releaseImport.setBuildMode(FieldBuildMode.Type.RELEASE);
+			releaseImport.setFile("lib/${ENV_NAME}/Release/library-description.xml");
+			componentPack.addImport(releaseImport);
+			
+			Import debugImport = new Import();
+			debugImport.setBuildMode(FieldBuildMode.Type.DEBUG);
+			debugImport.setFile("lib/${ENV_NAME}/Debug/library-description.xml");
+			componentPack.addImport(debugImport);
+
+			//write component pack
+			PackDomWriter writer = new PackDomWriter(contextHandler);
+			writer.write(componentPack, new TinyPack(), componentPath, "component.xml");
 		}
-	}
-	
-	private void generateSymbolicLinks(){
-		if(hasSharedLibBuild || !hasLibBuild){
-			String deployPath = repoRoot+"/"+envName+"/"+compileMode;
-			new File(deployPath).mkdirs();
-			/*File target = new File(outputPath+"/"+fullName);
-			File link = new File(deployPath+"/"+fullName+"."+packVersion);
-			File finalLink = new File(deployPath+"/"+fullName);*/
-			//Path targetPath = target.toPath();
-			//Path linkPath = link.toPath();
-			//Path finalLinkPath = finalLink.toPath();
+		{
+			TinyPack libraryPack = new TinyPack();
 			
-			/*if(Utilities.isWindows()){
-				try {
-					//linkPath.createLink(targetPath);
-					Files.createLink(linkPath, targetPath);
-				} catch (IOException e) {
-					err.addWarning("Unable to create hard link :\n"+e.getMessage());
-				}
-		
-				try {
-					//finalLinkPath.createLink(linkPath);
-					Files.createLink(finalLinkPath, linkPath);
-				} catch (IOException e) {
-					err.addWarning("Unable to create hard link :\n"+e.getMessage());
-				}
-			}
+			//library path
+			Dependency dependency = new Dependency();
+			dependency.addLibraryPath(".");
+			libraryPack.addDependency(dependency);
 			
-			if(Utilities.isLinux()){
-				try {
-					//linkPath.createSymbolicLink(targetPath);
-					Files.createSymbolicLink(targetPath, linkPath);
-				} catch (IOException e) {
-					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
-				}
-		
-				try {
-					//finalLinkPath.createSymbolicLink(linkPath);
-					Files.createSymbolicLink(linkPath, finalLinkPath);
-				} catch (IOException e) {
-					err.addWarning("Unable to create symbolic link :\n"+e.getMessage());
-				}
-			}*/
-			
+			Description description = new Description();
+			description.setName(packPath);
+			description.setCompileName(compileName);
+			description.setFullName(fullName);
+			description.setBuildType(packBuildType);
+			description.setBuildMode(FieldBuildMode.Type.ALL);
+			libraryPack.addDescription(description);
+
+			//write component pack
+			PackDomWriter writer = new PackDomWriter(contextHandler);
+			writer.write(libraryPack, new TinyPack(), outputPath, "library-description.xml");
 		}
 	}
 }
