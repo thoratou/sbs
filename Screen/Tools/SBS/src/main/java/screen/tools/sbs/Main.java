@@ -103,5 +103,8 @@ public class Main {
 		else
 			Logger.info("          COMMAND FAILED           ");
 		Logger.info("-----------------------------------");
+		//return an error code if an error is detected
+		if(!hasNoError)
+			System.exit(-1);
 	}
 }

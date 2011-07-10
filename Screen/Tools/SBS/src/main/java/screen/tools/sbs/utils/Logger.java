@@ -39,7 +39,7 @@ public class Logger {
 	}
 	
 	public static void error(String s){
-		System.out.println("[ERROR] "+s);
+		System.err.println("[ERROR] "+s);
 	}
 
 	public static void setDebug(boolean isDebug) {
