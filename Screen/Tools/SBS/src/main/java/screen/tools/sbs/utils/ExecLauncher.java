@@ -103,8 +103,15 @@ public class ExecLauncher {
 		};
 		processHandler.getProcessBuilder().directory(new File(path));
 		Map<String, String> environment = processHandler.getProcessBuilder().environment();
-		String envPath = environment.get("Path");
-		environment.put("Path",envPath+File.pathSeparator+paths.toString());
+		String variableName = null;
+		if(Utilities.isWindows()){
+			variableName = "Path";
+		}
+		else{
+			variableName = "LD_LIBRARY_PATH";
+		}
+		String envPath = environment.get(variableName);
+		environment.put(variableName,envPath+File.pathSeparator+paths.toString());
 		processHandler.exec();
 		}
 }
