@@ -55,7 +55,7 @@ public class CompileLauncher {
         String[] cmd = compileCommand.split(" ");
         Logger.info(ProcessLauncher.getCommand(cmd));
 		
-		new ProcessHandler() {
+		ProcessHandler processHandler = new ProcessHandler(cmd) {
 			
 			@Override
 			public void processOutLine(String line) {
@@ -72,6 +72,8 @@ public class CompileLauncher {
 		        	ErrorList.instance.addError(line);
 		    	}
 			}
-		}.exec(cmd,new File(path));
+		};
+		processHandler.getProcessBuilder().directory(new File(path));
+		processHandler.exec();
 	}
 }

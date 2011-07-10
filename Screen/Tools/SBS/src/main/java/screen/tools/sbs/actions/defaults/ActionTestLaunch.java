@@ -22,14 +22,18 @@
 
 package screen.tools.sbs.actions.defaults;
 
+import java.util.List;
+
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.objects.Pack;
 import screen.tools.sbs.utils.ExecLauncher;
 import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.utils.FieldPath;
 
 /**
  * Action to launch tests associated to a component
@@ -48,7 +52,8 @@ public class ActionTestLaunch implements Action {
 	public void perform() throws ContextException, FieldException {
 		//Pack pack = GlobalSettings.getGlobalSettings().getTestPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
-		ExecLauncher launcher = new ExecLauncher(contextHandler, pack);
+		List<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.TEST_RUNTIME_PATHS).getPaths();
+		ExecLauncher launcher = new ExecLauncher(contextHandler, pack, paths);
 		launcher.launch();
 	}
 	

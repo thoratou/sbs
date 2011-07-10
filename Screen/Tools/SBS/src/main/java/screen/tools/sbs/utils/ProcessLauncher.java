@@ -22,7 +22,6 @@
 
 package screen.tools.sbs.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +31,7 @@ import java.util.List;
 public class ProcessLauncher {
 
 	private Process process;
+	private ProcessBuilder processBuilder;
 	
 	public static String getCommand(String[] command){
 		StringBuffer buffer = new StringBuffer();
@@ -54,8 +54,18 @@ public class ProcessLauncher {
 		return buffer.toString();
 	}
 	
-	public ProcessLauncher() {
+	public ProcessLauncher(List<String> command) {
 		process = null;
+		processBuilder = new ProcessBuilder(command);
+	}
+	
+	public ProcessLauncher(String[] command) {
+		process = null;
+		processBuilder = new ProcessBuilder(command);
+	}
+
+	public ProcessBuilder getProcessBuilder(){
+		return processBuilder;
 	}
 	
 	public InputStream getInputStream() {
@@ -69,46 +79,21 @@ public class ProcessLauncher {
 	public InputStream getErrorStream() {
 		return process.getErrorStream();
 	}
-
-	public void execute(String command) throws IOException {
-		process = Runtime.getRuntime().exec(command);
-		execute();
-	}
 	
-	public void execute(String[] cmdarray) throws IOException {
-		process = Runtime.getRuntime().exec(cmdarray);
-		execute();
-	}
-	
-	public void execute(String[] cmdarray, String[] envp) throws IOException {
-		process = Runtime.getRuntime().exec(cmdarray, envp);
-		execute();
-	}
-	
-	public void execute(String[] cmdarray, String[] envp, File dir) throws IOException {
-		process = Runtime.getRuntime().exec(cmdarray, envp, dir);
-		execute();
-	}
-	
-	public void execute(String command, String[] envp) throws IOException {
-		process = Runtime.getRuntime().exec(command, envp);
-		execute();
-	}
-	
-	public void execute(String command, String[] envp, File dir) throws IOException  {
-		process = Runtime.getRuntime().exec(command, envp, dir);
-		execute();
-	}
-	
-	private void execute() {
+	public void execute() {
+		try {
+			process = processBuilder.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		new Thread() {
 		    public void run() {
 		        try {
-		            process.waitFor();
-		        } catch(InterruptedException ie) {
-		            ie.printStackTrace();
+			            process.waitFor();
+		        } catch(InterruptedException e) {
+		            e.printStackTrace();
 		        }
 		    }
 		}.start();
-	}	
+	}
 }

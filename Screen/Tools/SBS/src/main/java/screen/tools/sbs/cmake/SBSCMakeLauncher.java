@@ -131,9 +131,7 @@ public class SBSCMakeLauncher {
 		
 		Logger.info(ProcessLauncher.getCommand(command));
 
-		String [] cmd = new String[command.size()];
-		
-		new ProcessHandler() {
+		ProcessHandler processHandler = new ProcessHandler(command) {
 			
 			@Override
 			public void processOutLine(String line) {
@@ -145,7 +143,9 @@ public class SBSCMakeLauncher {
 				Logger.error(line);
 		    	ErrorList.instance.addError(line);					
 			}
-		}.exec(command.toArray(cmd),new File(sbsXmlPath));
+		};
+		processHandler.getProcessBuilder().directory(new File(sbsXmlPath));
+		processHandler.exec();
 
 	}
 }

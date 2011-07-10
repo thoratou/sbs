@@ -36,7 +36,7 @@ public class CMakeVersion {
 	
 	static String[] getVersion() throws ContextException{
 		if(cmakeVersion == null){
-			new ProcessHandler() {
+			new ProcessHandler(new String[]{"cmake","-version"}) {
 				
 				@Override
 				public void processOutLine(String line) {
@@ -59,7 +59,7 @@ public class CMakeVersion {
 					Logger.error(line);
 		        	ErrorList.instance.addError(line);
 				}
-			}.exec(new String[]{"cmake","-version"}, null);
+			}.exec();
 		}
 		if(cmakeVersion == null){
 			throw new ContextException("can't retrieve cmake version");

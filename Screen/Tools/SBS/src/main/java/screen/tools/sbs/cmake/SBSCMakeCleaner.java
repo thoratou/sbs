@@ -58,7 +58,7 @@ public class SBSCMakeCleaner {
 		if(command!=null){
 			Logger.info("command : "+ProcessLauncher.getCommand(command));
 			
-			new ProcessHandler() {
+			ProcessHandler processHandler = new ProcessHandler(command) {
 				
 				@Override
 				public void processOutLine(String line) {
@@ -70,7 +70,9 @@ public class SBSCMakeCleaner {
 					Logger.error(line);
 			    	ErrorList.instance.addError(line);					
 				}
-			}.exec(command,new File(sbsXmlPath));
+			};
+			processHandler.getProcessBuilder().directory(new File(sbsXmlPath));
+			processHandler.exec();
 		}
 	}
 }

@@ -24,7 +24,9 @@ package screen.tools.sbs.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -37,15 +39,31 @@ import screen.tools.sbs.objects.Pack;
 public class ExecLauncher {
 	private Pack pack;
 	private ContextHandler contextHandler;
+	private final List<FieldPath> runtimePaths;
 	
-	public ExecLauncher(ContextHandler contextHandler, Pack pack) {
+	public ExecLauncher(ContextHandler contextHandler, Pack pack, List<FieldPath> runtimePaths) {
 		this.contextHandler = contextHandler;
 		this.pack = pack;
+		this.runtimePaths = runtimePaths;
 	}
 	
 	public void launch() throws ContextException, FieldException{
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		
+		StringBuffer paths = new StringBuffer();
+		if(runtimePaths.isEmpty()){
+			paths.append(";");
+		}
+		else{
+			Iterator<FieldPath> iterator = runtimePaths.iterator();
+			while(iterator.hasNext()){
+				FieldPath fieldPath = iterator.next();
+				paths.append(fieldPath.getString());
+				if(iterator.hasNext())
+					paths.append(";");
+			}
+		}
+				
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
 		String repoRoot = fieldRepoRoot.getString();
 		
@@ -66,7 +84,7 @@ public class ExecLauncher {
 		
 		Logger.info(ProcessLauncher.getCommand(command));
 		
-		new ProcessHandler() {
+		ProcessHandler processHandler = new ProcessHandler(command) {
 			
 			@Override
 			public void processOutLine(String line) {
@@ -78,6 +96,10 @@ public class ExecLauncher {
 				Logger.error(line);
 		    	ErrorList.instance.addError(line);					
 			}
-		}.exec(command.toArray(new String[command.size()]),new File(path));
-	}
+		};
+		processHandler.getProcessBuilder().directory(new File(path));
+		Map<String, String> environment = processHandler.getProcessBuilder().environment();
+		environment.put("SBS_TMP_RUNTIME",paths.toString());
+		processHandler.exec();
+		}
 }
