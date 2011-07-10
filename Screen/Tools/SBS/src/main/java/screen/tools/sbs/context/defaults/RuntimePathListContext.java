@@ -22,70 +22,20 @@
 
 package screen.tools.sbs.context.defaults;
 
-import screen.tools.sbs.context.ContextKey;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ContextKeys {
-	public final static ContextKey PACK;
-	public final static ContextKey TEST_PACK;
-	public final static ContextKey TINY_PACK;
-	public final static ContextKey TINY_TEST_PACK;
-	public final static ContextKey SBS_XML_DOCUMENT;
-	public final static ContextKey SBS_FILE_AND_PATH;
-	public final static ContextKey REPOSITORIES;
-	public final static ContextKey ENV_VARIABLES;
-	public final static ContextKey RUNTIME_PATHS;
-	public final static ContextKey TEST_RUNTIME_PATHS;
-	
-	static{
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("pack");
-			PACK = tmp;
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("test-pack");
-			TEST_PACK = tmp;
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("tiny-pack");
-			TINY_PACK = tmp;
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("tiny-test-pack");
-			TINY_TEST_PACK = tmp;
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("xml-document");
-			SBS_XML_DOCUMENT = tmp;	
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("sbs-file-and-path");
-			SBS_FILE_AND_PATH = tmp;	
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("repositories");
-			REPOSITORIES = tmp;	
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("env-variables");
-			ENV_VARIABLES = tmp;	
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("runtime-paths");
-			RUNTIME_PATHS = tmp;	
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("test-runtime-paths");
-			TEST_RUNTIME_PATHS = tmp;	
-		}
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.utils.FieldPath;
+
+public class RuntimePathListContext implements Context {
+	private List<FieldPath> runtimePaths; 
+
+	public RuntimePathListContext() {
+		runtimePaths = new ArrayList<FieldPath>();
+	}
+
+	public List<FieldPath> getPaths() {
+		return runtimePaths;
 	}
 }

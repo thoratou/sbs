@@ -26,8 +26,10 @@ import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
 import screen.tools.sbs.actions.defaults.ActionRuntimePathDisplay;
+import screen.tools.sbs.actions.defaults.ActionRuntimePathLoad;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.actions.defaults.ActionTestRuntimePathDisplay;
+import screen.tools.sbs.actions.defaults.ActionTestRuntimePathLoad;
 import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -35,6 +37,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
+import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
@@ -86,6 +89,8 @@ public class TargetRuntimePaths implements Target {
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
+		contextHandler.addContext(ContextKeys.RUNTIME_PATHS, new RuntimePathListContext());
+		contextHandler.addContext(ContextKeys.TEST_RUNTIME_PATHS, new RuntimePathListContext());
 		actionManager.setContext(contextHandler);
 		
 		contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables()
@@ -97,12 +102,14 @@ public class TargetRuntimePaths implements Target {
 			ActionPackLoad actionPackLoad = new ActionPackLoad();
 			actionPackLoad.processRuntime(true);
 			actionManager.pushAction(actionPackLoad);
+			actionManager.pushAction(new ActionRuntimePathLoad());
 			actionManager.pushAction(new ActionRuntimePathDisplay());
 		}
 		if(optionIsTest.isTest()){
 			ActionTestPackLoad actionPackLoad = new ActionTestPackLoad();
 			actionPackLoad.processRuntime(true);
 			actionManager.pushAction(actionPackLoad);
+			actionManager.pushAction(new ActionTestRuntimePathLoad());
 			actionManager.pushAction(new ActionTestRuntimePathDisplay());
 		}
 	}

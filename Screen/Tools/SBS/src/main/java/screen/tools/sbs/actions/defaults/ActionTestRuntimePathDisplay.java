@@ -29,9 +29,7 @@ import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.utils.FieldException;
 import screen.tools.sbs.utils.FieldPath;
 import screen.tools.sbs.utils.Logger;
@@ -52,21 +50,14 @@ public class ActionTestRuntimePathDisplay implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		Pack pack = contextHandler.<PackContext>get(ContextKeys.TEST_PACK).getPack();
-		List<Dependency> dependencyList = pack.getDependencyList();
-		Iterator<Dependency> iterator = dependencyList.iterator();
+		List<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.TEST_RUNTIME_PATHS).getPaths();
 		StringBuffer buffer = new StringBuffer();
+		Iterator<FieldPath> iterator = paths.iterator();
 		while(iterator.hasNext()){
-			Dependency dependency = iterator.next();
-			List<FieldPath> libraryPathList = dependency.getLibraryPathList();
-			Iterator<FieldPath> pathIterator = libraryPathList.iterator();
-			while(pathIterator.hasNext()){
-				FieldPath fieldPath = pathIterator.next();
-				buffer.append(fieldPath.getString());
-				buffer.append("\n");
-			}
+			buffer.append(iterator.next().getString());
+			buffer.append("\n");
 		}
-		Logger.info("test runtime paths : \n"+buffer);
+		Logger.info("runtime paths : \n"+buffer);
 	}
 	
 	public void setContext(ContextHandler contextHandler) {
