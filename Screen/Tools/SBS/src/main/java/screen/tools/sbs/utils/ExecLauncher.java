@@ -52,7 +52,7 @@ public class ExecLauncher {
 		
 		StringBuffer paths = new StringBuffer();
 		if(runtimePaths.isEmpty()){
-			paths.append(";");
+			paths.append(File.pathSeparator);
 		}
 		else{
 			Iterator<FieldPath> iterator = runtimePaths.iterator();
@@ -60,9 +60,11 @@ public class ExecLauncher {
 				FieldPath fieldPath = iterator.next();
 				paths.append(fieldPath.getString());
 				if(iterator.hasNext())
-					paths.append(";");
+					paths.append(File.pathSeparator);
 			}
 		}
+		
+		Logger.debug(paths.toString());
 				
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
 		String repoRoot = fieldRepoRoot.getString();
@@ -73,7 +75,9 @@ public class ExecLauncher {
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
 		String compileMode = fieldCompileMode.getString();
 
-		String path = repoRoot+"/"+envName+"/"+compileMode;
+		String path = repoRoot+"/"+pack.getProperties().getName().getString()+
+						"/"+pack.getProperties().getVersion().getString()+
+						"/exe/"+envName+"/"+compileMode;
 
 		EnvironmentVariables addVars = new EnvironmentVariables();
 		addVars.put("EXE_NAME", pack.getProperties().getName().getString().replaceAll("/", ""));
@@ -99,7 +103,8 @@ public class ExecLauncher {
 		};
 		processHandler.getProcessBuilder().directory(new File(path));
 		Map<String, String> environment = processHandler.getProcessBuilder().environment();
-		environment.put("SBS_TMP_RUNTIME",paths.toString());
+		String envPath = environment.get("Path");
+		environment.put("Path",envPath+File.pathSeparator+paths.toString());
 		processHandler.exec();
 		}
 }

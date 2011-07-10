@@ -34,6 +34,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
+import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
@@ -80,6 +81,7 @@ public class TargetRun implements Target {
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
+		contextHandler.addContext(ContextKeys.RUNTIME_PATHS, new RuntimePathListContext());
 		actionManager.setContext(contextHandler);
 		
 		contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables()
