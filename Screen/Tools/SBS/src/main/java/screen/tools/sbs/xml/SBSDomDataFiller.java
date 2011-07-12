@@ -92,11 +92,17 @@ public class SBSDomDataFiller {
 		//ErrorList errList = GlobalSettings.getGlobalSettings().getErrorList();		
 		Element root = doc.getRootElement();
 		
+		boolean hasMainPack = true;
+		boolean hasTestPack = true;
 		try {
-			if(pack == null)
+			if(pack == null){
 				pack = new Pack();
-			if(testPack == null)
+				hasMainPack = false;
+			}
+			if(testPack == null){
 				testPack = new Pack();
+				hasTestPack = false;
+			}
 			//properties
 			
 			//name
@@ -124,25 +130,27 @@ public class SBSDomDataFiller {
 			}
 			
 			//main
-			processAll(root, pack, sbsXmlPath);
+			if(hasMainPack)
+				processAll(root, pack, sbsXmlPath);
 
 			//test
-			List<?> test = root.getChildren("test");
-			Iterator<?> iterator = test.iterator();
-			while(iterator.hasNext()){
-				testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
-				testPack.getProperties().setVersion(new FieldString(propertyVersion));
-				testPack.getProperties().setBuildType(new FieldString("executable"));
-				FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
-				Element next = (Element) iterator.next();
-				processDependencies(next, testPack, path);
-				if(isRuntime)
-					processRuntime(next, testPack, path);
-				processFlags(next,testPack,path);
-				processDescriptions(next, testPack, path);
-				processImports(next, testPack, path);
-			}
-			
+			if(hasTestPack){
+				List<?> test = root.getChildren("test");
+				Iterator<?> iterator = test.iterator();
+				while(iterator.hasNext()){
+					testPack.getProperties().setName(new FieldString(propertyName+"/Test"));
+					testPack.getProperties().setVersion(new FieldString(propertyVersion));
+					testPack.getProperties().setBuildType(new FieldString("executable"));
+					FieldPath path = new FieldPath(sbsXmlPath.getOriginalString()+"/test");
+					Element next = (Element) iterator.next();
+					processDependencies(next, testPack, path);
+					if(isRuntime)
+						processRuntime(next, testPack, path);
+					processFlags(next,testPack,path);
+					processDescriptions(next, testPack, path);
+					processImports(next, testPack, path);
+				}
+			}			
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		}
