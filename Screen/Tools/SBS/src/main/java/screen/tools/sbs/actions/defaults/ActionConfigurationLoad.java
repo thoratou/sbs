@@ -61,7 +61,7 @@ public class ActionConfigurationLoad implements Action {
 	 */
 	public void perform() throws ContextException, FieldException {
 		EnvironmentVariables environmentVariables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		FieldString fieldRoot = environmentVariables.getFieldString("SBS_ROOT");
+		FieldString fieldRoot = environmentVariables.getFieldString("SBS_HOME");
 		String root = fieldRoot.getString();
 		
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();

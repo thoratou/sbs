@@ -48,7 +48,7 @@ public class SBSCMakeCleaner {
 	 */
 	public void clean(Pack pack, String sbsXmlPath) {
 		String[] command = null;
-		String root = System.getProperty("SBS_HOME");
+		String root = System.getProperty("SBS_ROOT");
 		
 		if(Utilities.isWindows())
 			command = new String[]{"cmd.exe", "/C", root+"\\clean.bat"};

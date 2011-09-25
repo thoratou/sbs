@@ -40,13 +40,12 @@ public class ContextHandler {
 		//create context for environment variable and fill it with some values
 		EnvironmentVariablesContext environmentVariablesContext = new EnvironmentVariablesContext();
 
+		String home = System.getProperty("SBS_HOME");
+		environmentVariablesContext.getEnvironmentVariables().put("SBS_HOME", home);		
+
 		String root = System.getProperty("SBS_ROOT");
-		environmentVariablesContext.getEnvironmentVariables().put("SBS_ROOT", root);
-		
-		String home = System.getProperty("user.home");
-		environmentVariablesContext.getEnvironmentVariables().put("HOME", home);
-		
-		
+		environmentVariablesContext.getEnvironmentVariables().put("SBS_ROOT", root);		
+
 		// set variable context to field string process
 		FieldString.setCurrentEnvironmentVariables(environmentVariablesContext.getEnvironmentVariables());
 

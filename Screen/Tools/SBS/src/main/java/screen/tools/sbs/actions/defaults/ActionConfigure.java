@@ -112,7 +112,7 @@ public class ActionConfigure implements Action {
 			if(configs.size()>0)
 				Logger.warning("clean option incompatible with configurations, -e options ignored");
 			if(isGlobal){
-				clean(new FieldFile("${SBS_ROOT}/.sbsconfig"));
+				clean(new FieldFile("${SBS_HOME}/.sbsconfig"));
 			}
 			for(int i=0; i<projects.size(); i++){
 				clean(new FieldFile(projects.get(i)+"/.sbsconfig"));
@@ -120,7 +120,7 @@ public class ActionConfigure implements Action {
 		}
 		else{
 			if(isGlobal){
-				write(new FieldFile("${SBS_ROOT}/.sbsconfig"));
+				write(new FieldFile("${SBS_HOME}/.sbsconfig"));
 			}
 			for(int i=0; i<projects.size(); i++){
 				write(new FieldFile(projects.get(i)+"/.sbsconfig"));
