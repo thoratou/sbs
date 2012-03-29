@@ -25,12 +25,12 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.List;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldPath;
 
 /**
  * write folder list for all libraries
@@ -53,7 +53,7 @@ public class CMakeLinkFolderListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		List<FieldPath> linkDirectories = cmakePack.getLinkDirectories();
+		FieldList<FieldPath> linkDirectories = cmakePack.getLinkDirectories();
 		Iterator<FieldPath> iterator = linkDirectories.iterator();
 		cmakeListsWriter.write("LINK_DIRECTORIES(\n");
 		while(iterator.hasNext()){

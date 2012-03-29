@@ -23,6 +23,14 @@
 package screen.tools.sbs.utils;
 
 public class Logger {
+	public enum LogLevel{
+		NO_LOG,
+		DEBUG,
+		INFO,
+		WARNING,
+		ERROR
+	}
+	
 	private static boolean isDebug = false;
 	
 	public static void debug(String s){

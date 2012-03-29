@@ -27,9 +27,7 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldBuildType;
-import screen.tools.sbs.utils.FieldBuildType.Type;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * set BUILD_SHARED_LIBS
@@ -47,11 +45,12 @@ public class CMakeBuildTypeWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		FieldBuildType typeInst = cmakePack.getBuildType();
-		FieldBuildType.Type type = typeInst.get();
-		if(type != Type.EXECUTABLE){
-			String on = (type == Type.SHARED_LIBRARY ? "ON" : "OFF");
-			cmakeListsWriter.write("SET(BUILD_SHARED_LIBS "+on+")\n");
+		String type = cmakePack.getBuildType().get();
+		if(type.equals("static")){
+			cmakeListsWriter.write("SET(BUILD_SHARED_LIBS OFF)\n");
+		}
+		else if(type.equals("shared")){
+			cmakeListsWriter.write("SET(BUILD_SHARED_LIBS ON)\n");			
 		}
 	}
 }

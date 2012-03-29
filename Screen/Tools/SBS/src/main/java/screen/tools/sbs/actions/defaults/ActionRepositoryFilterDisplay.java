@@ -30,9 +30,9 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
+import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.repositories.RepositoryFilter;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
-import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to display repository list into standard output
@@ -78,11 +78,11 @@ public class ActionRepositoryFilterDisplay implements Action {
 		Iterator<RepositoryFilter> iterator = list.iterator();
 		while(iterator.hasNext()){
 			RepositoryFilter next = iterator.next();
-			String string = next.getId().getString();
-			String string2 = next.getData().getId().getString();
-			String string3 = next.getComponentName().getString();
-			String string4 = next.getComponentVersion().getString();
-			String string5 = next.getCompiler().getString();
+			String string = next.getId().get();
+			String string2 = next.getData().id().get();
+			String string3 = next.getComponentName().get();
+			String string4 = next.getComponentVersion().get();
+			String string5 = next.getCompiler().get();
 			System.out.format(format,string,string2,string3,string4,string5);	
 		}
 		

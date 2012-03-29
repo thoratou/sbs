@@ -27,8 +27,8 @@ import screen.tools.sbs.context.ContextKey;
 public class ContextKeys {
 	public final static ContextKey PACK;
 	public final static ContextKey TEST_PACK;
-	public final static ContextKey TINY_PACK;
-	public final static ContextKey TINY_TEST_PACK;
+	public final static ContextKey COMPONENT_PACK;
+	public final static ContextKey COMPONENT_TEST_PACK;
 	public final static ContextKey SBS_XML_DOCUMENT;
 	public final static ContextKey SBS_FILE_AND_PATH;
 	public final static ContextKey REPOSITORIES;
@@ -50,12 +50,12 @@ public class ContextKeys {
 		{
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("tiny-pack");
-			TINY_PACK = tmp;
+			COMPONENT_PACK = tmp;
 		}
 		{
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("tiny-test-pack");
-			TINY_TEST_PACK = tmp;
+			COMPONENT_TEST_PACK = tmp;
 		}
 		{
 			ContextKey tmp = new ContextKey();

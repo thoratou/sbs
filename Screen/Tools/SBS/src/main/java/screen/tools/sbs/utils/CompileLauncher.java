@@ -29,6 +29,8 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 
@@ -50,7 +52,7 @@ public class CompileLauncher {
 			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		
 		FieldString fieldCompileCommand = variables.getFieldString("COMPILE_COMMAND");
-		String compileCommand = fieldCompileCommand.getString();
+		String compileCommand = fieldCompileCommand.get();
 
         String[] cmd = compileCommand.split(" ");
         Logger.info(ProcessLauncher.getCommand(cmd));

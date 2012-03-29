@@ -24,8 +24,8 @@ package screen.tools.sbs.utils.targethelper;
 
 import java.util.List;
 
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.targets.Parameters;
-import screen.tools.sbs.utils.FieldBuildType;
 
 /**
  * @author Ratouit Thomas
@@ -53,9 +53,9 @@ public class MandatoryBuildType implements Mandatory{
 	 */
 	public int perform(Parameters pars, int it) {
 		type = pars.getParameterAt(it);
-		FieldBuildType field = new FieldBuildType();
+		FieldString field = new FieldString();
 		field.set(type);
-		if(field.isValid())
+		if(!field.isEmpty())
 			return it;
 		return -1;
 	}

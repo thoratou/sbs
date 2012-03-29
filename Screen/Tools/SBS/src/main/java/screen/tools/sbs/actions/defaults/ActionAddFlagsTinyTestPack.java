@@ -23,12 +23,12 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.component.ComponentPack;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.TinyPackContext;
-import screen.tools.sbs.objects.TinyPack;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * Action to generate a basic component.
@@ -53,7 +53,7 @@ public class ActionAddFlagsTinyTestPack implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		TinyPack testPack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).getPack();
+		ComponentPack testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();
 		ActionAddFlagsTinyPack.addFromField(testPack,field);
 	}
 	

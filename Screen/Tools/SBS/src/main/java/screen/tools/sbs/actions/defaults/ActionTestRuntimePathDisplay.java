@@ -30,8 +30,8 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.utils.Logger;
 
 /**
@@ -54,7 +54,7 @@ public class ActionTestRuntimePathDisplay implements Action {
 		StringBuffer buffer = new StringBuffer();
 		Iterator<FieldPath> iterator = paths.iterator();
 		while(iterator.hasNext()){
-			buffer.append(iterator.next().getString());
+			buffer.append(iterator.next().get());
 			buffer.append("\n");
 		}
 		Logger.info("runtime paths : \n"+buffer);

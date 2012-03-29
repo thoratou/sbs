@@ -23,5 +23,6 @@
 package screen.tools.sbs.context;
 
 public interface Context {
-
+	void setAvailable(boolean isAvailable);
+	boolean isAvailable();
 }

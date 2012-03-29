@@ -27,8 +27,8 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
 import screen.tools.sbs.cmake.CMakePack;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldString;
 
 /**
  * write cmake minimum version
@@ -45,7 +45,7 @@ import screen.tools.sbs.utils.FieldString;
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		FieldString version = cmakePack.getVersion();
-		cmakeListsWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION "+version.getString()+")\n");
+		FieldString version = cmakePack.getCmakeVersion();
+		cmakeListsWriter.write("CMAKE_MINIMUM_REQUIRED(VERSION "+version.get()+")\n");
 	}
 }

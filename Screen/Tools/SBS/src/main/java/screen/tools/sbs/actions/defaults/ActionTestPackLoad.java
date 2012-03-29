@@ -31,10 +31,9 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
-import screen.tools.sbs.xml.SBSDomDataFiller;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.pack.Pack;
 
 /**
  * Action to load test pack from an XML Dom.
@@ -63,7 +62,9 @@ public class ActionTestPackLoad implements Action {
 		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		Pack pack = new Pack();
-		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,new FieldPath(path));
+		FieldPath fieldPath = new FieldPath();
+		fieldPath.set(path);
+		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,fieldPath);
 		dataFiller.useRuntimes(isRuntime);
 		dataFiller.fill(doc);
 		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);

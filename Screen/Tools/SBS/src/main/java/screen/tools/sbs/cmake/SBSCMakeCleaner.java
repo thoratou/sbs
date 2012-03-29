@@ -25,7 +25,7 @@ package screen.tools.sbs.cmake;
 import java.io.File;
 
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.pack.Pack;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessHandler;
 import screen.tools.sbs.utils.ProcessLauncher;

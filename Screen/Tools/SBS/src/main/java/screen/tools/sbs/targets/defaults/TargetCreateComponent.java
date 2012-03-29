@@ -27,9 +27,9 @@ import screen.tools.sbs.actions.defaults.ActionCreateFolders;
 import screen.tools.sbs.actions.defaults.ActionCreateTinyPack;
 import screen.tools.sbs.actions.defaults.ActionWriteTinyPack;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.TinyPackContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
@@ -79,8 +79,8 @@ public class TargetCreateComponent implements Target {
 		context.setSbsXmlPath(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
-		contextHandler.addContext(ContextKeys.TINY_PACK, new TinyPackContext());
-		contextHandler.addContext(ContextKeys.TINY_TEST_PACK, new TinyPackContext());
+		contextHandler.addContext(ContextKeys.COMPONENT_PACK, new ComponentPackContext());
+		contextHandler.addContext(ContextKeys.COMPONENT_TEST_PACK, new ComponentPackContext());
 		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		actionManager.setContext(contextHandler);

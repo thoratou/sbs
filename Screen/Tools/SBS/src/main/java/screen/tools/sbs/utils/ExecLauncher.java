@@ -32,9 +32,12 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.pack.Pack;
 
 public class ExecLauncher {
 	private Pack pack;
@@ -58,7 +61,7 @@ public class ExecLauncher {
 			Iterator<FieldPath> iterator = runtimePaths.iterator();
 			while(iterator.hasNext()){
 				FieldPath fieldPath = iterator.next();
-				paths.append(fieldPath.getString());
+				paths.append(fieldPath.get());
 				if(iterator.hasNext())
 					paths.append(File.pathSeparator);
 			}
@@ -67,24 +70,24 @@ public class ExecLauncher {
 		Logger.debug(paths.toString());
 				
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
-		String repoRoot = fieldRepoRoot.getString();
+		String repoRoot = fieldRepoRoot.get();
 		
 		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-		String envName = fieldEnvName.getString();
+		String envName = fieldEnvName.get();
 
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		String compileMode = fieldCompileMode.getString();
+		String compileMode = fieldCompileMode.get();
 
-		String path = repoRoot+"/"+pack.getProperties().getName().getString()+
-						"/"+pack.getProperties().getVersion().getString()+
+		String path = repoRoot+"/"+pack.getProperties().getName().get()+
+						"/"+pack.getProperties().getVersion().get()+
 						"/exe/"+envName+"/"+compileMode;
 
 		EnvironmentVariables addVars = new EnvironmentVariables();
-		addVars.put("EXE_NAME", pack.getProperties().getName().getString().replaceAll("/", ""));
-		addVars.put("EXE_VERSION", pack.getProperties().getVersion().getString());
+		addVars.put("EXE_NAME", pack.getProperties().getName().get().replaceAll("/", ""));
+		addVars.put("EXE_VERSION", pack.getProperties().getVersion().get());
 		FieldString launchCommand = variables.getFieldString("LAUNCH_COMMAND");
 	    List<String> command = new ArrayList<String>();
-		command.add(path+"/"+launchCommand.getString(addVars));
+		command.add(path+"/"+launchCommand.get(addVars));
 		
 		Logger.info(ProcessLauncher.getCommand(command));
 		

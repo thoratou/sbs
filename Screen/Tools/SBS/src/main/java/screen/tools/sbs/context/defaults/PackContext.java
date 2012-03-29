@@ -23,24 +23,28 @@
 package screen.tools.sbs.context.defaults;
 
 import screen.tools.sbs.context.Context;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.pack.Pack;
 
 public class PackContext implements Context {
 	private Pack pack;
+	private boolean isAvailable;
 	
 	public PackContext() {
-		pack = null;
-	}
-
-	public void setPack(Pack pack) {
-		this.pack = pack;
-	}
-
-	public boolean hasPack(){
-		return pack != null;
+		pack = new Pack();
+		isAvailable = false;
 	}
 	
 	public Pack getPack() {
 		return pack;
+	}
+	
+	@Override
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+	
+	@Override
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 }

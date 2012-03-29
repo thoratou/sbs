@@ -23,15 +23,14 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.component.ComponentDomWriter;
+import screen.tools.sbs.component.ComponentPack;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.TinyPackContext;
-import screen.tools.sbs.objects.TinyPack;
-//import screen.tools.sbs.pack.PackXmlWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.xml.PackDomWriter;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * Action to generate a basic component.
@@ -48,11 +47,11 @@ public class ActionWriteTinyPack implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		TinyPack pack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).getPack();
-		TinyPack testPack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).getPack();
+		ComponentPack pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();
+		ComponentPack testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();
-		PackDomWriter writer = new PackDomWriter(contextHandler);
+		ComponentDomWriter writer = new ComponentDomWriter(contextHandler);
 		writer.write(pack,testPack,path,file);
 	}
 

@@ -27,8 +27,8 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.pack.Pack;
 
 /**
  * Action to verify test pack content.

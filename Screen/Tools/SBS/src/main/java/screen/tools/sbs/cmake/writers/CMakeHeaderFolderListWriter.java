@@ -25,12 +25,12 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.List;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldPath;
 
 /**
  * write folder list for all header files
@@ -55,7 +55,7 @@ public class CMakeHeaderFolderListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		List<FieldPath> includeDirectories = cmakePack.getIncludeDirectories();
+		FieldList<FieldPath> includeDirectories = cmakePack.getIncludeDirectories();
 		Iterator<FieldPath> iterator = includeDirectories.iterator();
 		cmakeListsWriter.write("INCLUDE_DIRECTORIES(\n");
 		while(iterator.hasNext()){

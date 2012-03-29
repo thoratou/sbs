@@ -31,10 +31,9 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
-import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.pack.Pack;
 
 /**
  * Action to generate CMakeLists.txt from a test pack.
@@ -54,10 +53,10 @@ public class ActionRuntimePathLoad implements Action {
 	public void perform() throws ContextException, FieldException {
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
 		List<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.RUNTIME_PATHS).getPaths();
-		List<Dependency> dependencyList = pack.getDependencyList();
-		Iterator<Dependency> iterator = dependencyList.iterator();
+		List<PackDependency> dependencyList = pack.getDependencyList();
+		Iterator<PackDependency> iterator = dependencyList.iterator();
 		while(iterator.hasNext()){
-			Dependency dependency = iterator.next();
+			PackDependency dependency = iterator.next();
 			List<FieldPath> libraryPathList = dependency.getLibraryPathList();
 			Iterator<FieldPath> pathIterator = libraryPathList.iterator();
 			while(pathIterator.hasNext()){

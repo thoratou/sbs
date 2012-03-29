@@ -27,8 +27,8 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldString;
 
 /**
  * write project name
@@ -47,6 +47,6 @@ public class CMakeProjectNameWriter implements CMakeSegmentWriter{
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
 		FieldString projectName = cmakePack.getProjectName();
-		cmakeListsWriter.write("PROJECT("+projectName.getString()+")\n");
+		cmakeListsWriter.write("PROJECT("+projectName.get()+")\n");
 	}
 }

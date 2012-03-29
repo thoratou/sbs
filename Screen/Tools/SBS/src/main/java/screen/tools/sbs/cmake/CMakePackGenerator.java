@@ -22,21 +22,17 @@
 
 package screen.tools.sbs.cmake;
 
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 
-import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Description;
-import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.Library;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.objects.ProjectProperties;
-import screen.tools.sbs.utils.FieldBuildType;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldObject;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.fields.FieldString;
+import screen.tools.sbs.pack.Pack;
+import screen.tools.sbs.pack.PackFlag;
+import screen.tools.sbs.pack.PackLibrary;
+import screen.tools.sbs.pack.PackManifest;
 
 /**
  * Generate a CMake pack from and SBS pack
@@ -65,7 +61,9 @@ public class CMakePackGenerator {
 	 */
 	public void generate() throws FieldException{
 		convertFromProperties(pack.getProperties());
-		convertFromDependencies(pack.getDependencyList(), pack.getDescriptionMap());
+		convertFromIncludePathList(pack.getIncludePathList());
+		convertFromLibraryPathList(pack.getLibraryPathList());
+		convertFromLibraries(pack.getLibraryList());
 		convertFromFlags(pack.getFlagList());
 	}
 
@@ -79,38 +77,13 @@ public class CMakePackGenerator {
 	 *  @param properties Component properties
 	 * @throws FieldException 
 	 */
-	protected void convertFromProperties(ProjectProperties properties) throws FieldException {
+	protected void convertFromProperties(PackManifest properties) throws FieldException {
 		FieldString name = pack.getProperties().getName();
-		cmakePack.setProjectName(name.getString().replaceAll("/", ""));
-		cmakePack.setProjectVersion(pack.getProperties().getVersion());
+		cmakePack.getProjectName().set(name.get().replaceAll("/", ""));
+		cmakePack.getProjectVersion().set(pack.getProperties().getVersion().get());
 
 		FieldString buildType = pack.getProperties().getBuildType();
-		FieldBuildType type = new FieldBuildType();
-		type.set(buildType.getString());
-		cmakePack.setBuildType(type);
-	}
-	
-	/**
-	 * Convert dependency list
-	 * Content :
-	 *  - include path list
-	 *  - library path list
-	 *  - library list
-	 * 
-	 * @param dependencyList 
-	 * @param descriptionMap
-	 * @throws FieldException 
-	 */
-
-	protected void convertFromDependencies(List<Dependency> dependencyList,
-			Hashtable<String, Description> descriptionMap) throws FieldException {
-		Iterator<Dependency> iterator = dependencyList.iterator();
-		while (iterator.hasNext()) {
-			Dependency dependency = iterator.next();
-			convertFromIncludePathList(dependency.getIncludePathList());
-			convertFromLibraryPathList(dependency.getLibraryPathList());
-			convertFromLibraryList(dependency.getLibraryList(), descriptionMap);
-		}
+		cmakePack.getBuildType().set(buildType.get());
 	}
 
 	/**
@@ -119,11 +92,11 @@ public class CMakePackGenerator {
 	 * @param includePathList
 	 * @throws FieldException 
 	 */
-	protected void convertFromIncludePathList(List<FieldPath> includePathList) throws FieldException {
+	protected void convertFromIncludePathList(FieldList<FieldPath> includePathList) throws FieldException {
 		Iterator<FieldPath> iterator = includePathList.iterator();
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
-			cmakePack.addIncludeDirectory(fieldPath.getCMakeString());
+			cmakePack.getIncludeDirectories().allocate().set(fieldPath.getCMakeString());
 		}
 	}
 
@@ -133,34 +106,28 @@ public class CMakePackGenerator {
 	 * @param libraryPathList
 	 * @throws FieldException 
 	 */
-	protected void convertFromLibraryPathList(List<FieldPath> libraryPathList) throws FieldException {
+	protected void convertFromLibraryPathList(FieldList<FieldPath> libraryPathList) throws FieldException {
 		Iterator<FieldPath> iterator = libraryPathList.iterator();
 		while (iterator.hasNext()) {
 			FieldPath fieldPath = iterator.next();
-			cmakePack.addLinkDirectory(fieldPath.getCMakeString());
+			cmakePack.getLinkDirectories().allocate().set(fieldPath.getCMakeString());
 		}
 	}
-
+	
 	/**
-	 * Convert library list
+	 * Convert dependency list
+	 * Content :
+	 *  - library list
 	 * 
-	 * @param libraryList
-	 * @param descriptionMap
+	 * @param libraryList 
 	 * @throws FieldException 
 	 */
-	protected void convertFromLibraryList(List<Library> libraryList,
-			Hashtable<String, Description> descriptionMap) throws FieldException {
-		Iterator<Library> iterator = libraryList.iterator();
+
+	protected void convertFromLibraries(FieldList<PackLibrary> libraryList) throws FieldException {
+		Iterator<PackLibrary> iterator = libraryList.iterator();
 		while (iterator.hasNext()) {
-			Library library = iterator.next();
-			FieldString fieldName = library.getName();
-			String name = fieldName.getString();
-			Description description = descriptionMap.get(name);
-			if(description != null){
-				cmakePack.addLinkLibraries(description.getCompileName().getString());
-			}
-			else
-				ErrorList.instance.addError("no description for library "+name+" into the pack");
+			PackLibrary library = iterator.next();
+			cmakePack.getLinkLibraries().allocate().set(library.getCompileName().get());
 		}
 	}
 
@@ -169,11 +136,12 @@ public class CMakePackGenerator {
 	 * 
 	 * @param flagList
 	 */
-	protected void convertFromFlags(List<Flag> flagList) {
-		Iterator<Flag> iterator = flagList.iterator();
+	protected void convertFromFlags(FieldList<PackFlag> flagList) {
+		Iterator<PackFlag> iterator = flagList.iterator();
 		while (iterator.hasNext()) {
-			Flag flag = iterator.next();
-			cmakePack.addCompileFlag(flag.getFlag(), flag.getValue());
+			PackFlag flag = iterator.next();
+			FieldObject value = cmakePack.getCompileFlags().allocate(flag.getKey());
+			value.merge(flag.getValue());
 		}
 	}	
 }

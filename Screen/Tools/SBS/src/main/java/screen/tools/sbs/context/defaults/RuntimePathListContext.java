@@ -22,20 +22,30 @@
 
 package screen.tools.sbs.context.defaults;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import screen.tools.sbs.context.Context;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldPath;
 
 public class RuntimePathListContext implements Context {
-	private List<FieldPath> runtimePaths; 
+	private FieldList<FieldPath> runtimePaths;
+	private boolean isAvailable; 
 
 	public RuntimePathListContext() {
-		runtimePaths = new ArrayList<FieldPath>();
+		runtimePaths = new FieldList<FieldPath>(new FieldPath());
+		isAvailable = false;
 	}
 
-	public List<FieldPath> getPaths() {
+	public FieldList<FieldPath> getPaths() {
 		return runtimePaths;
+	}
+	
+	@Override
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+	
+	@Override
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 }

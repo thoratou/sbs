@@ -27,12 +27,12 @@ import java.io.File;
 import org.jdom.Document;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.component.ComponentDomReader;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.context.defaults.XmlDocumentContext;
-import screen.tools.sbs.xml.SBSDomParser;
 
 /**
  * Action to load an SBS XML file
@@ -50,7 +50,7 @@ public class ActionXmlLoad implements Action {
 	public void perform() throws ContextException {
 		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();
-		Document doc = SBSDomParser.parserFile(new File(path+"/"+file));
+		Document doc = ComponentDomReader.parserFile(new File(path+"/"+file));
 		//GlobalSettings.getGlobalSettings().setXmlDocument(doc);
 		contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).setDocument(doc);
 	}

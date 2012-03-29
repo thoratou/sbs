@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.json.simple.JSONObject;
@@ -50,23 +49,13 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
-import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Description;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldJSONObject;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.objects.Import;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.objects.ProjectProperties;
-import screen.tools.sbs.objects.TinyPack;
-import screen.tools.sbs.utils.FieldBool;
-import screen.tools.sbs.utils.FieldBuildMode;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldJSONObject;
-import screen.tools.sbs.utils.FieldPath;
-import screen.tools.sbs.utils.FieldPathType;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.pack.Pack;
 import screen.tools.sbs.utils.Utilities;
-import screen.tools.sbs.xml.PackDomWriter;
 
 /**
  * Generates CMakeLists.txt and SBS files for global repository from a pack
@@ -95,12 +84,6 @@ public class SBSCMakeFileGenerator {
 	private String typedFolder;
 	private String outputPath;
 
-	private String componentPath;
-
-	private String compileName;
-
-	private String fullName;
-
 	private ContextHandler contextHandler;
 	
 	/**
@@ -122,22 +105,23 @@ public class SBSCMakeFileGenerator {
 		
 		//repository root
 		FieldString fieldRepoRoot = variables.getFieldString("REPOSITORY_ROOT");
-		repoRoot = fieldRepoRoot.getString();
+		repoRoot = fieldRepoRoot.get();
 		
 		//env name
 		FieldString fieldEnvName = variables.getFieldString("ENV_NAME");
-		envName = fieldEnvName.getString();
+		envName = fieldEnvName.get();
 
 		//compile mode
 		FieldString fieldCompileMode = variables.getFieldString("_COMPILE_MODE");
-		compileMode = fieldCompileMode.getString();
+		compileMode = fieldCompileMode.get();
 		
 		//compile flags
 		
 		String flagVar = compileMode.toUpperCase()+"_FLAGS";
 		FieldString fieldFlag = variables.getFieldString(flagVar);
 		if(!fieldFlag.isEmpty()){
-			FieldJSONObject jsonFlags = new FieldJSONObject(fieldFlag);
+			FieldJSONObject jsonFlags = new FieldJSONObject();
+			jsonFlags.set(fieldFlag.getOriginal());
 			flagsObject = jsonFlags.getJSONObject();
 		}
 		else{
@@ -147,44 +131,42 @@ public class SBSCMakeFileGenerator {
 		//default paths
 		if(Utilities.isLinux()){
 			FieldString fieldIncludePath = variables.getFieldString("DEFAULT_INCLUDE_PATH");
-			defaultIncludePath = fieldIncludePath.getString();
+			defaultIncludePath = fieldIncludePath.get();
 			
 			FieldString fieldLibPath = variables.getFieldString("DEFAULT_LIB_PATH");
-			defaultLibPath = fieldLibPath.getString();
+			defaultLibPath = fieldLibPath.get();
 		}
 		
 		//pack properties		
-		packName = pack.getProperties().getName().getString().replaceAll("/", "");
-		packPath = pack.getProperties().getName().getString();
-		packVersion = pack.getProperties().getVersion().getString();
+		packName = pack.getProperties().getName().get().replaceAll("/", "");
+		packPath = pack.getProperties().getName().get();
+		packVersion = pack.getProperties().getVersion().get();
 
-		packBuildType = pack.getProperties().getBuildType().getString();
+		packBuildType = pack.getProperties().getBuildType().get();
 		hasLibBuild = "static".equals(packBuildType) || "shared".equals(packBuildType);
 		typedFolder = hasLibBuild ? "lib" : "exe";
 		hasSharedLibBuild = "shared".equals(packBuildType); 
 		
 		outputPath = repoRoot+"/"+packPath+"/"+packVersion+"/"+typedFolder+"/"+envName+"/"+ compileMode;
-		componentPath = repoRoot +"/"+packPath+"/"+packVersion;
-		
 		EnvironmentVariables additionalVars = new EnvironmentVariables();
 		additionalVars.put("LIB_NAME", packName);
 		additionalVars.put("EXE_NAME", packName);
-		compileName = new FieldString(
+		new FieldString(
 				hasLibBuild ? (
 					hasSharedLibBuild ?
 						"${DEFAULT_SHARED_LIB_COMPILE_NAME}" :
 						"${DEFAULT_STATIC_LIB_COMPILE_NAME}"
 						) :
 					""
-				).getString(additionalVars);
-		fullName = new FieldString(
+				).get(additionalVars);
+		new FieldString(
 				hasLibBuild ? (
 					hasSharedLibBuild ?
 						"${DEFAULT_SHARED_LIB_FULL_NAME}" :
 						"${DEFAULT_STATIC_LIB_FULL_NAME}"
 						) :
 					"${DEFAULT_EXE_FULL_NAME}"
-				).getString(additionalVars);
+				).get(additionalVars);
 	}
 	
 	public void generate() throws ContextException, FieldException {
@@ -209,8 +191,8 @@ public class SBSCMakeFileGenerator {
 			CMakePackGenerator generator = new CMakePackGenerator(pack, cmakePack);
 			generator.generate();
 						
-			cmakePack.setVersion("2.6");
-			cmakePack.setBuildMode(compileMode);
+			cmakePack.getCmakeVersion().set("2.6");
+			cmakePack.getBuildMode().set(compileMode);
 			cmakePack.setTest(isTest);
 			
 			if(flagsObject!=null){
@@ -219,23 +201,23 @@ public class SBSCMakeFileGenerator {
 				while(iterator.hasNext()){
 					Object next = iterator.next();
 					String key = (String) next;
-					cmakePack.addCompileFlag(key, flagsObject.get(key));
+					cmakePack.getCompileFlags().allocate(new FieldString(key)).setObject(flagsObject.get(key));
 				}
 			}
 			
 			if(!isTest){
-				cmakePack.addIncludeDirectory("src");
-				cmakePack.addIncludeDirectory("include");
+				cmakePack.getIncludeDirectories().allocate().set("src");
+				cmakePack.getIncludeDirectories().allocate().set("include");
 			}
 			else{
-				cmakePack.addIncludeDirectory(".");
+				cmakePack.getIncludeDirectories().allocate().set(".");
 			}
 			
 			if(Utilities.isLinux()){
-				cmakePack.addIncludeDirectory(defaultIncludePath);
-				cmakePack.addLinkDirectory(defaultLibPath);				
+				cmakePack.getIncludeDirectories().allocate().set(defaultIncludePath);
+				cmakePack.getIncludeDirectories().allocate().set(defaultLibPath);				
 			}
-			cmakePack.setOutputPath(outputPath);
+			cmakePack.getOutputPath().set(outputPath);
 
 			CMakePackWriter writer = new CMakePackWriter(cmakePack, cmakeListWriter);
 			writer.addSegmentWriter(new CMakeVersionWriter());
@@ -264,91 +246,6 @@ public class SBSCMakeFileGenerator {
 		//creation component root folder
 		new File(outputPath).mkdirs();
 		
-		//self component description file writing
-		{
-			TinyPack componentPack = new TinyPack();
-			
-			//set properties
-			ProjectProperties properties = new ProjectProperties();
-			properties.setName(packPath);
-			properties.setVersion(packVersion);
-			properties.setBuildType(packBuildType);
-			componentPack.setProperties(properties);
-
-			//component paths
-			Dependency dependency = new Dependency();
-			FieldPath includePath = new FieldPath(new File(sbsXmlPath).getAbsolutePath()+"/include");
-			includePath.setPathType(FieldPathType.Type.ABSOLUTE);
-			dependency.addIncludePath(includePath);
-			dependency.addLibrary(packPath);
-			componentPack.addDependency(dependency);
-			
-			//exported dependencies
-			List<Dependency> depList = pack.getDependencyList();
-			for(int i=0; i<depList.size(); i++){
-				Dependency dep = depList.get(i);
-				if(!dep.getExport().isEmpty()){
-					if(dep.getExport().getBool()){
-						Dependency componentDependency = new Dependency();
-						componentDependency.setName(dep.getName());
-						componentDependency.setVersion(dep.getVersion());
-						componentDependency.setIncludePathList(dep.getIncludePathList());
-						componentDependency.setLibraryPathList(dep.getLibraryPathList());
-						componentDependency.setLibraryNameList(dep.getLibraryList());
-						componentPack.addDependency(componentDependency);
-					}
-				}
-			}
-			
-			//runtime dependencies
-			List<Dependency> runList = pack.getDependencyList();
-			for(int i=0; i<runList.size(); i++){
-				Dependency run = runList.get(i);
-				if(run.getSbs()){
-					FieldBool export = run.getExport();
-					if(export.isEmpty() || !export.getBool()){
-						Dependency componentRunDependency = new Dependency();
-						componentRunDependency.setName(run.getName());
-						componentRunDependency.setVersion(run.getVersion());
-						componentPack.addRuntime(componentRunDependency);
-					}
-				}
-			}
-			
-			//imports
-			Import releaseImport = new Import();
-			releaseImport.setBuildMode(FieldBuildMode.Type.RELEASE);
-			releaseImport.setFile("lib/${ENV_NAME}/Release/library-description.xml");
-			componentPack.addImport(releaseImport);
-			
-			Import debugImport = new Import();
-			debugImport.setBuildMode(FieldBuildMode.Type.DEBUG);
-			debugImport.setFile("lib/${ENV_NAME}/Debug/library-description.xml");
-			componentPack.addImport(debugImport);
-
-			//write component pack
-			PackDomWriter writer = new PackDomWriter(contextHandler);
-			writer.write(componentPack, new TinyPack(), componentPath, "component.xml");
-		}
-		{
-			TinyPack libraryPack = new TinyPack();
-			
-			//library path
-			Dependency dependency = new Dependency();
-			dependency.addLibraryPath(".");
-			libraryPack.addDependency(dependency);
-			
-			Description description = new Description();
-			description.setName(packPath);
-			description.setCompileName(compileName);
-			description.setFullName(fullName);
-			description.setBuildType(packBuildType);
-			description.setBuildMode(FieldBuildMode.Type.ALL);
-			libraryPack.addDescription(description);
-
-			//write component pack
-			PackDomWriter writer = new PackDomWriter(contextHandler);
-			writer.write(libraryPack, new TinyPack(), outputPath, "library-description.xml");
-		}
+		//TODO
 	}
 }

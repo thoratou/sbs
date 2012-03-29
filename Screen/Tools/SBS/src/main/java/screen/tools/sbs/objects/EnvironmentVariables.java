@@ -29,7 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.utils.Logger;
 
 public class EnvironmentVariables {
@@ -53,7 +53,9 @@ public class EnvironmentVariables {
 		while(en.hasMoreElements()){
 			String key = (String) en.nextElement();
 			String value = properties.getProperty(key);
-			variableTable.put(key, new FieldString(value));
+			FieldString fieldValue = new FieldString();
+			fieldValue.set(value);
+			variableTable.put(key, fieldValue);
 		}
 	}
 	
@@ -61,7 +63,9 @@ public class EnvironmentVariables {
 		Logger.debug("add var");
 		Logger.debug("   key : "+variable);
 		Logger.debug("   value : "+value);
-		variableTable.put(variable, new FieldString(value));
+		FieldString fieldValue = new FieldString();
+		fieldValue.set(value);
+		variableTable.put(variable, fieldValue);
 	}
 		
 	public FieldString getFieldString(String variable){

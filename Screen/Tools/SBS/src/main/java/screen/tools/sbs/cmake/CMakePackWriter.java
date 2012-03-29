@@ -27,8 +27,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import screen.tools.sbs.utils.FieldBuildType;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldString;
 
 
 /**
@@ -45,16 +45,16 @@ public class CMakePackWriter {
 	 * 
 	 * @param type Input SBS build type
 	 * @return Output CMake build type
+	 * @throws FieldException 
 	 */
-	public static String getCmakeBuildType(FieldBuildType.Type type){
-		switch(type){
-		case EXECUTABLE:
+	public static String getCmakeBuildType(FieldString buildType) throws FieldException{
+		String type = buildType.get();
+		if(type.equals("executable"))
 			return "EXECUTABLE";
-		case STATIC_LIBRARY:
+		else if(type.equals("static"))
 			return "STATIC";
-		case SHARED_LIBRARY:
+		else if(type.equals("shared"))
 			return "SHARED";
-		}
 		return null;
 	}
 	

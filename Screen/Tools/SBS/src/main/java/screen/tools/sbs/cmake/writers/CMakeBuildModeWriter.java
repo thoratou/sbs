@@ -27,8 +27,7 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * set CMAKE_BUILD_TYPE
@@ -46,7 +45,6 @@ public class CMakeBuildModeWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		FieldString mode = cmakePack.getBuildMode();
-		cmakeListsWriter.write("SET(CMAKE_BUILD_TYPE \""+mode.getString()+"\")\n");
+		cmakeListsWriter.write("SET(CMAKE_BUILD_TYPE \""+cmakePack.getBuildMode().get()+"\")\n");
 	}
 }

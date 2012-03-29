@@ -27,9 +27,8 @@ import java.io.Writer;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldBuildType.Type;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
 
 /**
  * set LIBRARY_OUTPUT_PATH or EXECUTABLE_OUTPUT_PATH 
@@ -48,9 +47,9 @@ public class CMakeBuildFolderWriter implements CMakeSegmentWriter{
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
 		FieldPath output = cmakePack.getOutputPath();
-		if(cmakePack.getBuildType().get() != Type.EXECUTABLE)
-			cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getCMakeString()+")\n");
-		else
+		if(cmakePack.getBuildType().get().equals("executable"))
 			cmakeListsWriter.write("SET(EXECUTABLE_OUTPUT_PATH "+output.getCMakeString()+")\n");
+		else
+			cmakeListsWriter.write("SET(LIBRARY_OUTPUT_PATH "+output.getCMakeString()+")\n");
 	}
 }

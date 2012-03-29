@@ -30,10 +30,10 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.pack.Pack;
 import screen.tools.sbs.utils.ExecLauncher;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
 
 /**
  * Action to launch tests associated to a component

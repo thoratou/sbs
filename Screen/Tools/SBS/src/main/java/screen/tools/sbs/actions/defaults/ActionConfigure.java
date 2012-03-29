@@ -31,9 +31,9 @@ import java.util.List;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldFile;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldFile;
 import screen.tools.sbs.utils.Logger;
 
 /**
@@ -112,18 +112,26 @@ public class ActionConfigure implements Action {
 			if(configs.size()>0)
 				Logger.warning("clean option incompatible with configurations, -e options ignored");
 			if(isGlobal){
-				clean(new FieldFile("${SBS_HOME}/.sbsconfig"));
+				FieldFile fieldFile = new FieldFile();
+				fieldFile.set("${SBS_HOME}/.sbsconfig");
+				clean(fieldFile);
 			}
 			for(int i=0; i<projects.size(); i++){
-				clean(new FieldFile(projects.get(i)+"/.sbsconfig"));
+				FieldFile fieldFile = new FieldFile();
+				fieldFile.set(projects.get(i)+"/.sbsconfig");
+				clean(fieldFile);
 			}
 		}
 		else{
 			if(isGlobal){
-				write(new FieldFile("${SBS_HOME}/.sbsconfig"));
+				FieldFile fieldFile = new FieldFile();
+				fieldFile.set("${SBS_HOME}/.sbsconfig");
+				write(fieldFile);
 			}
 			for(int i=0; i<projects.size(); i++){
-				write(new FieldFile(projects.get(i)+"/.sbsconfig"));
+				FieldFile fieldFile = new FieldFile();
+				fieldFile.set(projects.get(i)+"/.sbsconfig");
+				write(fieldFile);
 			}			
 		}
 	}
@@ -135,10 +143,10 @@ public class ActionConfigure implements Action {
 	 * @throws FieldException 
 	 */
 	private void clean(FieldFile fieldFile) throws FieldException {
-		if(new File(fieldFile.getString()).delete())
-			Logger.info("configuration cleaned : "+fieldFile.getString());
+		if(new File(fieldFile.get()).delete())
+			Logger.info("configuration cleaned : "+fieldFile.get());
 		else
-			ErrorList.instance.addWarning("no configuration file : "+fieldFile.getString());
+			ErrorList.instance.addWarning("no configuration file : "+fieldFile.get());
 	}
 
 	/**
@@ -148,7 +156,7 @@ public class ActionConfigure implements Action {
 	 * @throws FieldException 
 	 */
 	private void write(FieldFile file) throws FieldException{
-		File outFile = new File(file.getString());
+		File outFile = new File(file.get());
 		try {
 			FileWriter outWriter = new FileWriter(outFile,false);
 			for(int i = 0; i<configs.size(); i++){

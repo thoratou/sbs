@@ -34,13 +34,13 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
 import screen.tools.sbs.repositories.RepositoryDataTable;
 import screen.tools.sbs.repositories.RepositoryFilterTable;
 import screen.tools.sbs.repositories.RepositoryParser;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldString;
 
 /**
  * Action to load local or global configuration.
@@ -62,7 +62,7 @@ public class ActionConfigurationLoad implements Action {
 	public void perform() throws ContextException, FieldException {
 		EnvironmentVariables environmentVariables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		FieldString fieldRoot = environmentVariables.getFieldString("SBS_HOME");
-		String root = fieldRoot.getString();
+		String root = fieldRoot.get();
 		
 		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
 		

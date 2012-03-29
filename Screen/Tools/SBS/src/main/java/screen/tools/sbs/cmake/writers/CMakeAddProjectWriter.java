@@ -28,9 +28,7 @@ import java.io.Writer;
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakePackWriter;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldBuildType;
-import screen.tools.sbs.utils.FieldBuildType.Type;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * write ADD_LIBRARY or ADD_EXECUTABLE part
@@ -53,15 +51,14 @@ public class CMakeAddProjectWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		FieldBuildType typeInst = cmakePack.getBuildType();
-		FieldBuildType.Type type = typeInst.get();
-		if(type == Type.EXECUTABLE)
+		String type = cmakePack.getBuildType().get();
+		if(type.equals("executable"))
 			cmakeListsWriter.write("ADD_EXECUTABLE(\n");
 		else
 			cmakeListsWriter.write("ADD_LIBRARY(\n");
 		cmakeListsWriter.write("    ${PROJECT_NAME}\n");
-		if(type != Type.EXECUTABLE)
-			cmakeListsWriter.write("    "+CMakePackWriter.getCmakeBuildType(type)+"\n");
+		if(!type.equals("executable"))
+			cmakeListsWriter.write("    "+CMakePackWriter.getCmakeBuildType(cmakePack.getBuildType())+"\n");
 		cmakeListsWriter.write("    ${SRC_FILES}\n");
 		cmakeListsWriter.write("    ${INC_FILES}\n");
 		cmakeListsWriter.write(")\n");

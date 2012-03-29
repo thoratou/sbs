@@ -28,14 +28,14 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.component.ComponentFlag;
+import screen.tools.sbs.component.ComponentPack;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.TinyPackContext;
-import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.TinyPack;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldJSONObject;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldJSONObject;
 
 /**
  * Action to generate a basic component.
@@ -60,7 +60,7 @@ public class ActionAddFlagsTinyPack implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		TinyPack pack = contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).getPack();
+		ComponentPack pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();
 		addFromField(pack,field);
 	}
 	
@@ -68,8 +68,9 @@ public class ActionAddFlagsTinyPack implements Action {
 		this.contextHandler = contextHandler;
 	}
 
-	public static void addFromField(TinyPack pack, String field) throws FieldException {
-		FieldJSONObject fieldJSONObject = new FieldJSONObject(field);
+	public static void addFromField(ComponentPack pack, String field) throws FieldException {
+		FieldJSONObject fieldJSONObject = new FieldJSONObject();
+		fieldJSONObject.set(field);
 		JSONObject flagsObject = fieldJSONObject.getJSONObject();
 		
 		Set<?> keySet = flagsObject.keySet();			
@@ -77,10 +78,10 @@ public class ActionAddFlagsTinyPack implements Action {
 		while(iterator.hasNext()){
 			Object next = iterator.next();
 			String key = (String) next;
-			Flag flag = new Flag();
-			flag.setFlag(key);
-			flag.setValue(flagsObject.get(key));
-			pack.addFlag(flag);
+			ComponentFlag flag = new ComponentFlag();
+			flag.getKey().set(key);
+			flag.getValue().setObject(flagsObject.get(key));
+			pack.getFlagList().allocate().merge(flag);
 		}
 	}
 	

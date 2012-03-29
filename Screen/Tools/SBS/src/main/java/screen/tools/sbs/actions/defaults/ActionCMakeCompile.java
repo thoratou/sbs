@@ -25,8 +25,8 @@ package screen.tools.sbs.actions.defaults;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.utils.CompileLauncher;
-import screen.tools.sbs.utils.FieldException;
 
 /**
  * Action to compile a component from a makefile.

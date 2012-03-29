@@ -29,10 +29,12 @@ import screen.tools.sbs.repositories.RepositoryFilterTable;
 public class RepositoryContext implements Context {
 	private RepositoryFilterTable repositoryFilterTable;
 	private RepositoryDataTable repositoryDataTable;
+	private boolean isAvailable;
 
 	public RepositoryContext() {
 		repositoryFilterTable = new RepositoryFilterTable();
 		repositoryDataTable = new RepositoryDataTable();
+		isAvailable = false;
 	}
 
 	public RepositoryFilterTable getRepositoryFilterTable() {
@@ -41,5 +43,15 @@ public class RepositoryContext implements Context {
 
 	public RepositoryDataTable getRepositoryDataTable() {
 		return repositoryDataTable;
+	}
+	
+	@Override
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+	
+	@Override
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 }

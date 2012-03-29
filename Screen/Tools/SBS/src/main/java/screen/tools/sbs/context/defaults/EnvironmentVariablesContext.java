@@ -27,12 +27,24 @@ import screen.tools.sbs.objects.EnvironmentVariables;
 
 public class EnvironmentVariablesContext implements Context {
 	private EnvironmentVariables environmentVariables;
+	private boolean isAvailable;
 
 	public EnvironmentVariablesContext() {
 		environmentVariables = new EnvironmentVariables();
+		isAvailable = false;
 	}
 
 	public EnvironmentVariables getEnvironmentVariables() {
 		return environmentVariables;
+	}
+	
+	@Override
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+	
+	@Override
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 }

@@ -24,16 +24,16 @@ package screen.tools.sbs.cmake.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldObject;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldMap;
+import screen.tools.sbs.fields.FieldObject;
+import screen.tools.sbs.fields.FieldString;
 
 /**
  * fill all ADD_DEFINITIONS instructions
@@ -53,14 +53,14 @@ public class CMakeDefinitionListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		Hashtable<FieldString, FieldObject> compileFlags = cmakePack.getCompileFlags();
+		FieldMap<FieldString, FieldObject> compileFlags = cmakePack.getCompileFlags();
 		Set<Entry<FieldString, FieldObject>> entrySet = compileFlags.entrySet();
 		Iterator<Entry<FieldString, FieldObject>> iterator = entrySet.iterator();
 		while(iterator.hasNext()){
 			Entry<FieldString, FieldObject> next = iterator.next();
 			FieldString flag = next.getKey();
 			FieldObject value = next.getValue();
-			cmakeListsWriter.write("ADD_DEFINITIONS(-D"+flag.getString());
+			cmakeListsWriter.write("ADD_DEFINITIONS(-D"+flag.get());
 			if(value.isValid()){
 				Object object = value.getObject();
 				if(object instanceof String)

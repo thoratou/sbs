@@ -29,7 +29,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.objects.Pack;
+import screen.tools.sbs.pack.Pack;
 
 /**
  * Action to clean a component environment.

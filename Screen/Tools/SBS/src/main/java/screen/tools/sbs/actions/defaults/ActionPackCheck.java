@@ -22,20 +22,17 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import java.util.List;
-
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
-import screen.tools.sbs.objects.Dependency;
-import screen.tools.sbs.objects.Description;
-import screen.tools.sbs.objects.Flag;
-import screen.tools.sbs.objects.Library;
-import screen.tools.sbs.objects.Pack;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldPath;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldPath;
+import screen.tools.sbs.pack.Pack;
+import screen.tools.sbs.pack.PackFlag;
+import screen.tools.sbs.pack.PackLibrary;
 import screen.tools.sbs.utils.Logger;
 
 /**
@@ -71,62 +68,61 @@ public class ActionPackCheck implements Action {
 	 * @throws FieldException 
 	 */
 	public static void checkFields(Pack pack) throws FieldException{
-		Logger.info("Properties :");
-		Logger.info("pack = " + pack.getProperties().getName().getString());
-		Logger.info("version = " + pack.getProperties().getVersion().getString());
-		Logger.info("build = " + pack.getProperties().getBuildType().getString());
+		Logger.info("properties : {");
+		Logger.info("    pack = " + pack.getProperties().getName().get());
+		Logger.info("    version = " + pack.getProperties().getVersion().get());
+		Logger.info("    build = " + pack.getProperties().getBuildType().get());
+		Logger.info("} ,");
 		
-		Logger.info("Dependencies :");
-		List<Dependency> deps = pack.getDependencyList();
+		FieldList<PackLibrary> deps = pack.getLibraryList();
+		Logger.info("library : {");
 		for (int i=0; i<deps.size(); i++){
-			Logger.info("Dependency{");
-			
-			Dependency dep = deps.get(i);
+			Logger.info("[");
+			PackLibrary dep = deps.get(i);
 			if(!dep.getName().isEmpty())
-				Logger.info("    name = " + dep.getName().getString());
+				Logger.info("    name = " + dep.getName().get());
 			if(!dep.getVersion().isEmpty())
-				Logger.info("    version = " + dep.getVersion().getString());
-			
-			List<FieldPath> incs = dep.getIncludePathList();
-			for(int j=0; j<incs.size(); j++){
-				Logger.info("    include path = " + incs.get(j).getString());
-			}
-			
-			List<FieldPath> libPaths = dep.getLibraryPathList();
-			for(int j=0; j<libPaths.size(); j++){
-				Logger.info("    library path = " + libPaths.get(j).getString());
-			}
-			
-			List<Library> libs = dep.getLibraryList();
-			for(int j=0; j<libs.size(); j++){
-				if(!libs.get(j).getName().isEmpty())
-					Logger.info("    library name = " + libs.get(j).getName().getString());
-				if(!libs.get(j).getVersion().isEmpty())
-					Logger.info("    library version = " + libs.get(j).getVersion().getString());
-			}
-			
-			Logger.info("}");
+				Logger.info("    version = " + dep.getVersion().get());
+			Logger.info("] ,");
+		}
+		Logger.info("} ,");
+
+		FieldList<FieldPath> incs = pack.getIncludePathList();
+		Logger.info("includes : {");
+		for(int j=0; j<incs.size(); j++){
+			Logger.info("[");
+			Logger.info("    path = " + incs.get(j).get());
+			Logger.info("] ,");
+		}
+		Logger.info("} ,");
+		
+		FieldList<FieldPath> libPaths = pack.getLibraryPathList();
+		Logger.info("library : {");
+		for(int j=0; j<libPaths.size(); j++){
+			Logger.info("[");
+			Logger.info("    path = " + libPaths.get(j).get());
+			Logger.info("] ,");
 		}
 		
-		Logger.info("Flags :");
-		List<Flag> flags = pack.getFlagList();
+		FieldList<PackLibrary> libs = pack.getLibraryList();
+		for(int j=0; j<libs.size(); j++){
+			Logger.info("[");
+			if(!libs.get(j).getName().isEmpty())
+				Logger.info("    library name = " + libs.get(j).getName().get());
+			if(!libs.get(j).getVersion().isEmpty())
+				Logger.info("    library version = " + libs.get(j).getVersion().get());
+			Logger.info("] ,");
+		}
+		Logger.info("} ,");
+		
+		Logger.info("flags : {");
+		FieldList<PackFlag> flags = pack.getFlagList();
 		for (int i=0; i<flags.size(); i++){
-			Logger.info("Flag{");
-			Logger.info("    flag = "+flags.get(i).getFlag().getString());
+			Logger.info("[");
+			Logger.info("    flag = "+flags.get(i).getKey().get());
 			Logger.info("    value = "+flags.get(i).getValue().getObject());
-			Logger.info("}");
+			Logger.info("] ,");
 		}
-		
-		Logger.info("Descriptions :");
-		List<Description> descs = pack.getDescriptionList();
-		for (int i=0; i<descs.size(); i++){
-			Logger.info("Description{");
-			Logger.info("    name = "+descs.get(i).getName().getString());
-			Logger.info("    compileName = "+descs.get(i).getCompileName().getString());
-			if(!descs.get(i).getFullName().isEmpty())
-			Logger.info("    fullName = "+descs.get(i).getFullName().getString());
-			Logger.info("    buildType = "+descs.get(i).getBuildType().getString());
-			Logger.info("}");
-		}
+		Logger.info("}");		
 	}
 }

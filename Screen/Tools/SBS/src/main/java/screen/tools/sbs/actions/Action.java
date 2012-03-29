@@ -24,7 +24,7 @@ package screen.tools.sbs.actions;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
 
 /**
  * Common interface to SBS Actions.

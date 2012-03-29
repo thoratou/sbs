@@ -23,26 +23,29 @@
 package screen.tools.sbs.context.defaults;
 
 import screen.tools.sbs.context.Context;
+import screen.tools.sbs.fields.FieldString;
 
 public class SbsFileAndPathContext implements Context{
 
-	private String sbsXmlPath;
-	private String sbsXmlFile;
+	private FieldString sbsXmlPath;
+	private FieldString sbsXmlFile;
+	private boolean isAvailable;
 
-	public void setSbsXmlPath(String sbsXmlPath) {
-		this.sbsXmlPath = sbsXmlPath;
+	public FieldString getSbsXmlPath() {
+		return sbsXmlPath;
 	}
 
-	public String getSbsXmlPath() {
-		return sbsXmlPath+"/";
-	}
-
-	public void setSbsXmlFile(String sbsXmlFile) {
-		this.sbsXmlFile = sbsXmlFile;
-	}
-
-	public String getSbsXmlFile() {
+	public FieldString getSbsXmlFile() {
 		return sbsXmlFile;
 	}
 
+	@Override
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+	
+	@Override
+	public boolean isAvailable() {
+		return isAvailable;
+	}
 }

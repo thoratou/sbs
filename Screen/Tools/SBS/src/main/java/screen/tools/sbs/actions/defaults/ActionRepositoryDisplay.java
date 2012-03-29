@@ -30,9 +30,9 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
-import screen.tools.sbs.repositories.RepositoryData;
-import screen.tools.sbs.repositories.RepositoryDataTable;
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.repositories.RepositoryLocalData;
+import screen.tools.sbs.repositories.RepositoryLocalData;
 
 /**
  * Action to display repository list into standard output
@@ -51,7 +51,7 @@ public class ActionRepositoryDisplay implements Action {
 	public void perform() throws ContextException, FieldException {
 		//retrieve repository list
 		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
-		List<RepositoryData> list = repositoryDataTable.getSorterByIDList();
+		List<RepositoryLocalData> list = repositoryDataTable.getSorterByIDList();
 		
 		//define output format
 		String format ="";
@@ -71,12 +71,12 @@ public class ActionRepositoryDisplay implements Action {
 		System.out.format(format,"-----","----","------------------------------");
 		
 		//table content
-		Iterator<RepositoryData> iterator = list.iterator();
+		Iterator<RepositoryLocalData> iterator = list.iterator();
 		while(iterator.hasNext()){
-			RepositoryData next = iterator.next();
-			String string = next.getId().getString();
-			String string2 = next.getType().toString();
-			String string3 = next.getPath().getString();
+			RepositoryLocalData next = iterator.next();
+			String string = next.id().get();
+			String string2 = next.type().toString();
+			String string3 = next.path().get();
 			System.out.format(format,string,string2,string3);	
 		}
 		

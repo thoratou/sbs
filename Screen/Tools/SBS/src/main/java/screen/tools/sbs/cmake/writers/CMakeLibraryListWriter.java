@@ -25,12 +25,12 @@ package screen.tools.sbs.cmake.writers;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.List;
 
 import screen.tools.sbs.cmake.CMakePack;
 import screen.tools.sbs.cmake.CMakeSegmentWriter;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.fields.FieldString;
 
 /**
  * write libraries to link
@@ -54,13 +54,13 @@ public class CMakeLibraryListWriter implements CMakeSegmentWriter{
 	 */
 	public void write(CMakePack cmakePack, Writer cmakeListsWriter)
 			throws IOException, FieldException {
-		List<FieldString> linkLibraries = cmakePack.getLinkLibraries();
+		FieldList<FieldString> linkLibraries = cmakePack.getLinkLibraries();
 		Iterator<FieldString> iterator = linkLibraries.iterator();
 		cmakeListsWriter.write("TARGET_LINK_LIBRARIES(\n");
 		cmakeListsWriter.write("    ${PROJECT_NAME}\n");
 		while(iterator.hasNext()){
 			FieldString next = iterator.next();
-			cmakeListsWriter.write("    "+next.getString()+"\n");
+			cmakeListsWriter.write("    "+next.get()+"\n");
 		}		
 		cmakeListsWriter.write(")\n");
 	}

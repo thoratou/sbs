@@ -25,7 +25,7 @@ package screen.tools.sbs.cmake;
 import java.io.IOException;
 import java.io.Writer;
 
-import screen.tools.sbs.utils.FieldException;
+import screen.tools.sbs.fields.FieldException;
 
 
 /**

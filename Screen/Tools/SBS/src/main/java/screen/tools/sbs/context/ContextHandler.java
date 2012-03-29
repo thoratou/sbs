@@ -26,7 +26,7 @@ import java.util.Hashtable;
 
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
-import screen.tools.sbs.utils.FieldString;
+import screen.tools.sbs.fields.FieldString;
 
 public class ContextHandler {
 	private Hashtable<ContextKey, Context> contextTable;
@@ -54,11 +54,6 @@ public class ContextHandler {
 
 	public void addContext(ContextKey key, Context context){
 		contextTable.put(key, context);
-	}
-	
-	@Deprecated
-	public Context getContext(ContextKey key){
-		return contextTable.get(key);
 	}
 	
 	@SuppressWarnings("unchecked")

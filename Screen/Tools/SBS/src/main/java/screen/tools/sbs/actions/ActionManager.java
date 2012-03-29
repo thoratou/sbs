@@ -27,8 +27,8 @@ import java.util.List;
 
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.utils.FieldException;
 
 /**
  * Class to handler, register and launch actions.

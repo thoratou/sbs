@@ -34,11 +34,11 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
+import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldJSONObject;
+import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.utils.FieldException;
-import screen.tools.sbs.utils.FieldJSONObject;
-import screen.tools.sbs.utils.FieldString;
 import screen.tools.sbs.utils.Logger;
 import screen.tools.sbs.utils.ProcessHandler;
 import screen.tools.sbs.utils.ProcessLauncher;
@@ -66,9 +66,10 @@ public class SBSCMakeLauncher {
 		FieldString fieldRcCompiler = variables.getFieldString("RC_COMPILER");
 		
 		FieldString fieldAddVarSetString = variables.getFieldString("CMAKE_ADD_VAR_SET");
-		FieldJSONObject fieldAddVarSet = new FieldJSONObject(fieldAddVarSetString);
+		FieldJSONObject fieldAddVarSet = new FieldJSONObject();
+		fieldAddVarSet.set(fieldAddVarSetString.getOriginal());
 				
-		String targetEnv = fieldTargetEnv.getString();
+		String targetEnv = fieldTargetEnv.get();
 		
 		if("/".equals(sbsXmlPath))
 			sbsXmlPath=".";
@@ -82,25 +83,25 @@ public class SBSCMakeLauncher {
 				command.add("--no-warn-unused-cli");
 		
 		if(!fieldMakeProg.isEmpty()){
-			String makeProg = fieldMakeProg.getString();
+			String makeProg = fieldMakeProg.get();
 			if(!makeProg.equals(""))
 				command.add("-DCMAKE_MAKE_PROGRAM=\""+makeProg+"\"");
 		}
 		
 		if(!fieldCCompiler.isEmpty()){
-			String cCompiler = fieldCCompiler.getString();
+			String cCompiler = fieldCCompiler.get();
 			if(!cCompiler.equals(""))
 				command.add("-DCMAKE_C_COMPILER=\""+cCompiler+"\"");
 		}
 		
 		if(!fieldCppCompiler.isEmpty()){
-			String cppCompiler = fieldCppCompiler.getString();
+			String cppCompiler = fieldCppCompiler.get();
 			if(!cppCompiler.equals(""))
 				command.add("-DCMAKE_CXX_COMPILER=\""+cppCompiler+"\"");
 		}
 		
 		if(!fieldRcCompiler.isEmpty()){
-			String rcCompiler = fieldRcCompiler.getString();
+			String rcCompiler = fieldRcCompiler.get();
 			if(!rcCompiler.equals(""))
 				command.add("-DCMAKE_RC_COMPILER=\""+rcCompiler+"\"");        		
 		}

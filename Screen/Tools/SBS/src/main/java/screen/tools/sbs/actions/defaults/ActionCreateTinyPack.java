@@ -23,11 +23,11 @@
 package screen.tools.sbs.actions.defaults;
 
 import screen.tools.sbs.actions.Action;
+import screen.tools.sbs.component.ComponentPack;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.TinyPackContext;
-import screen.tools.sbs.objects.TinyPack;
 
 /**
  * Action to generate a basic component.
@@ -55,12 +55,12 @@ public class ActionCreateTinyPack implements Action {
 	 * @throws ContextException 
 	 */
 	public void perform() throws ContextException {
-		TinyPack pack = new TinyPack();
-		pack.getProperties().getName().setString(name);
-		pack.getProperties().getVersion().setString(version);
-		pack.getProperties().getBuildType().setString(buildType);
-		contextHandler.<TinyPackContext>get(ContextKeys.TINY_PACK).setPack(pack);
-		contextHandler.<TinyPackContext>get(ContextKeys.TINY_TEST_PACK).setPack(new TinyPack());
+		ComponentPack pack = new ComponentPack();
+		pack.getProperties().getName().set(name);
+		pack.getProperties().getVersion().set(version);
+		pack.getProperties().getBuildType().set(buildType);
+		contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).setPack(pack);
+		contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).setPack(new ComponentPack());
 	}
 	
 	public void setContext(ContextHandler contextHandler) {
