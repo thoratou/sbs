@@ -20,60 +20,30 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package screen.tools.sbs.component;
+package screen.tools.sbs.repositories.query;
 
-import screen.tools.sbs.fields.FieldFactory;
-import screen.tools.sbs.fields.FieldFile;
-import screen.tools.sbs.fields.FieldString;
-import screen.tools.sbs.fields.interfaces.FieldBuildModeInterface;
-import screen.tools.sbs.fields.interfaces.FieldFileInterface;
-import screen.tools.sbs.fields.interfaces.FieldToolChainInterface;
-import screen.tools.sbs.objects.Entry;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class ComponentImport implements Entry<ComponentImport>,
-										FieldFileInterface,
-										FieldToolChainInterface,
-										FieldBuildModeInterface {
-	private FieldFile file;
-	private FieldString toolChain;
-	private FieldString buildMode;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.repositories.RepositoryData;
+import screen.tools.sbs.utils.DbQueryHandler;
+
+public class RetrieveRepositoriesQuery {
 	
-	public ComponentImport() {
-		file = FieldFactory.createMandatoryFieldFile();
-		toolChain = FieldFactory.createOptionalFieldString("all");
-		buildMode = FieldFactory.createOptionalFieldString("all");
-	}
-
-	public ComponentImport(ComponentImport import_) {
-		file = import_.file.copy();
-		toolChain = import_.toolChain.copy();
-		buildMode = import_.buildMode.copy();
-	}
-
-	@Override
-	public FieldFile getFile() {
-		return file;
-	}
-	
-	@Override
-	public FieldString getToolChain() {
-		return toolChain;
-	}
-
-	@Override
-	public FieldString getBuildMode() {
-		return buildMode;
-	}
-
-	@Override
-	public void merge(ComponentImport import_) {
-		file.merge(import_.file);
-		toolChain.merge(import_.toolChain);
-		buildMode.merge(import_.buildMode);
-	}
-
-	@Override
-	public ComponentImport copy() {
-		return new ComponentImport(this);
+	public void process(final FieldList<RepositoryData> list){
+		new DbQueryHandler("select * from repository") {
+			
+			@Override
+			protected boolean processResult(ResultSet result) throws SQLException {
+				RepositoryData data = list.allocate();
+				data.getRepositoryId().set(result.getString("repo-id"));
+				data.getLocationType().set(result.getString("location-type"));
+				data.getDeliveryType().set(result.getString("delivery-type"));
+				data.getRemotePath().set(result.getString("remote-path"));
+				data.getLocalPath().set(result.getString("local-path"));
+				return true;
+			}
+		}.process();
 	}
 }

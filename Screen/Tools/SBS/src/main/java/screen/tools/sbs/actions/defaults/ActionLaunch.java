@@ -22,8 +22,6 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import java.util.List;
-
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
@@ -31,6 +29,7 @@ import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.pack.Pack;
 import screen.tools.sbs.utils.ExecLauncher;
@@ -52,7 +51,7 @@ public class ActionLaunch implements Action {
 	public void perform() throws ContextException, FieldException {
 		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
-		List<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.RUNTIME_PATHS).getPaths();
+		FieldList<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.RUNTIME_PATHS).getPaths();
 		ExecLauncher launcher = new ExecLauncher(contextHandler, pack, paths);
 		launcher.launch();
 	}

@@ -49,8 +49,8 @@ public class ActionWriteTinyPack implements Action {
 	public void perform() throws ContextException, FieldException {
 		ComponentPack pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();
 		ComponentPack testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
-		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile();
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
+		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile().get();
 		ComponentDomWriter writer = new ComponentDomWriter(contextHandler);
 		writer.write(pack,testPack,path,file);
 	}

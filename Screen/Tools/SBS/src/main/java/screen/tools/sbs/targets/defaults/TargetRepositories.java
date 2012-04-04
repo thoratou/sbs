@@ -25,7 +25,6 @@ package screen.tools.sbs.targets.defaults;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionRepositoryDisplay;
-import screen.tools.sbs.actions.defaults.ActionRepositoryFilterDisplay;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
@@ -74,8 +73,7 @@ public class TargetRepositories implements Target {
 		helper.perform(parameters);
 		
 		SbsFileAndPathContext context = new SbsFileAndPathContext();
-		context.setSbsXmlPath(mandatoryPath.getPath());
-
+		context.getSbsXmlPath().set(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
@@ -86,7 +84,6 @@ public class TargetRepositories implements Target {
 		if("display".equals(mandatorySubTarget.getSubTarget())){
 			displayHelper.perform(parameters);
 			actionManager.pushAction(new ActionRepositoryDisplay());
-			actionManager.pushAction(new ActionRepositoryFilterDisplay());
 		}
 		if("find".equals(mandatorySubTarget.getSubTarget())){
 			findHelper.perform(parameters);

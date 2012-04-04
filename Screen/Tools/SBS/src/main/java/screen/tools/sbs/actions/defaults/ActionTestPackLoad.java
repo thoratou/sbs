@@ -22,15 +22,11 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import org.jdom.Document;
-
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.pack.Pack;
@@ -59,15 +55,14 @@ public class ActionTestPackLoad implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		Document doc = contextHandler.<XmlDocumentContext>get(ContextKeys.SBS_XML_DOCUMENT).getDocument();
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
 		Pack pack = new Pack();
 		FieldPath fieldPath = new FieldPath();
 		fieldPath.set(path);
-		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,fieldPath);
-		dataFiller.useRuntimes(isRuntime);
-		dataFiller.fill(doc);
-		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);
+//		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler,null,pack,fieldPath);
+//		dataFiller.useRuntimes(isRuntime);
+//		dataFiller.fill(doc);
+//		contextHandler.<PackContext>get(ContextKeys.TEST_PACK).setPack(pack);
 	}
 	
 	public void processRuntime(boolean isRuntime){

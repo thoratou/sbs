@@ -49,7 +49,7 @@ public class ActionCMakeGenerate implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
 		SBSCMakeFileGenerator generator = new SBSCMakeFileGenerator(contextHandler, pack, path, false);
 		generator.generate();

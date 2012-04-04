@@ -28,13 +28,11 @@ import screen.tools.sbs.actions.defaults.ActionAddFlagsTinyTestPack;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionTinyPackLoad;
 import screen.tools.sbs.actions.defaults.ActionWriteTinyPack;
-import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -94,7 +92,6 @@ public class TargetFlags implements Target {
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.COMPONENT_PACK, new ComponentPackContext());
 		contextHandler.addContext(ContextKeys.COMPONENT_TEST_PACK, new ComponentPackContext());
-		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
@@ -102,11 +99,10 @@ public class TargetFlags implements Target {
 		if("add".equals(mandatorySubTarget.getSubTarget())){
 			addHelper.perform(parameters);
 			
-			context.setSbsXmlFile(optionChooseSbsFile.getFile());
-			context.setSbsXmlPath(mandatoryPath.getPath());
-
+			context.getSbsXmlFile().set(optionChooseSbsFile.getFile());
+			context.getSbsXmlPath().set(mandatoryPath.getPath());
+			
 			actionManager.pushAction(new ActionConfigurationLoad());
-			actionManager.pushAction(new ActionXmlLoad());
 			actionManager.pushAction(new ActionTinyPackLoad());
 
 			if(optionIsTest.isMain()){

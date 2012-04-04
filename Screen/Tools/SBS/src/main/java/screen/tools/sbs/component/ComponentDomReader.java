@@ -59,7 +59,8 @@ public class ComponentDomReader {
 	private static String propertyVersionQuery = "//properties/version/text()";
 	private static String propertyBuildTypeQuery = "//properties/type/text()";
 
-	public void read(ComponentPack pack, ComponentPack testPack, Document doc) throws FieldException{
+	public void read(ComponentPack pack, ComponentPack testPack, File file) throws FieldException{
+		Document doc = parserFile(file);
 		try {
 			Element root = doc.getRootElement();
 			

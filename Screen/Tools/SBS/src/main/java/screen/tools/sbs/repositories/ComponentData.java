@@ -33,7 +33,7 @@ import screen.tools.sbs.fields.interfaces.FieldToolChainInterface;
 import screen.tools.sbs.fields.interfaces.FieldVersionInterface;
 import screen.tools.sbs.objects.Entry;
 
-public class RepositoryLocalComponentData implements Entry<RepositoryLocalComponentData>,
+public class ComponentData implements Entry<ComponentData>,
 											FieldRepositoryIdInterface,
 											FieldNameInterface,
 											FieldVersionInterface,
@@ -47,7 +47,7 @@ public class RepositoryLocalComponentData implements Entry<RepositoryLocalCompon
 	private FieldString buildMode;
 	private FieldPath path;
 	
-	public RepositoryLocalComponentData() {
+	public ComponentData() {
 		repositoryId = FieldFactory.createMandatoryFieldString();
 		name = FieldFactory.createMandatoryFieldString();
 		version = FieldFactory.createMandatoryFieldString();
@@ -56,7 +56,7 @@ public class RepositoryLocalComponentData implements Entry<RepositoryLocalCompon
 		path = FieldFactory.createOptionalFieldPath();
 	}
 	
-	public RepositoryLocalComponentData(RepositoryLocalComponentData component) {
+	public ComponentData(ComponentData component) {
 		repositoryId = component.repositoryId.copy();
 		name = component.name.copy();
 		version = component.version.copy();
@@ -96,7 +96,7 @@ public class RepositoryLocalComponentData implements Entry<RepositoryLocalCompon
 	}
 	
 	@Override
-	public void merge(RepositoryLocalComponentData component) {
+	public void merge(ComponentData component) {
 		repositoryId.merge(component.repositoryId);
 		name.merge(component.name);
 		version.merge(component.version);
@@ -106,7 +106,7 @@ public class RepositoryLocalComponentData implements Entry<RepositoryLocalCompon
 	}
 
 	@Override
-	public RepositoryLocalComponentData copy() {
-		return new RepositoryLocalComponentData(this);
+	public ComponentData copy() {
+		return new ComponentData(this);
 	}
 }

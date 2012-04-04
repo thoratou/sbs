@@ -23,7 +23,6 @@
 package screen.tools.sbs.actions.defaults;
 
 import java.util.Iterator;
-import java.util.List;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
@@ -31,6 +30,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.utils.Logger;
 
@@ -50,7 +50,7 @@ public class ActionRuntimePathDisplay implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		List<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.RUNTIME_PATHS).getPaths();
+		FieldList<FieldPath> paths = contextHandler.<RuntimePathListContext>get(ContextKeys.RUNTIME_PATHS).getPaths();
 		StringBuffer buffer = new StringBuffer();
 		Iterator<FieldPath> iterator = paths.iterator();
 		while(iterator.hasNext()){

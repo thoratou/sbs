@@ -33,6 +33,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
@@ -42,12 +43,12 @@ import screen.tools.sbs.pack.Pack;
 public class ExecLauncher {
 	private Pack pack;
 	private ContextHandler contextHandler;
-	private final List<FieldPath> runtimePaths;
+	private final FieldList<FieldPath> runtimePaths;
 	
-	public ExecLauncher(ContextHandler contextHandler, Pack pack, List<FieldPath> runtimePaths) {
+	public ExecLauncher(ContextHandler contextHandler, Pack pack, FieldList<FieldPath> paths) {
 		this.contextHandler = contextHandler;
 		this.pack = pack;
-		this.runtimePaths = runtimePaths;
+		this.runtimePaths = paths;
 	}
 	
 	public void launch() throws ContextException, FieldException{

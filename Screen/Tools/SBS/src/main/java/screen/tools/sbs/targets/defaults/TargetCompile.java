@@ -63,7 +63,7 @@ public class TargetCompile implements Target {
 		helper.perform(parameters);
 		
 		SbsFileAndPathContext context = new SbsFileAndPathContext();
-		context.setSbsXmlPath(mandatoryPath.getPath());
+		context.getSbsXmlPath().set(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);

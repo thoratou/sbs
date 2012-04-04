@@ -47,9 +47,9 @@ public class CompileLauncher {
 		EnvironmentVariables variables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
 		String path = null;
 		if(isTest)
-			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath()+"test/";
+			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get()+"test/";
 		else
-			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+			path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
 		
 		FieldString fieldCompileCommand = variables.getFieldString("COMPILE_COMMAND");
 		String compileCommand = fieldCompileCommand.get();

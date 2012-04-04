@@ -32,15 +32,11 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
-import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
 import screen.tools.sbs.objects.ErrorList;
-import screen.tools.sbs.repositories.RepositoryDataTable;
-import screen.tools.sbs.repositories.RepositoryFilterTable;
-import screen.tools.sbs.repositories.RepositoryParser;
 
 /**
  * Action to load local or global configuration.
@@ -64,7 +60,7 @@ public class ActionConfigurationLoad implements Action {
 		FieldString fieldRoot = environmentVariables.getFieldString("SBS_HOME");
 		String root = fieldRoot.get();
 		
-		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
 		
 		//searches local .sbsconfig
 		File file = new File(sbsXmlPath+"/.sbsconfig");
@@ -103,14 +99,7 @@ public class ActionConfigurationLoad implements Action {
 		}
 		
 		//load repositories
-		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
-		RepositoryFilterTable repositoryFilterTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryFilterTable();
-		
-		RepositoryParser parser = new RepositoryParser(
-									new File(root+"/repositories/repositories.xml"),
-									repositoryDataTable,
-									repositoryFilterTable);
-		parser.fill();
+		//TODO
 	}
 
 	public void setContext(ContextHandler contextHandler) {

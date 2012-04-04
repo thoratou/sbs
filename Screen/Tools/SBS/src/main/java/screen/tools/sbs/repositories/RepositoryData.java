@@ -25,16 +25,26 @@ package screen.tools.sbs.repositories;
 import screen.tools.sbs.fields.FieldFactory;
 import screen.tools.sbs.fields.FieldPath;
 import screen.tools.sbs.fields.FieldString;
+import screen.tools.sbs.fields.interfaces.FieldDeliveryTypeInterface;
+import screen.tools.sbs.fields.interfaces.FieldLocalPathInterface;
+import screen.tools.sbs.fields.interfaces.FieldLocationTypeInterface;
+import screen.tools.sbs.fields.interfaces.FieldRemotePathInterface;
+import screen.tools.sbs.fields.interfaces.FieldRepositoryIdInterface;
 import screen.tools.sbs.objects.Entry;
 
-public class RepositoryLocalData implements Entry<RepositoryLocalData> {
+public class RepositoryData implements Entry<RepositoryData>,
+									   FieldRepositoryIdInterface,
+									   FieldLocationTypeInterface,
+									   FieldDeliveryTypeInterface,
+									   FieldRemotePathInterface,
+									   FieldLocalPathInterface{
 	private FieldString repositoryId;
 	private FieldString locationType;
 	private FieldString deliveryType;	
 	private FieldPath remotePath;
 	private FieldPath localPath;
 	
-	public RepositoryLocalData() {
+	public RepositoryData() {
 		repositoryId = FieldFactory.createMandatoryFieldString();
 		locationType = FieldFactory.createMandatoryFieldString();
 		deliveryType = FieldFactory.createMandatoryFieldString();
@@ -42,7 +52,7 @@ public class RepositoryLocalData implements Entry<RepositoryLocalData> {
 		localPath = FieldFactory.createOptionalFieldPath();
 	}
 	
-	public RepositoryLocalData(RepositoryLocalData data) {
+	public RepositoryData(RepositoryData data) {
 		repositoryId = data.repositoryId.copy();
 		locationType = data.locationType.copy();
 		deliveryType = data.deliveryType.copy();
@@ -51,7 +61,32 @@ public class RepositoryLocalData implements Entry<RepositoryLocalData> {
 	}
 
 	@Override
-	public void merge(RepositoryLocalData data) {
+	public FieldString getRepositoryId() {
+		return repositoryId;
+	}
+
+	@Override
+	public FieldString getLocationType() {
+		return locationType;
+	}
+
+	@Override
+	public FieldString getDeliveryType() {
+		return deliveryType;
+	}
+
+	@Override
+	public FieldPath getRemotePath() {
+		return remotePath;
+	}
+
+	@Override
+	public FieldPath getLocalPath() {
+		return localPath;
+	}
+	
+	@Override
+	public void merge(RepositoryData data) {
 		repositoryId.merge(data.repositoryId);
 		locationType.merge(data.locationType);
 		deliveryType.merge(data.deliveryType);
@@ -60,7 +95,8 @@ public class RepositoryLocalData implements Entry<RepositoryLocalData> {
 	}
 
 	@Override
-	public RepositoryLocalData copy() {
-		return new RepositoryLocalData(this);
+	public RepositoryData copy() {
+		return new RepositoryData(this);
 	}
+
 }

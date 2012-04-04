@@ -23,26 +23,20 @@
 package screen.tools.sbs.context.defaults;
 
 import screen.tools.sbs.context.Context;
-import screen.tools.sbs.repositories.RepositoryDataTable;
-import screen.tools.sbs.repositories.RepositoryFilterTable;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.repositories.RepositoryData;
 
 public class RepositoryContext implements Context {
-	private RepositoryFilterTable repositoryFilterTable;
-	private RepositoryDataTable repositoryDataTable;
+	private FieldList<RepositoryData> reposirotyList;
 	private boolean isAvailable;
 
 	public RepositoryContext() {
-		repositoryFilterTable = new RepositoryFilterTable();
-		repositoryDataTable = new RepositoryDataTable();
+		reposirotyList = new FieldList<RepositoryData>(new RepositoryData());
 		isAvailable = false;
 	}
 
-	public RepositoryFilterTable getRepositoryFilterTable() {
-		return repositoryFilterTable;
-	}
-
-	public RepositoryDataTable getRepositoryDataTable() {
-		return repositoryDataTable;
+	public FieldList<RepositoryData> getRepositoryList() {
+		return reposirotyList;
 	}
 	
 	@Override

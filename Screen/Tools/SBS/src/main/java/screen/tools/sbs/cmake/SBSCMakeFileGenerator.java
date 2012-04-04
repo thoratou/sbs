@@ -151,22 +151,6 @@ public class SBSCMakeFileGenerator {
 		EnvironmentVariables additionalVars = new EnvironmentVariables();
 		additionalVars.put("LIB_NAME", packName);
 		additionalVars.put("EXE_NAME", packName);
-		new FieldString(
-				hasLibBuild ? (
-					hasSharedLibBuild ?
-						"${DEFAULT_SHARED_LIB_COMPILE_NAME}" :
-						"${DEFAULT_STATIC_LIB_COMPILE_NAME}"
-						) :
-					""
-				).get(additionalVars);
-		new FieldString(
-				hasLibBuild ? (
-					hasSharedLibBuild ?
-						"${DEFAULT_SHARED_LIB_FULL_NAME}" :
-						"${DEFAULT_STATIC_LIB_FULL_NAME}"
-						) :
-					"${DEFAULT_EXE_FULL_NAME}"
-				).get(additionalVars);
 	}
 	
 	public void generate() throws ContextException, FieldException {
@@ -201,7 +185,9 @@ public class SBSCMakeFileGenerator {
 				while(iterator.hasNext()){
 					Object next = iterator.next();
 					String key = (String) next;
-					cmakePack.getCompileFlags().allocate(new FieldString(key)).setObject(flagsObject.get(key));
+					FieldString keyField = new FieldString();
+					keyField.set(key);
+					cmakePack.getCompileFlags().allocate(keyField).setObject(flagsObject.get(key));
 				}
 			}
 			

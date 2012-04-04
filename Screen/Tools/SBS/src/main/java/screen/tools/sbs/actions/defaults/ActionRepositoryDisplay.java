@@ -23,7 +23,6 @@
 package screen.tools.sbs.actions.defaults;
 
 import java.util.Iterator;
-import java.util.List;
 
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
@@ -31,8 +30,8 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.fields.FieldException;
-import screen.tools.sbs.repositories.RepositoryLocalData;
-import screen.tools.sbs.repositories.RepositoryLocalData;
+import screen.tools.sbs.fields.FieldList;
+import screen.tools.sbs.repositories.RepositoryData;
 
 /**
  * Action to display repository list into standard output
@@ -50,8 +49,7 @@ public class ActionRepositoryDisplay implements Action {
 	 */
 	public void perform() throws ContextException, FieldException {
 		//retrieve repository list
-		RepositoryDataTable repositoryDataTable = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryDataTable();
-		List<RepositoryLocalData> list = repositoryDataTable.getSorterByIDList();
+		FieldList<RepositoryData> repositoryList = contextHandler.<RepositoryContext>get(ContextKeys.REPOSITORIES).getRepositoryList();
 		
 		//define output format
 		String format ="";
@@ -71,12 +69,14 @@ public class ActionRepositoryDisplay implements Action {
 		System.out.format(format,"-----","----","------------------------------");
 		
 		//table content
-		Iterator<RepositoryLocalData> iterator = list.iterator();
+		Iterator<RepositoryData> iterator = repositoryList.iterator();
 		while(iterator.hasNext()){
-			RepositoryLocalData next = iterator.next();
-			String string = next.id().get();
-			String string2 = next.type().toString();
-			String string3 = next.path().get();
+			RepositoryData next = iterator.next();
+			String string = next.getRepositoryId().get();
+			String string2 = next.getLocationType().toString();
+			String string3 = next.getDeliveryType().get();
+			//String string4 = next.getRemotePath().get();
+			//String string5 = next.getLocalPath().get();			
 			System.out.format(format,string,string2,string3);	
 		}
 		

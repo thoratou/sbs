@@ -29,6 +29,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.pack.Pack;
 
 /**
@@ -43,12 +44,13 @@ public class ActionClean implements Action {
 	/**
 	 * Performs clean action.
 	 * @throws ContextException 
+	 * @throws FieldException 
 	 */
-	public void perform() throws ContextException {
+	public void perform() throws ContextException, FieldException {
 		SBSCMakeCleaner cleaner = new SBSCMakeCleaner();
 		//Pack pack = GlobalSettings.getGlobalSettings().getPack();
 		Pack pack = contextHandler.<PackContext>get(ContextKeys.PACK).getPack();
-		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath();
+		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
 		cleaner.clean(pack, sbsXmlPath);		
 	}
 

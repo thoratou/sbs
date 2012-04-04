@@ -26,17 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import screen.tools.sbs.fields.FieldString;
-import screen.tools.sbs.repositories.RepositoryType;
 
 public class RepositoryManifest {
 	FieldString id;
-	RepositoryType type;
 	FieldString freeText;
 	List<RepositoryManifestComponentData> components;
 	
 	public RepositoryManifest() {
 		id = new FieldString();
-		type = new RepositoryType();
 		freeText = new FieldString();
 		components = new ArrayList<RepositoryManifestComponentData>();
 	}

@@ -26,8 +26,6 @@ import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionLaunch;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
-import screen.tools.sbs.actions.defaults.ActionRuntimePathLoad;
-import screen.tools.sbs.actions.defaults.ActionXmlLoad;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
@@ -36,7 +34,6 @@ import screen.tools.sbs.context.defaults.PackContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -73,12 +70,11 @@ public class TargetRun implements Target {
 		helper.perform(parameters);
 		
 		SbsFileAndPathContext context = new SbsFileAndPathContext();
-		context.setSbsXmlFile(optionChooseSbsFile.getFile());
-		context.setSbsXmlPath(mandatoryPath.getPath());
-
+		context.getSbsXmlFile().set(optionChooseSbsFile.getFile());
+		context.getSbsXmlPath().set(mandatoryPath.getPath());
+		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.PACK, new PackContext());
-		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		contextHandler.addContext(ContextKeys.RUNTIME_PATHS, new RuntimePathListContext());
@@ -88,11 +84,9 @@ public class TargetRun implements Target {
 			.put("_COMPILE_MODE", optionIsDebug.getString());
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
-		actionManager.pushAction(new ActionXmlLoad());
 		ActionPackLoad actionPackLoad = new ActionPackLoad();
 		actionPackLoad.processRuntime(true);
 		actionManager.pushAction(actionPackLoad);
-		actionManager.pushAction(new ActionRuntimePathLoad());
 		actionManager.pushAction(new ActionLaunch());
 	}
 

@@ -30,7 +30,6 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
-import screen.tools.sbs.context.defaults.XmlDocumentContext;
 import screen.tools.sbs.targets.Parameters;
 import screen.tools.sbs.targets.Target;
 import screen.tools.sbs.targets.TargetCall;
@@ -75,13 +74,12 @@ public class TargetCreateComponent implements Target {
 		helper.perform(parameters);
 		
 		SbsFileAndPathContext context = new SbsFileAndPathContext();
-		context.setSbsXmlFile(optionChooseSbsFile.getFile());
-		context.setSbsXmlPath(mandatoryPath.getPath());
+		context.getSbsXmlFile().set(optionChooseSbsFile.getFile());
+		context.getSbsXmlPath().set(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.COMPONENT_PACK, new ComponentPackContext());
 		contextHandler.addContext(ContextKeys.COMPONENT_TEST_PACK, new ComponentPackContext());
-		contextHandler.addContext(ContextKeys.SBS_XML_DOCUMENT, new XmlDocumentContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		actionManager.setContext(contextHandler);
 		
