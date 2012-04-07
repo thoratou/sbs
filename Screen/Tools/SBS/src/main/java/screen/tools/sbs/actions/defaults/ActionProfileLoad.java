@@ -22,21 +22,18 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.context.defaults.ProfileContext;
 import screen.tools.sbs.fields.FieldException;
+import screen.tools.sbs.fields.FieldFile;
 import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.objects.EnvironmentVariables;
-import screen.tools.sbs.objects.ErrorList;
+import screen.tools.sbs.profile.Profile;
+import screen.tools.sbs.profile.ProfileReader;
 import screen.tools.sbs.utils.Logger;
 
 /**
@@ -47,7 +44,7 @@ import screen.tools.sbs.utils.Logger;
  * @author Ratouit Thomas
  *
  */
-public class ActionConfigurationLoad implements Action {
+public class ActionProfileLoad implements Action {
 
 	private ContextHandler contextHandler;
 
@@ -57,52 +54,28 @@ public class ActionConfigurationLoad implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
+		Profile profile = contextHandler.<ProfileContext>get(ContextKeys.PROFILE).getProfile();
 		EnvironmentVariables environmentVariables = contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables();
-		FieldString fieldRoot = environmentVariables.getFieldString("SBS_HOME");
-		String root = fieldRoot.get();
-		
-		String sbsXmlPath = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
-		
-		//searches local .sbsconfig
-		File file = new File(sbsXmlPath+"/.sbsconfig");
-		
-		//searches global .sbsconfig
-		if(!file.exists()){
-			file = new File(root+"/.sbsconfig");
-			if(!file.exists()){
-				ErrorList.instance.addError("Can't find configuration, please use \"configure\" target");
-				return;
-			}
+
+		FieldString mode = environmentVariables.getFieldString("_COMPILE_MODE");
+		FieldFile profileFile = new FieldFile();
+		if(mode.get().equals("release")){
+			FieldString var = environmentVariables.getFieldString("RELEASE_PROFILE");
+			Logger.info("Use release profile : "+var.get());
+			profileFile.set(var.get());
+		}
+		else if(mode.get().equals("debug")){
+			FieldString var = environmentVariables.getFieldString("DEBUG_PROFILE");
+			Logger.info("Use debug profile : "+var.get());
+			profileFile.set(var.get());
+		}
+		else{
+			//TODO other profiles
+			Logger.info("Use custom profile");
 		}
 		
-		//loads selected configuration
-		try {
-			FileReader reader = new FileReader(file);
-			char cbuf[] = new char[1024];
-			String config = "";
-			while(reader.read(cbuf) > 0){
-				config+=new String(cbuf);
-			}
-			config =  config.replaceAll("\t", "");
-			config =  config.replaceAll(" ", "");
-			
-			String[] configs = config.split("\n");
-			for(int i=0; i<configs.length-1; i++){
-				String configFile = root+"/"+configs[i]+".config";
-				contextHandler.<EnvironmentVariablesContext>get(ContextKeys.ENV_VARIABLES).getEnvironmentVariables().putFromFile(configFile);
-				Logger.info("Use configuration : "+configFile);
-			}
-			reader.close();
-		} catch (FileNotFoundException e) {
-			ErrorList.instance.addError("Can't read configuration");
-			return;
-		} catch (IOException e) {
-			ErrorList.instance.addError("Can't read configuration");
-			return;
-		}
-		
-		//load repositories
-		//TODO
+		ProfileReader reader = new ProfileReader(profile);
+		reader.read(profileFile.get());
 	}
 
 	public void setContext(ContextHandler contextHandler) {

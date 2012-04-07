@@ -24,6 +24,7 @@ package screen.tools.sbs.targets.defaults;
 
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
+import screen.tools.sbs.actions.defaults.ActionProfileLoad;
 import screen.tools.sbs.actions.defaults.ActionTestLaunch;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.context.ContextException;
@@ -31,6 +32,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.ProfileContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
@@ -77,6 +79,7 @@ public class TargetTest implements Target {
 		contextHandler.addContext(ContextKeys.PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
+		contextHandler.addContext(ContextKeys.PROFILE, new ProfileContext());
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		contextHandler.addContext(ContextKeys.TEST_RUNTIME_PATHS, new RuntimePathListContext());
 		actionManager.setContext(contextHandler);
@@ -85,6 +88,7 @@ public class TargetTest implements Target {
 			.put("_COMPILE_MODE", optionIsDebug.getString());
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
+		actionManager.pushAction(new ActionProfileLoad());
 		ActionTestPackLoad actionPackLoad = new ActionTestPackLoad();
 		actionPackLoad.processRuntime(true);
 		actionManager.pushAction(actionPackLoad);

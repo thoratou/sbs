@@ -55,7 +55,7 @@ public class OptionIsDebug implements Option {
 	}
 	
 	public String getString() {
-		return isDebug ? "Debug" : "Release";
+		return isDebug ? "debug" : "release";
 	}
 
 	public void usage(List<String> manUsage) {

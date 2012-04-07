@@ -1,10 +1,35 @@
 package screen.tools.sbs.profile;
 
+import java.util.Iterator;
+
+import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.objects.Entry;
 
+/*****************************************************************************
+ * This source file is part of SBS (Screen Build System),                    *
+ * which is a component of Screen Framework                                  *
+ *                                                                           *
+ * Copyright (c) 2008-2011 Ratouit Thomas                                    *
+ *                                                                           *
+ * This program is free software; you can redistribute it and/or modify it   *
+ * under the terms of the GNU Lesser General Public License as published by  *
+ * the Free Software Foundation; either version 3 of the License, or (at     *
+ * your option) any later version.                                           *
+ *                                                                           *
+ * This program is distributed in the hope that it will be useful, but       *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of                *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser   *
+ * General Public License for more details.                                  *
+ *                                                                           *
+ * You should have received a copy of the GNU Lesser General Public License  *
+ * along with this program; if not, write to the Free Software Foundation,   *
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA, or go to   *
+ * http://www.gnu.org/copyleft/lesser.txt.                                   *
+ *****************************************************************************/
+
 public class ProfileHierarchie implements Entry<ProfileHierarchie> {
-	public FieldList<ProfileHierarchieItem> items;
+	private FieldList<ProfileHierarchieItem> items;
 	
 	public ProfileHierarchie() {
 		items = new FieldList<ProfileHierarchieItem>(new ProfileHierarchieItem());
@@ -26,6 +51,48 @@ public class ProfileHierarchie implements Entry<ProfileHierarchie> {
 	@Override
 	public ProfileHierarchie copy() {
 		return new ProfileHierarchie(this);
+	}
+
+	public boolean match(String toMatch) throws FieldException {
+		boolean ret = false;
+		if(toMatch != null && !items.isEmpty()){
+			if(toMatch.equals("all")){
+				ret = true;
+			}
+			else{
+				Iterator<ProfileHierarchieItem> iterator = items.iterator();
+				while (iterator.hasNext() && !ret) {
+					ProfileHierarchieItem item = iterator.next();
+					if(toMatch.equals(item.getField().get())){
+						ret = true;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	public ProfileHierarchieItem getProfileItem(String toMatch) throws FieldException{
+		ProfileHierarchieItem ret = null;
+		if(toMatch != null && !items.isEmpty()){
+			if(toMatch.equals("all")){
+				ret = items.get(0);
+			}
+			else{
+				Iterator<ProfileHierarchieItem> iterator = items.iterator();
+				while (iterator.hasNext() && ret != null) {
+					ProfileHierarchieItem item = iterator.next();
+					if(toMatch.equals(item.getField().get())){
+						ret = item;
+					}
+				}
+			}
+		}
+		
+		if(ret == null){
+			ret = new ProfileHierarchieItem();
+		}
+		return ret;
 	}
 	
 }

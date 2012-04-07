@@ -23,6 +23,7 @@
 package screen.tools.sbs.context.defaults;
 
 import screen.tools.sbs.context.Context;
+import screen.tools.sbs.fields.FieldFactory;
 import screen.tools.sbs.fields.FieldString;
 
 public class SbsFileAndPathContext implements Context{
@@ -30,6 +31,11 @@ public class SbsFileAndPathContext implements Context{
 	private FieldString sbsXmlPath;
 	private FieldString sbsXmlFile;
 	private boolean isAvailable;
+	
+	public SbsFileAndPathContext() {
+		sbsXmlPath = FieldFactory.createMandatoryFieldString();
+		sbsXmlFile = FieldFactory.createOptionalFieldString("sbs.xml");
+	}
 
 	public FieldString getSbsXmlPath() {
 		return sbsXmlPath;

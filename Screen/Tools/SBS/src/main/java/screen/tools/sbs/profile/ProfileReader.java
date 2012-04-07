@@ -22,45 +22,33 @@
 
 package screen.tools.sbs.profile;
 
-import screen.tools.sbs.objects.Entry;
+import screen.tools.sbs.utils.Logger.LogLevel;
 
-public class Profile implements Entry<Profile>{
-	public ProfileHierarchie buildTypeHierarchie;
-	public ProfileHierarchie buildModeHierarchie;
-	public ProfileHierarchie toolChainHierarchie;
-	
-	public Profile() {
-		buildTypeHierarchie = new ProfileHierarchie();
-		buildModeHierarchie = new ProfileHierarchie();
-		toolChainHierarchie = new ProfileHierarchie();
-	}
+public class ProfileReader {
 
-	public Profile(Profile profile) {
-		buildTypeHierarchie = profile.buildTypeHierarchie.copy();
-		buildModeHierarchie = profile.buildModeHierarchie.copy();
-		toolChainHierarchie = profile.toolChainHierarchie.copy();
-	}
-	
-	public ProfileHierarchie getBuildModeHierarchie() {
-		return buildModeHierarchie;
-	}
-	
-	public ProfileHierarchie getBuildTypeHierarchie() {
-		return buildTypeHierarchie;
-	}
-	
-	public ProfileHierarchie getToolChainHierarchie() {
-		return toolChainHierarchie;
+	public ProfileReader(Profile profile) {
+		// TODO Auto-generated constructor stub
+		//tmp code
+		{
+			ProfileHierarchieItem item = profile.getToolChainHierarchie().getItems().allocate();
+			item.getField().set("MingW");
+			item.setLogLevel(LogLevel.INFO);
+		}
+		{
+			ProfileHierarchieItem item = profile.getBuildModeHierarchie().getItems().allocate();
+			item.getField().set("release");
+			item.setLogLevel(LogLevel.INFO);
+		}
+		{
+			ProfileHierarchieItem item = profile.getBuildTypeHierarchie().getItems().allocate();
+			item.getField().set("all");
+			item.setLogLevel(LogLevel.INFO);
+		}
 	}
 
-	@Override
-	public void merge(Profile profile) {
-		buildTypeHierarchie.merge(profile.buildTypeHierarchie);
-		buildModeHierarchie.merge(profile.buildModeHierarchie);
-		toolChainHierarchie.merge(profile.toolChainHierarchie);
+	public void read(String string) {
+		// TODO Auto-generated method stub
+		
 	}
-	@Override
-	public Profile copy() {
-		return new Profile(this);
-	}
+
 }

@@ -20,47 +20,31 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package screen.tools.sbs.profile;
+package screen.tools.sbs.context.defaults;
 
-import screen.tools.sbs.objects.Entry;
+import screen.tools.sbs.context.Context;
+import screen.tools.sbs.profile.Profile;
 
-public class Profile implements Entry<Profile>{
-	public ProfileHierarchie buildTypeHierarchie;
-	public ProfileHierarchie buildModeHierarchie;
-	public ProfileHierarchie toolChainHierarchie;
+public class ProfileContext implements Context {
+	private Profile profile;
+	private boolean isAvailable;
 	
-	public Profile() {
-		buildTypeHierarchie = new ProfileHierarchie();
-		buildModeHierarchie = new ProfileHierarchie();
-		toolChainHierarchie = new ProfileHierarchie();
-	}
-
-	public Profile(Profile profile) {
-		buildTypeHierarchie = profile.buildTypeHierarchie.copy();
-		buildModeHierarchie = profile.buildModeHierarchie.copy();
-		toolChainHierarchie = profile.toolChainHierarchie.copy();
-	}
-	
-	public ProfileHierarchie getBuildModeHierarchie() {
-		return buildModeHierarchie;
-	}
-	
-	public ProfileHierarchie getBuildTypeHierarchie() {
-		return buildTypeHierarchie;
-	}
-	
-	public ProfileHierarchie getToolChainHierarchie() {
-		return toolChainHierarchie;
+	public ProfileContext() {
+		profile = new Profile();
+		isAvailable = false;
 	}
 
+	public Profile getProfile() {
+		return profile;
+	}
+	
 	@Override
-	public void merge(Profile profile) {
-		buildTypeHierarchie.merge(profile.buildTypeHierarchie);
-		buildModeHierarchie.merge(profile.buildModeHierarchie);
-		toolChainHierarchie.merge(profile.toolChainHierarchie);
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
 	}
+	
 	@Override
-	public Profile copy() {
-		return new Profile(this);
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 }

@@ -27,6 +27,7 @@ import screen.tools.sbs.fields.FieldFactory;
 import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.fields.FieldString;
 import screen.tools.sbs.fields.interfaces.FieldBuildModeInterface;
+import screen.tools.sbs.fields.interfaces.FieldBuildTypeInterface;
 import screen.tools.sbs.fields.interfaces.FieldExportInterface;
 import screen.tools.sbs.fields.interfaces.FieldNameInterface;
 import screen.tools.sbs.fields.interfaces.FieldToolChainInterface;
@@ -38,7 +39,8 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 											FieldVersionInterface,
 											FieldExportInterface,
 											FieldToolChainInterface,
-											FieldBuildModeInterface {
+											FieldBuildModeInterface,
+											FieldBuildTypeInterface{
 	private FieldString name;
 	private FieldString version;
 	private FieldBool export;
@@ -46,6 +48,7 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 	private FieldList<ComponentPath> libraryPathList;
 	private FieldList<ComponentLibrary> libraryList;
 	private FieldString toolChain;
+	private FieldString buildType;
 	private FieldString buildMode;
 	
 	public ComponentDependency() {
@@ -56,6 +59,7 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 		libraryPathList = new FieldList<ComponentPath>(new ComponentPath());
 		libraryList = new FieldList<ComponentLibrary>(new ComponentLibrary());
 		toolChain = FieldFactory.createOptionalFieldString("all");
+		buildType = FieldFactory.createOptionalFieldString("all");
 		buildMode = FieldFactory.createOptionalFieldString("all");
 	}
 	
@@ -67,6 +71,7 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 		libraryPathList = dependency.libraryPathList.copy();
 		libraryList = dependency.libraryList.copy();
 		toolChain = dependency.toolChain.copy();
+		buildType = dependency.buildType.copy();
 		buildMode = dependency.buildMode.copy();
 	}
 
@@ -100,6 +105,11 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 	public FieldString getToolChain() {
 		return toolChain;
 	}
+
+	@Override
+	public FieldString getBuildType() {
+		return buildType;
+	}
 	
 	@Override
 	public FieldString getBuildMode() {
@@ -115,6 +125,7 @@ public class ComponentDependency implements Entry<ComponentDependency>,
 		libraryPathList.merge(dependency.libraryPathList);
 		libraryList.merge(dependency.libraryList);
 		toolChain.merge(dependency.toolChain);
+		buildType.merge(dependency.buildType);
 		buildMode.merge(dependency.toolChain);
 	}
 

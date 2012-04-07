@@ -26,11 +26,13 @@ import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionLaunch;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
+import screen.tools.sbs.actions.defaults.ActionProfileLoad;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.ProfileContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.RuntimePathListContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
@@ -76,6 +78,7 @@ public class TargetRun implements Target {
 		ContextHandler contextHandler = new ContextHandler();
 		contextHandler.addContext(ContextKeys.PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
+		contextHandler.addContext(ContextKeys.PROFILE, new ProfileContext());
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		contextHandler.addContext(ContextKeys.RUNTIME_PATHS, new RuntimePathListContext());
 		actionManager.setContext(contextHandler);
@@ -84,6 +87,7 @@ public class TargetRun implements Target {
 			.put("_COMPILE_MODE", optionIsDebug.getString());
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
+		actionManager.pushAction(new ActionProfileLoad());
 		ActionPackLoad actionPackLoad = new ActionPackLoad();
 		actionPackLoad.processRuntime(true);
 		actionManager.pushAction(actionPackLoad);

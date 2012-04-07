@@ -139,7 +139,7 @@ public class ComponentDomWriter {
 		versionElt.setText(version.get());
 		propertiesElt.addContent(versionElt);
 
-		Element buildTypeElt = new Element("buildtype");
+		Element buildTypeElt = new Element("type");
 		buildTypeElt.setText(buildType.get());
 		propertiesElt.addContent(buildTypeElt);
 			

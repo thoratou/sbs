@@ -27,6 +27,7 @@ import screen.tools.sbs.actions.defaults.ActionCMakeCompile;
 import screen.tools.sbs.actions.defaults.ActionCMakeGenerate;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
+import screen.tools.sbs.actions.defaults.ActionProfileLoad;
 import screen.tools.sbs.actions.defaults.ActionTestCMakeCompile;
 import screen.tools.sbs.actions.defaults.ActionTestCMakeGenerate;
 import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
@@ -35,6 +36,7 @@ import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
+import screen.tools.sbs.context.defaults.ProfileContext;
 import screen.tools.sbs.context.defaults.RepositoryContext;
 import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.targets.Parameters;
@@ -84,6 +86,7 @@ public class TargetBuild implements Target {
 		contextHandler.addContext(ContextKeys.PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
+		contextHandler.addContext(ContextKeys.PROFILE, new ProfileContext());
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
 		
@@ -91,6 +94,7 @@ public class TargetBuild implements Target {
 			.put("_COMPILE_MODE", optionIsDebug.getString());
 
 		actionManager.pushAction(new ActionConfigurationLoad());
+		actionManager.pushAction(new ActionProfileLoad());
 		if(optionIsTest.isMain()){
 			actionManager.pushAction(new ActionPackLoad());
 			actionManager.pushAction(new ActionCMakeGenerate());

@@ -33,6 +33,7 @@ public class ContextKeys {
 	public final static ContextKey SBS_FILE_AND_PATH;
 	public final static ContextKey REPOSITORIES;
 	public final static ContextKey ENV_VARIABLES;
+	public final static ContextKey PROFILE;
 	public final static ContextKey RUNTIME_PATHS;
 	public final static ContextKey TEST_RUNTIME_PATHS;
 	
@@ -76,6 +77,11 @@ public class ContextKeys {
 			ContextKey tmp = new ContextKey();
 			tmp.setKey("env-variables");
 			ENV_VARIABLES = tmp;	
+		}
+		{
+			ContextKey tmp = new ContextKey();
+			tmp.setKey("profile");
+			PROFILE = tmp;	
 		}
 		{
 			ContextKey tmp = new ContextKey();
