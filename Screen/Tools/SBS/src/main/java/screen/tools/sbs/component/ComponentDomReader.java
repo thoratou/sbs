@@ -31,6 +31,11 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
+import screen.tools.sbs.context.ContextException;
+import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
+import screen.tools.sbs.context.defaults.ContextKeys;
+import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.fields.FieldBool;
 import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.fields.FieldFile;
@@ -58,41 +63,62 @@ public class ComponentDomReader {
 	private static String propertyNameQuery = "//properties/name/text()";
 	private static String propertyVersionQuery = "//properties/version/text()";
 	private static String propertyBuildTypeQuery = "//properties/type/text()";
+	private final ContextHandler contextHandler;
+	
+	public ComponentDomReader(ContextHandler contextHandler) {
+		this.contextHandler = contextHandler;
+	}
 
-	public void read(ComponentPack pack, ComponentPack testPack, File file) throws FieldException{
-		Document doc = parserFile(file);
+	public void read() throws FieldException, ContextException{
+		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
+		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile().get();
+		
+		ComponentPack pack = null;
+		if(contextHandler.isAvailable(ContextKeys.COMPONENT_PACK)){
+			pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();			
+		}
+		
+		ComponentPack testPack = null;
+		if(contextHandler.isAvailable(ContextKeys.COMPONENT_TEST_PACK)){
+			testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();			
+		}
+		
+		Document doc = parserFile(new File(path+"/"+file));
 		try {
 			Element root = doc.getRootElement();
 			
 			//Main manifest
 			PackManifest packManifest = new PackManifest();
 			readProperties(packManifest, root);
-			pack.getProperties().merge(packManifest);
 			
-			//Test manifest
-			PackManifest testManifest = packManifest.copy();
-			String testName = testManifest.getName().getOriginal()+"/Test";
-			testManifest.getName().set(testName);
-			testManifest.getBuildType().set("executable");
-			testPack.getProperties().merge(testManifest);
-			
-			final ComponentPack finalPack = pack;
-			new DomChildHandler(root,"main") {
-				
-				@Override
-				protected void processChild(Element child) {
-					readComponentPack(finalPack, child);
-				}
-			}.process();
+			if(pack != null){
+				pack.getProperties().merge(packManifest);
+				final ComponentPack finalPack = pack;
+				new DomChildHandler(root,"main") {
+					
+					@Override
+					protected void processChild(Element child) {
+						readComponentPack(finalPack, child);
+					}
+				}.process();
+			}
 
-			final ComponentPack finalTestPack = testPack;
-			new DomChildHandler(root,"test") {
-				
-				@Override
-				protected void processChild(Element child) {
-					readComponentPack(finalTestPack, child);
-				}
-			}.process();
+			if(testPack != null){
+				//Test manifest
+				PackManifest testManifest = packManifest.copy();
+				String testName = testManifest.getName().getOriginal()+"/Test";
+				testManifest.getName().set(testName);
+				testManifest.getBuildType().set("executable");
+				testPack.getProperties().merge(testManifest);
+				final ComponentPack finalTestPack = testPack;
+				new DomChildHandler(root,"test") {
+					
+					@Override
+					protected void processChild(Element child) {
+						readComponentPack(finalTestPack, child);
+					}
+				}.process();
+			}
 			
 		} catch (JDOMException e) {
 			e.printStackTrace();

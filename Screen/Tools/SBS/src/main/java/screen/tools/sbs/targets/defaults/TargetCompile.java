@@ -25,7 +25,6 @@ package screen.tools.sbs.targets.defaults;
 import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionCMakeCompile;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
-import screen.tools.sbs.actions.defaults.ActionTestCMakeCompile;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ContextKeys;
@@ -71,12 +70,7 @@ public class TargetCompile implements Target {
 		actionManager.setContext(contextHandler);
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
-		if(optionIsTest.isMain()){
-			actionManager.pushAction(new ActionCMakeCompile());
-		}
-		if(optionIsTest.isTest()){
-			actionManager.pushAction(new ActionTestCMakeCompile());
-		}		
+		actionManager.pushAction(new ActionCMakeCompile());
 	}
 
 	public TargetCall getTargetCall() {

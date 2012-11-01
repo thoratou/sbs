@@ -89,7 +89,7 @@ public class TargetRun implements Target {
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionProfileLoad());
 		ActionPackLoad actionPackLoad = new ActionPackLoad();
-		actionPackLoad.processRuntime(true);
+		//actionPackLoad.processRuntime(true);
 		actionManager.pushAction(actionPackLoad);
 		actionManager.pushAction(new ActionLaunch());
 	}

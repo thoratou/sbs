@@ -26,10 +26,9 @@ import screen.tools.sbs.actions.ActionManager;
 import screen.tools.sbs.actions.defaults.ActionClean;
 import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
-import screen.tools.sbs.actions.defaults.ActionTestClean;
-import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
@@ -75,8 +74,14 @@ public class TargetClean implements Target {
 		context.getSbsXmlPath().set(mandatoryPath.getPath());
 
 		ContextHandler contextHandler = new ContextHandler();
-		contextHandler.addContext(ContextKeys.PACK, new PackContext());
-		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
+		if(optionIsTest.isMain()){
+			contextHandler.addContext(ContextKeys.COMPONENT_PACK, new ComponentPackContext());
+			contextHandler.addContext(ContextKeys.PACK, new PackContext());
+		}
+		if(optionIsTest.isTest()){
+			contextHandler.addContext(ContextKeys.COMPONENT_TEST_PACK, new ComponentPackContext());
+			contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
+		}	
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
 		actionManager.setContext(contextHandler);
@@ -86,14 +91,8 @@ public class TargetClean implements Target {
 
 		
 		actionManager.pushAction(new ActionConfigurationLoad());
-		if(optionIsTest.isMain()){
-			actionManager.pushAction(new ActionPackLoad());
-			actionManager.pushAction(new ActionClean());
-		}
-		if(optionIsTest.isTest()){
-			actionManager.pushAction(new ActionTestPackLoad());
-			actionManager.pushAction(new ActionTestClean());
-		}		
+		actionManager.pushAction(new ActionPackLoad());
+		actionManager.pushAction(new ActionClean());
 	}
 
 	public TargetCall getTargetCall() {

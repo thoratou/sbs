@@ -56,6 +56,10 @@ public class ContextHandler {
 		contextTable.put(key, context);
 	}
 	
+	public boolean isAvailable(ContextKey key){
+		return contextTable.contains(key);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T extends Context> T get(ContextKey key) throws ContextException{
 		T concreteContext = (T) contextTable.get(key);

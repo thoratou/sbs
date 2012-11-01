@@ -37,7 +37,7 @@ public abstract class FieldBase<T> {
 	
 	// environment variables //
 	
-	private static EnvironmentVariables currentEnvironmentVariables;
+	private static EnvironmentVariables currentEnvironmentVariables = new EnvironmentVariables();
 
 	public static void setCurrentEnvironmentVariables(
 			EnvironmentVariables currentEnvironmentVariables) {

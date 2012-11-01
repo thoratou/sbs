@@ -75,4 +75,8 @@ public class EnvironmentVariables {
 		}
 		return fieldString;
 	}
+	
+	public void clear(){
+		variableTable.clear();
+	}
 }

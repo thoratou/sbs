@@ -22,18 +22,11 @@
 
 package screen.tools.sbs.actions.defaults;
 
-import java.io.File;
-
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.component.ComponentDomReader;
-import screen.tools.sbs.component.ComponentPack;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.context.defaults.ComponentPackContext;
-import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.fields.FieldException;
-import screen.tools.sbs.fields.FieldPath;
 
 /**
  * Action to load pack from an XML Dom.
@@ -52,16 +45,8 @@ public class ActionTinyPackLoad implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
-		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile().get();
-		ComponentPack pack = new ComponentPack();
-		ComponentPack testPack = new ComponentPack();
-		FieldPath fieldPath = new FieldPath();
-		fieldPath.set(path);
-		ComponentDomReader domReader = new ComponentDomReader();
-		domReader.read(pack,testPack, new File(path+"/"+file ));
-		contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack().merge(pack);
-		contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack().merge(testPack);
+		ComponentDomReader domReader = new ComponentDomReader(contextHandler);
+		domReader.read();
 	}
 
 	public void setContext(ContextHandler contextHandler) {

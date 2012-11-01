@@ -27,10 +27,9 @@ import screen.tools.sbs.actions.defaults.ActionConfigurationLoad;
 import screen.tools.sbs.actions.defaults.ActionPackCheck;
 import screen.tools.sbs.actions.defaults.ActionPackLoad;
 import screen.tools.sbs.actions.defaults.ActionProfileLoad;
-import screen.tools.sbs.actions.defaults.ActionTestPackCheck;
-import screen.tools.sbs.actions.defaults.ActionTestPackLoad;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
+import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
 import screen.tools.sbs.context.defaults.EnvironmentVariablesContext;
 import screen.tools.sbs.context.defaults.PackContext;
@@ -81,8 +80,14 @@ public class TargetCheck implements Target {
 		context.getSbsXmlPath().set(mandatoryPath.getPath());
 		
 		ContextHandler contextHandler = new ContextHandler();
-		contextHandler.addContext(ContextKeys.PACK, new PackContext());
-		contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
+		if(optionIsTest.isMain()){
+			contextHandler.addContext(ContextKeys.COMPONENT_PACK, new ComponentPackContext());
+			contextHandler.addContext(ContextKeys.PACK, new PackContext());
+		}
+		if(optionIsTest.isTest()){
+			contextHandler.addContext(ContextKeys.COMPONENT_TEST_PACK, new ComponentPackContext());
+			contextHandler.addContext(ContextKeys.TEST_PACK, new PackContext());
+		}	
 		contextHandler.addContext(ContextKeys.SBS_FILE_AND_PATH, context);
 		contextHandler.addContext(ContextKeys.PROFILE, new ProfileContext());
 		contextHandler.addContext(ContextKeys.REPOSITORIES, new RepositoryContext());
@@ -93,14 +98,8 @@ public class TargetCheck implements Target {
 
 		actionManager.pushAction(new ActionConfigurationLoad());
 		actionManager.pushAction(new ActionProfileLoad());
-		if(optionIsTest.isMain()){
-			actionManager.pushAction(new ActionPackLoad());
-			actionManager.pushAction(new ActionPackCheck());
-		}
-		if(optionIsTest.isTest()){
-			actionManager.pushAction(new ActionTestPackLoad());
-			actionManager.pushAction(new ActionTestPackCheck());			
-		}
+		actionManager.pushAction(new ActionPackLoad());
+		actionManager.pushAction(new ActionPackCheck());
 	}
 
 	public TargetCall getTargetCall() {

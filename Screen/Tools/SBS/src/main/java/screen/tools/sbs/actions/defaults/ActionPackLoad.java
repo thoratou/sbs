@@ -25,11 +25,8 @@ package screen.tools.sbs.actions.defaults;
 import screen.tools.sbs.actions.Action;
 import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
-import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
 import screen.tools.sbs.fields.FieldException;
-import screen.tools.sbs.fields.FieldPath;
-import screen.tools.sbs.pack.Pack;
+import screen.tools.sbs.pack.PackReader;
 
 /**
  * Action to load pack from an XML Dom.
@@ -40,11 +37,9 @@ import screen.tools.sbs.pack.Pack;
 public class ActionPackLoad implements Action {
 
 	private ContextHandler contextHandler;
-	private boolean isRuntime;
 	
 	public ActionPackLoad() {
 		contextHandler = null;
-		isRuntime = false;
 	}
 
 	/**
@@ -54,20 +49,10 @@ public class ActionPackLoad implements Action {
 	 * @throws FieldException 
 	 */
 	public void perform() throws ContextException, FieldException {
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
-		Pack pack = new Pack();
-		FieldPath fieldPath = new FieldPath();
-		fieldPath.set(path);
-//		SBSDomDataFiller dataFiller = new SBSDomDataFiller(contextHandler, pack,null,fieldPath);
-//		dataFiller.useRuntimes(isRuntime);
-//		dataFiller.fill(doc);
-//		contextHandler.<PackContext>get(ContextKeys.PACK).setPack(pack);
+		PackReader reader = new PackReader(contextHandler);
+		reader.read();
 	}
 	
-	public void processRuntime(boolean isRuntime){
-		this.isRuntime = isRuntime;
-	}
-
 	public void setContext(ContextHandler contextHandler) {
 		this.contextHandler = contextHandler;
 	}

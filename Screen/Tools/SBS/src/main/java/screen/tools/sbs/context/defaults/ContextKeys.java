@@ -29,7 +29,6 @@ public class ContextKeys {
 	public final static ContextKey TEST_PACK;
 	public final static ContextKey COMPONENT_PACK;
 	public final static ContextKey COMPONENT_TEST_PACK;
-	public final static ContextKey SBS_XML_DOCUMENT;
 	public final static ContextKey SBS_FILE_AND_PATH;
 	public final static ContextKey REPOSITORIES;
 	public final static ContextKey ENV_VARIABLES;
@@ -50,18 +49,13 @@ public class ContextKeys {
 		}
 		{
 			ContextKey tmp = new ContextKey();
-			tmp.setKey("tiny-pack");
+			tmp.setKey("component-pack");
 			COMPONENT_PACK = tmp;
 		}
 		{
 			ContextKey tmp = new ContextKey();
-			tmp.setKey("tiny-test-pack");
+			tmp.setKey("component-test-pack");
 			COMPONENT_TEST_PACK = tmp;
-		}
-		{
-			ContextKey tmp = new ContextKey();
-			tmp.setKey("xml-document");
-			SBS_XML_DOCUMENT = tmp;	
 		}
 		{
 			ContextKey tmp = new ContextKey();

@@ -58,6 +58,7 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 	public FieldString(Type type, String defaultValue) {
 		super(type);
 		originalString = null;
+		this.defaultValue = defaultValue;
 	}
 
 	@Override
@@ -80,16 +81,26 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 
 	@Override
 	public String getOriginal() {
-		return new String(originalString);
+		return originalString;
 	}
 	
 	@Override
 	public String get(EnvironmentVariables additionalVars) throws FieldException {
 		String ret = null;
-		if(!isEmpty())
+		if(!isEmpty()){
 			ret = convertFromOriginalToFinal(originalString,additionalVars);
-		if(ret == null)
+		}
+		
+		if(ret == null){
+			if(defaultValue != null){
+				ret = convertFromOriginalToFinal(defaultValue,additionalVars);				
+			}
+		}
+
+		if(ret == null){
 			throw new FieldException(originalString);
+		}
+
 		return ret;
 	}
 

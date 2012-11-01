@@ -1,6 +1,5 @@
 package screen.tools.sbs.pack;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -11,7 +10,7 @@ import screen.tools.sbs.context.ContextException;
 import screen.tools.sbs.context.ContextHandler;
 import screen.tools.sbs.context.defaults.ComponentPackContext;
 import screen.tools.sbs.context.defaults.ContextKeys;
-import screen.tools.sbs.context.defaults.SbsFileAndPathContext;
+import screen.tools.sbs.context.defaults.ProfileContext;
 import screen.tools.sbs.fields.FieldException;
 import screen.tools.sbs.fields.FieldList;
 import screen.tools.sbs.fields.FieldMap;
@@ -70,31 +69,38 @@ public class PackReader {
 	
 	private FieldMap<Key, ComponentPack> map;
 
-	public PackReader(Profile profile, ContextHandler contextHandler) {
-		this.profile = profile;
+	public PackReader(ContextHandler contextHandler) throws ContextException {
+		profile = contextHandler.<ProfileContext>get(ContextKeys.PROFILE).getProfile();
 		this.contextHandler = contextHandler;
 		stack = new Stack<ComponentPack>();
 		map = new FieldMap<Key,ComponentPack>(new ComponentPack());
 	}
 	
 	public void read() throws FieldException, ContextException{
-		String path = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlPath().get();
-		String file = contextHandler.<SbsFileAndPathContext>get(ContextKeys.SBS_FILE_AND_PATH).getSbsXmlFile().get();
-		ComponentPack pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();
-		ComponentPack testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();
-		
 		//main pack
-		ComponentDomReader reader = new ComponentDomReader();
-		reader.read(pack, testPack, new File(path+"/"+file));
+		ComponentDomReader reader = new ComponentDomReader(contextHandler);
+		reader.read();
 		
-		stack.add(pack);
+		ComponentPack pack = null;
+		if(contextHandler.isAvailable(ContextKeys.COMPONENT_PACK)){
+			pack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_PACK).getPack();			
+		}
 		
-		retrieveImports(pack);
-		retrieveDependencies(pack);
+//		ComponentPack testPack = null;
+//		if(contextHandler.isAvailable(ContextKeys.COMPONENT_TEST_PACK)){
+//			testPack = contextHandler.<ComponentPackContext>get(ContextKeys.COMPONENT_TEST_PACK).getPack();			
+//		}
 		
-		while(!stack.empty())
-		{
-			ComponentPack componentPack = stack.pop();
+		if(pack!=null){
+			stack.add(pack);
+			
+			retrieveImports(pack);
+			retrieveDependencies(pack);
+			
+//			while(!stack.empty())
+//			{
+//				ComponentPack componentPack = stack.pop();
+//			}
 		}
 	}
 
