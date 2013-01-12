@@ -21,6 +21,7 @@ public class FieldStringTestCase extends TestCase{
 		fieldString.set("toto");
 		
 		assertFalse(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertEquals("toto", fieldString.getOriginal());
 		assertEquals("toto", fieldString.get());
 	}
@@ -38,6 +39,7 @@ public class FieldStringTestCase extends TestCase{
 		fieldString.set("${TOTO}");
 		
 		assertFalse(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertEquals("${TOTO}", fieldString.getOriginal());
 		assertEquals("Value", fieldString.get(environmentVariables));
 	}
@@ -53,6 +55,7 @@ public class FieldStringTestCase extends TestCase{
 		fieldString.set("${TOTO}");
 		
 		assertFalse(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertEquals("${TOTO}", fieldString.getOriginal());
 		assertEquals("Value", fieldString.get());
 	}
@@ -67,6 +70,7 @@ public class FieldStringTestCase extends TestCase{
 		fieldString.set("${TOTO}");
 		
 		assertFalse(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertEquals("${TOTO}", fieldString.getOriginal());
 		try {
 			fieldString.get();
@@ -83,6 +87,7 @@ public class FieldStringTestCase extends TestCase{
 
 		FieldString fieldString = new FieldString();
 		assertTrue(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertNull(fieldString.getOriginal());
 		try {
 			fieldString.get();
@@ -99,6 +104,7 @@ public class FieldStringTestCase extends TestCase{
 
 		FieldString fieldString = new FieldString(Type.OPTIONAL,null);
 		assertTrue(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
 		assertNull(fieldString.getOriginal());
 		try {
 			fieldString.get();
@@ -115,8 +121,67 @@ public class FieldStringTestCase extends TestCase{
 
 		FieldString fieldString = new FieldString(Type.OPTIONAL,"default");
 		assertTrue(fieldString.isEmpty());
+		assertEquals("default", fieldString.getDefault());
 		assertNull(fieldString.getOriginal());
 		assertEquals("default", fieldString.get());
 	}
 
+	@Test
+	public void testDefaultValueEvaluation() throws FieldException{
+		//clean up global env for contextless test
+		FieldBase.getCurrentEnvironmentVariables().clear();
+		FieldBase.getCurrentEnvironmentVariables().put("DEFAULT", "default");
+
+		FieldString fieldString = new FieldString(Type.OPTIONAL,"${DEFAULT}");
+		assertTrue(fieldString.isEmpty());
+		assertEquals("${DEFAULT}", fieldString.getDefault());
+		assertNull(fieldString.getOriginal());
+		assertEquals("default", fieldString.get());
+	}
+	
+	@Test
+	public void testDefaultOverwrite() throws FieldException{
+		//clean up global env for contextless test
+		FieldBase.getCurrentEnvironmentVariables().clear();
+		FieldBase.getCurrentEnvironmentVariables().put("DEFAULT", "default");
+		FieldBase.getCurrentEnvironmentVariables().put("VALUE", "toto");
+
+		//get -> default
+		FieldString fieldString = new FieldString(Type.OPTIONAL,"${DEFAULT}");
+		assertTrue(fieldString.isEmpty());
+		assertEquals("${DEFAULT}", fieldString.getDefault());
+		assertNull(fieldString.getOriginal());
+		assertEquals("default", fieldString.get());
+		
+		//get -> toto
+		fieldString.set("${VALUE}");
+		assertFalse(fieldString.isEmpty());
+		assertEquals("${DEFAULT}", fieldString.getDefault());
+		assertEquals("${VALUE}", fieldString.getOriginal());
+		assertEquals("toto", fieldString.get());
+		
+		//get -> default
+		fieldString.set(null);
+		assertTrue(fieldString.isEmpty());
+		assertEquals("${DEFAULT}", fieldString.getDefault());
+		assertNull(fieldString.getOriginal());
+		assertEquals("default", fieldString.get());
+	}
+
+	@Test
+	public void testComplexEvaluation() throws FieldException{
+		//clean up global env for contextless test
+		FieldBase.getCurrentEnvironmentVariables().clear();
+
+		FieldString fieldString = new FieldString();
+		fieldString.set("Hello ${FIELD1} !!, I am a ${FIELD2} evaluation");
+		
+		FieldBase.getCurrentEnvironmentVariables().put("FIELD1", "World");
+		FieldBase.getCurrentEnvironmentVariables().put("FIELD2", "longer");
+		
+		assertFalse(fieldString.isEmpty());
+		assertNull(fieldString.getDefault());
+		assertEquals("Hello ${FIELD1} !!, I am a ${FIELD2} evaluation", fieldString.getOriginal());
+		assertEquals("Hello World !!, I am a longer evaluation", fieldString.get());
+	}
 }

@@ -75,7 +75,7 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 	}
 	
 	@Override
-	public String getDefault() throws FieldException {
+	public String getDefault() {
 		return defaultValue;
 	}
 
@@ -93,7 +93,10 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 		
 		if(ret == null){
 			if(defaultValue != null){
-				ret = convertFromOriginalToFinal(defaultValue,additionalVars);				
+				ret = convertFromOriginalToFinal(defaultValue,additionalVars);	
+				if(ret == null){
+					throw new FieldException(defaultValue);
+				}
 			}
 		}
 
