@@ -2,7 +2,7 @@
  * This source file is part of SBS (Screen Build System),                    *
  * which is a component of Screen Framework                                  *
  *                                                                           *
- * Copyright (c) 2008-2011 Ratouit Thomas                                    *
+ * Copyright (c) 2008-2013 Ratouit Thomas                                    *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify it   *
  * under the terms of the GNU Lesser General Public License as published by  *
