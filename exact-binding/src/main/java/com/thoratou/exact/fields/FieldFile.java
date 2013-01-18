@@ -20,10 +20,10 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package screen.tools.sbs.fields;
+package com.thoratou.exact.fields;
 
-import screen.tools.sbs.objects.Entry;
-import screen.tools.sbs.objects.EnvironmentVariables;
+import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.fields.EnvironmentVariables;
 
 public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
 	FieldString fieldString;

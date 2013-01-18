@@ -20,17 +20,13 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package screen.tools.fields;
+package com.thoratou.exact.fields;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import screen.tools.sbs.fields.FieldBase;
-import screen.tools.sbs.fields.FieldBase.Type;
-import screen.tools.sbs.fields.FieldException;
-import screen.tools.sbs.fields.FieldString;
-import screen.tools.sbs.objects.EnvironmentVariables;
+import com.thoratou.exact.fields.FieldBase.Type;
 
 public class FieldStringTestCase extends TestCase{
 	
