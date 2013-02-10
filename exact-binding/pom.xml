@@ -8,6 +8,11 @@
 	<artifactId>exact-binding</artifactId>
     <dependencies>
 		<dependency>
+			<groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
+			<artifactId>java-cup</artifactId>
+			<version>0.11a</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
@@ -21,11 +26,32 @@
     </dependencies>
     <build>
         <defaultGoal>package</defaultGoal>
-        <finalName>${artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
+            <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+						<sources>
+							<source>target/generated-sources/cup/</source>
+							<source>target/generated-sources/jflex/</source>
+						</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
-			<groupId>org.apache.maven.plugins</groupId> 
-				<artifactId>maven-compiler-plugin</artifactId> 
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
 				<configuration>
 					<source>1.6</source> 
 					<target>1.6</target> 
@@ -34,6 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -43,6 +70,37 @@
                     </archive>
                 </configuration>
             </plugin>
-      	</plugins>
-    </build>
+            <plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+					<id>ant-jcup-task</id>
+					<phase>generate-sources</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+					<tasks>
+						<echo>Running Java CUP</echo>
+						<taskdef name="cup" classname="java_cup.anttask.CUPTask" classpathref="maven.compile.classpath"/>
+						<cup srcfile="${basedir}/src/main/cup/com/thoratou/exact/xpath/XPath.cup" destdir="${basedir}/target/generated-sources/cup/" parser="XPath" symbols="sym" interface="true"/>
+					</tasks>
+					</configuration>
+					</execution>
+				</executions>
+			</plugin>
+            <plugin>
+				<groupId>de.jflex</groupId>
+				<artifactId>maven-jflex-plugin</artifactId>
+				<version>1.4.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
