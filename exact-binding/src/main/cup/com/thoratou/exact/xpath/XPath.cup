@@ -18,12 +18,12 @@ action code {:
                 return arr;
         }
 
-        private static <T> Vector<T> Vappend (Vector<T> v, T elem) {
+        private static <T> Vector<T> append (Vector<T> v, T elem) {
                 v.addElement(elem);
                 return v;
         }
 
-        private static <T> Vector<T> Vprepend (Vector<T> v, T elem) {
+        private static <T> Vector<T> prepend (Vector<T> v, T elem) {
                 v.insertElementAt(elem, 0);
                 return v;
         }
@@ -145,7 +145,7 @@ base_expr       ::=     LPAREN expr:e RPAREN                    {: RESULT = e; :
 op_expr ::=     expr:a OR expr:b                                {: RESULT = new XPathBoolExpr(XPathBoolExpr.Operator.OR, a, b); :}
         |       expr:a AND expr:b                               {: RESULT = new XPathBoolExpr(XPathBoolExpr.Operator.AND, a, b); :}
         |       expr:a EQ expr:b                                {: RESULT = new XPathEqExpr(XPathEqExpr.Operator.EQ, a, b); :}
-        |       expr:a NEQ expr:b                               {: RESULT = new XPathEqExpr(XPathEqExpr.Operator.EQ, a, b); :}
+        |       expr:a NEQ expr:b                               {: RESULT = new XPathEqExpr(XPathEqExpr.Operator.NEQ, a, b); :}
         |       expr:a LT expr:b                                {: RESULT = new XPathCmpExpr(XPathCmpExpr.Operator.LT, a, b); :}
         |       expr:a LTE expr:b                               {: RESULT = new XPathCmpExpr(XPathCmpExpr.Operator.LTE, a, b); :}
         |       expr:a GT expr:b                                {: RESULT = new XPathCmpExpr(XPathCmpExpr.Operator.GT, a, b); :}
@@ -164,8 +164,8 @@ func_call       ::=     QNAME:q LPAREN arg_list:al RPAREN       {: RESULT = new 
                 |       QNAME:q LPAREN RPAREN                   {: RESULT = new XPathFuncExpr(q, new XPathExpression[0]); :}
                 ;
 
-arg_list        ::=     arg_list:al COMMA expr:e                {: RESULT = Vappend(al, e); :}
-                |       expr:e                                  {: RESULT = Vappend(new Vector<XPathExpression>(), e); :}
+arg_list        ::=     arg_list:al COMMA expr:e                {: RESULT = append(al, e); :}
+                |       expr:e                                  {: RESULT = append(new Vector<XPathExpression>(), e); :}
                 ;
 
 path_expr       ::=     loc_path:lp                             {: RESULT = lp; :}
@@ -177,13 +177,13 @@ predicate       ::=     LBRACK expr:e RBRACK                    {: RESULT = e; :
 loc_path        ::=     rel_loc_path:rlp                        {: RESULT = new XPathPathExpr(XPathPathExpr.InitialContext.REL, getStepArr(rlp)); :}
                 |       SLASH rel_loc_path:rlp                  {: RESULT = new XPathPathExpr(XPathPathExpr.InitialContext.ABS, getStepArr(rlp)); :}
                 |       DBL_SLASH rel_loc_path:rlp              {: RESULT = new XPathPathExpr(XPathPathExpr.InitialContext.ABS,
-                                                                                              getStepArr(Vprepend(rlp, XPathStep.ABBR_DESCENDANTS()))); :}
+                                                                                              getStepArr(prepend(rlp, XPathStep.ABBR_DESCENDANTS()))); :}
                 |       SLASH                                   {: RESULT = new XPathPathExpr(XPathPathExpr.InitialContext.ABS, new XPathStep[0]); :}
                 ;
 
-rel_loc_path    ::=     step:s                                  {: RESULT = Vappend(new Vector<XPathStep>(), s); :}
-                |       rel_loc_path:rlp SLASH step:s           {: RESULT = Vappend(rlp, s); :}
-                |       rel_loc_path:rlp DBL_SLASH step:s       {: RESULT = Vappend(Vappend(rlp, XPathStep.ABBR_DESCENDANTS()), s); :}
+rel_loc_path    ::=     step:s                                  {: RESULT = append(new Vector<XPathStep>(), s); :}
+                |       rel_loc_path:rlp SLASH step:s           {: RESULT = append(rlp, s); :}
+                |       rel_loc_path:rlp DBL_SLASH step:s       {: RESULT = append(append(rlp, XPathStep.ABBR_DESCENDANTS()), s); :}
                 ;
 
 step    ::=     step_unabbr:s                                   {: RESULT = s.unwrapStep(); :}
@@ -191,7 +191,7 @@ step    ::=     step_unabbr:s                                   {: RESULT = s.un
         |       DBL_DOT                                         {: RESULT = XPathStep.ABBR_PARENT(); :}
         ;
 
-step_unabbr     ::=     step_unabbr:s predicate:p               {: Vappend(s.exprVect, p); RESULT = s; :}
+step_unabbr     ::=     step_unabbr:s predicate:p               {: append(s.exprVect, p); RESULT = s; :}
                 |       step_body:sb                            {: RESULT = new VectorWrapper(sb); :}
                 ;
 
