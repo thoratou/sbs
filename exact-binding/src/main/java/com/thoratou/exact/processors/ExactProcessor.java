@@ -1,7 +1,29 @@
+/*****************************************************************************
+ * This source file is part of SBS (Screen Build System),                    *
+ * which is a component of Screen Framework                                  *
+ *                                                                           *
+ * Copyright (c) 2008-2013 Ratouit Thomas                                    *
+ *                                                                           *
+ * This program is free software; you can redistribute it and/or modify it   *
+ * under the terms of the GNU Lesser General Public License as published by  *
+ * the Free Software Foundation; either version 3 of the License, or (at     *
+ * your option) any later version.                                           *
+ *                                                                           *
+ * This program is distributed in the hope that it will be useful, but       *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of                *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser   *
+ * General Public License for more details.                                  *
+ *                                                                           *
+ * You should have received a copy of the GNU Lesser General Public License  *
+ * along with this program; if not, write to the Free Software Foundation,   *
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA, or go to   *
+ * http://www.gnu.org/copyleft/lesser.txt.                                   *
+ *****************************************************************************/
+
 package com.thoratou.exact.processors;
 
-import java.lang.reflect.Method;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -18,6 +40,8 @@ import com.thoratou.exact.annotations.ExactPath;
 @SupportedAnnotationTypes("com.thoratou.exact.annotations.ExactNode")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ExactProcessor extends AbstractProcessor{
+	
+	private static Logger logger = CustomLogger.getLogger();
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -31,13 +55,13 @@ public class ExactProcessor extends AbstractProcessor{
 						TypeElement typeElement = (TypeElement) e;
 						
 						Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
-						System.out.println("Exact class : "+clazz.getName());
+						logger.info("Exact class : "+clazz.getName());
 						
 						for(Element innerElement : typeElement.getEnclosedElements()){
 							if(innerElement.getKind() == ElementKind.METHOD){
 								ExactPath annotation = innerElement.getAnnotation(ExactPath.class);
 								if(annotation != null){
-									System.out.println("Exact method : "+innerElement.getSimpleName()+" , "+annotation.value());
+									logger.info("Exact method : "+innerElement.getSimpleName()+" , "+annotation.value());
 								}
 							}
 						}

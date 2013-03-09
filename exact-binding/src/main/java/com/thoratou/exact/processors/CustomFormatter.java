@@ -20,17 +20,46 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.annotations;
+package com.thoratou.exact.processors;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
-@Documented
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
-public @interface ExactPath {
-	String value();
+class CustomFormatter extends Formatter {
+	
+	public CustomFormatter() {
+		super();
+	}
+	
+    @Override
+    public String format(final LogRecord r) {
+        StringBuilder sb = new StringBuilder();
+        sb	.append("[")
+        	.append(r.getLevel().getName())
+        	.append("] ")
+        	.append(formatMessage(r))
+        	.append(System.getProperty("line.separator"));
+        if (null != r.getThrown()) {
+            sb.append("Throwable occurred: "); //$NON-NLS-1$
+            Throwable t = r.getThrown();
+            PrintWriter pw = null;
+            try {
+                StringWriter sw = new StringWriter();
+                pw = new PrintWriter(sw);
+                t.printStackTrace(pw);
+                sb.append(sw.toString());
+            } finally {
+                if (pw != null) {
+                    try {
+                        pw.close();
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -32,6 +32,7 @@ public class FieldStringTestCase extends TestCase{
 	
 	@Test
 	public void testBasic() throws FieldException{
+		
 		//clean up global env for contextless test
 		FieldBase.getCurrentEnvironmentVariables().clear();
 

@@ -20,17 +20,29 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.annotations;
+package com.thoratou.exact.processors;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
-@Documented
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
-public @interface ExactPath {
-	String value();
+public class CustomLogger {
+	private static Logger logger = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
+	static {
+		for(Handler handler: logger.getParent().getHandlers())
+        {
+			logger.getParent().removeHandler(handler);
+        }
+		
+        CustomFormatter formatter = new CustomFormatter();
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(formatter);
+        logger.addHandler(consoleHandler);
+    }
+	
+	public static Logger getLogger(){
+		return logger;
+	}
 }

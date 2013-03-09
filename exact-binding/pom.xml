@@ -117,7 +117,7 @@
 							<processors>
 								<processor>com.thoratou.exact.processors.ExactProcessor</processor>
 							</processors>
-						</configuration> 
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
