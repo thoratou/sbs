@@ -22,13 +22,7 @@
  
 package com.thoratou.exact.fields;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-
-import com.thoratou.exact.fields.Entry;
+import java.util.*;
 
 public class FieldMap<Key extends Entry<Key>, Value extends Entry<Value>> implements Entry< FieldMap<Key, Value> > {
 	Hashtable<Key, Value> table;

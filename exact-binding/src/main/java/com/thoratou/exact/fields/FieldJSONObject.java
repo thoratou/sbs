@@ -26,9 +26,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.thoratou.exact.fields.Entry;
-import com.thoratou.exact.fields.EnvironmentVariables;
-
 public class FieldJSONObject implements Entry<FieldJSONObject>{
 	FieldString jsonString;
 

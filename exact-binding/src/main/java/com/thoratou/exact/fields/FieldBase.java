@@ -22,8 +22,6 @@
  
 package com.thoratou.exact.fields;
 
-import com.thoratou.exact.fields.EnvironmentVariables;
-
 public abstract class FieldBase<T> {
 	public enum Type{
 		MANDATORY,

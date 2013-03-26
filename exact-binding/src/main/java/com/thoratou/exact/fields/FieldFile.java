@@ -22,9 +22,6 @@
 
 package com.thoratou.exact.fields;
 
-import com.thoratou.exact.fields.Entry;
-import com.thoratou.exact.fields.EnvironmentVariables;
-
 public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
 	FieldString fieldString;
 	

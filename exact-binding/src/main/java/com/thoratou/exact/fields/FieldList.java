@@ -25,8 +25,6 @@ package com.thoratou.exact.fields;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.thoratou.exact.fields.Entry;
-
 public class FieldList <T extends Entry<T> > implements Entry<FieldList<T> >{
 	private ArrayList<T> array;
 	final T prototype;

@@ -29,8 +29,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import com.thoratou.exact.fields.FieldString;
-
 public class EnvironmentVariables {
 	private Hashtable<String, FieldString> variableTable;
 	
