@@ -6,6 +6,10 @@ import com.thoratou.exact.xpath.ast.*;
 action code {:
 		public XPathPathExpr xPathExpr = null;
 
+		public XPathPathExpr getXPathPathExpr(){
+		    return parser.action_obj.xPathExpr;
+		}
+
         private static XPathExpression[] getExprArr (Vector<XPathExpression> v) {
                 XPathExpression[] arr = new XPathExpression[v.size()];
                 v.copyInto(arr);

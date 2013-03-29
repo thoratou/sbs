@@ -22,20 +22,22 @@
 
 package com.thoratou.exact.processors;
 
-import java.util.Set;
-import java.util.logging.Logger;
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.xpath.XPathParser;
+import com.thoratou.exact.xpath.ast.XPathPathExpr;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
+import javax.lang.model.util.ElementFilter;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @SupportedAnnotationTypes("com.thoratou.exact.annotations.ExactNode")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
@@ -46,31 +48,48 @@ public class ExactProcessor extends AbstractProcessor{
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if(!roundEnv.processingOver()){
+
+            HashMap<String, Item> itemMap = new HashMap<String, Item>();
 			
 			//retrieve all classes with @ExactNode annotation
-			for(Element e : roundEnv.getElementsAnnotatedWith(ExactNode.class)){
-				//verify this is a class
-				if(e.getKind() == ElementKind.CLASS){
-					try {
-						TypeElement typeElement = (TypeElement) e;
-						
-						Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
-						logger.info("Exact class : "+clazz.getName());
-						
-						for(Element innerElement : typeElement.getEnclosedElements()){
-							if(innerElement.getKind() == ElementKind.METHOD){
-								ExactPath annotation = innerElement.getAnnotation(ExactPath.class);
-								if(annotation != null){
-									logger.info("Exact method : "+innerElement.getSimpleName()+" , "+annotation.value());
-								}
-							}
-						}
-					} catch (ClassNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
+			for(TypeElement e : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ExactNode.class))){
+                try {
+                    TypeElement typeElement = (TypeElement) e;
+
+                    Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
+                    String className = clazz.getName();
+                    logger.info("Exact class : "+clazz.getName());
+
+                    for(ExecutableElement methodElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())){
+                        ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
+                        if(annotation != null){
+                            String methodName = methodElement.getSimpleName().toString();
+                            String returnType = methodElement.getReturnType().toString();
+                            String xPathString = annotation.value();
+
+                            logger.info("Exact method : "+methodName+" , "+annotation.value()+" , "+returnType);
+
+                            XPathParser parser = new XPathParser(xPathString);
+                            try {
+                                XPathPathExpr xPathPathExpr = parser.parse();
+
+                                Item item = new Item();
+                                item.setxPathPathExpr(xPathPathExpr);
+                                item.setMethodName(methodName);
+                                item.setReturnType(returnType);
+
+                                itemMap.put(className, item);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
 			}
+
+            //use all annotation data to generate parsing files
 		}
 		return false;
 	}

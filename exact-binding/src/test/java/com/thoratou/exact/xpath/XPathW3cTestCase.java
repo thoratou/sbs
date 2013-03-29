@@ -22,15 +22,9 @@
 
 package com.thoratou.exact.xpath;
 
-import java.io.StringReader;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
-import com.thoratou.exact.xpath.XPath;
-import com.thoratou.exact.xpath.XPathLexer;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
+import junit.framework.TestCase;
+import org.junit.Test;
 
 public class XPathW3cTestCase extends TestCase{
 	
@@ -354,11 +348,8 @@ public class XPathW3cTestCase extends TestCase{
 	
 	public void checkString(String xpathString, String xpathExpr) throws Exception{
 		
-		XPathLexer lexer = new XPathLexer(new StringReader(xpathString));
-		XPath parser = new XPath(lexer);
-		parser.parse();
-		
-		XPathPathExpr finalExpr = parser.action_obj.xPathExpr;
+		XPathParser parser = new XPathParser(xpathString);
+        XPathPathExpr finalExpr = parser.parse();
 		assertEquals(finalExpr.toString(), xpathExpr);
 	}
 }

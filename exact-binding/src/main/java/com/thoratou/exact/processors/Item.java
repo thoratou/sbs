@@ -22,17 +22,34 @@
 
 package com.thoratou.exact.processors;
 
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.fields.FieldString;
+import com.thoratou.exact.xpath.ast.XPathPathExpr;
 
-@ExactNode
-public class SimpleBom {
+class Item{
+    private XPathPathExpr xPathPathExpr;
+    private String methodName;
+    private String returnType;
 
-	FieldString dummy;
-	
-	@ExactPath("dummy/text()")
-	public FieldString getDummy(){
-		return dummy;
-	}
+    public XPathPathExpr getxPathPathExpr() {
+        return xPathPathExpr;
+    }
+
+    public void setxPathPathExpr(XPathPathExpr xPathPathExpr) {
+        this.xPathPathExpr = xPathPathExpr;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
+    }
 }

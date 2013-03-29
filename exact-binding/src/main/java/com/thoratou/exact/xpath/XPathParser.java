@@ -20,19 +20,23 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.processors;
+package com.thoratou.exact.xpath;
 
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.fields.FieldString;
+import com.thoratou.exact.xpath.ast.XPathPathExpr;
 
-@ExactNode
-public class SimpleBom {
+import java.io.StringReader;
 
-	FieldString dummy;
-	
-	@ExactPath("dummy/text()")
-	public FieldString getDummy(){
-		return dummy;
-	}
+public class XPathParser{
+    XPathLexer lexer;
+    XPath parser;
+
+	public XPathParser(String xPathString){
+        lexer = new XPathLexer(new StringReader(xPathString));
+        parser = new XPath(lexer);
+    }
+
+    public XPathPathExpr parse() throws Exception {
+        parser.parse();
+        return parser.action_obj.getXPathPathExpr();
+    }
 }
