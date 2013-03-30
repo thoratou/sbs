@@ -26,6 +26,8 @@ import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
 import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -35,7 +37,10 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -49,49 +54,89 @@ public class ExactProcessor extends AbstractProcessor{
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if(!roundEnv.processingOver()){
 
-            HashMap<String, Item> itemMap = new HashMap<String, Item>();
-			
-			//retrieve all classes with @ExactNode annotation
-			for(TypeElement e : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ExactNode.class))){
-                try {
-                    TypeElement typeElement = (TypeElement) e;
+            try {
+                HashMap<String, ArrayList<Item> > itemMap = new HashMap<String, ArrayList<Item>>();
+                readAnnotations(roundEnv, itemMap);
 
-                    Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
-                    String className = clazz.getName();
-                    logger.info("Exact class : "+clazz.getName());
+                HashMap<String, HashMap<PathStep, ? extends StepImplementation> > mergedMap
+                        = new HashMap<String, HashMap<PathStep, ? extends StepImplementation>>();
+                mergeClassPaths(itemMap,mergedMap);
 
-                    for(ExecutableElement methodElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())){
-                        ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
-                        if(annotation != null){
-                            String methodName = methodElement.getSimpleName().toString();
-                            String returnType = methodElement.getReturnType().toString();
-                            String xPathString = annotation.value();
-
-                            logger.info("Exact method : "+methodName+" , "+annotation.value()+" , "+returnType);
-
-                            XPathParser parser = new XPathParser(xPathString);
-                            try {
-                                XPathPathExpr xPathPathExpr = parser.parse();
-
-                                Item item = new Item();
-                                item.setxPathPathExpr(xPathPathExpr);
-                                item.setMethodName(methodName);
-                                item.setReturnType(returnType);
-
-                                itemMap.put(className, item);
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
-                        }
-                    }
-                } catch (ClassNotFoundException e1) {
-                    e1.printStackTrace();
-                }
-			}
-
-            //use all annotation data to generate parsing files
+                writeSources(mergedMap);
+            } catch (Exception e) {
+                logger.severe(e.getMessage());
+                e.printStackTrace();
+            }
 		}
 		return false;
 	}
 
+    private void readAnnotations(RoundEnvironment roundEnv, HashMap<String, ArrayList<Item> > itemMap)
+            throws Exception {
+        //retrieve all classes with @ExactNode annotation
+        for(TypeElement typeElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ExactNode.class))){
+            Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
+            String className = clazz.getName();
+            logger.info("Exact class : "+clazz.getName());
+
+            for(ExecutableElement methodElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())){
+                ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
+                if(annotation != null){
+                    String methodName = methodElement.getSimpleName().toString();
+                    String returnType = methodElement.getReturnType().toString();
+                    String xPathString = annotation.value();
+
+                    logger.info("Exact method : "+methodName+" , "+annotation.value()+" , "+returnType);
+
+                    XPathParser parser = new XPathParser(xPathString);
+                    XPathPathExpr xPathPathExpr = parser.parse();
+
+                    Item item = new Item();
+                    item.setxPathPathExpr(xPathPathExpr);
+                    item.setMethodName(methodName);
+                    item.setReturnType(returnType);
+
+                    if(itemMap.containsKey(className)){
+                        ArrayList<Item> items = itemMap.get(className);
+                        items.add(item);
+                    }
+                    else{
+                        ArrayList<Item> items = new ArrayList<Item>();
+                        items.add(item);
+                        itemMap.put(className,items);
+                    }
+                }
+            }
+        }
+    }
+
+    private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
+                                 HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap) {
+        //TODO
+    }
+
+    private void writeSources(HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap)
+            throws UnsupportedEncodingException {
+        VelocityEngine engine = new VelocityEngine();
+        engine.init();
+
+        //read file into JAR
+        InputStream configStream = getClass().getResourceAsStream("/display.vm");
+        BufferedReader configReader = new BufferedReader(new InputStreamReader(configStream, "UTF-8"));
+
+        //Template template = engine.getTemplate("display.vm");
+
+        //use all annotation data to generate parsing files
+        for(Map.Entry<String, HashMap<PathStep, ? extends StepImplementation>> entryList : mergedMap.entrySet()) {
+            String className = entryList.getKey();
+            HashMap<PathStep, ? extends StepImplementation> steps = entryList.getValue();
+
+            VelocityContext context = new VelocityContext();
+            context.put("class", className);
+
+            StringWriter writer = new StringWriter();
+            engine.evaluate(context, writer, "", configReader);
+            //TODO
+        }
+    }
 }
