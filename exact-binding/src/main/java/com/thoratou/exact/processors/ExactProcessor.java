@@ -112,7 +112,40 @@ public class ExactProcessor extends AbstractProcessor{
 
     private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
                                  HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap) {
-        //TODO
+        /*
+        convert Xpath path map into step-by-step merged representation
+        example :
+
+        input :
+            { 'com.thoratou.example.SimpleBom' ->
+                 [
+                    {'toto/titi/text()', 'getTiti()', 'FieldString'},
+                    {'toto/tata/@value', 'getTata()', 'FieldString'}
+                    {'toto/tata/child', 'getChild()', 'com.thoratou.example.ChildBom'}
+                 ]
+            }
+
+        output :
+            { 'com.thoratou.example.SimpleBom', ->
+                 [
+                    {CHILD_ELEMENT, 'toto'} ->
+                    [
+                        {CHILD_ELEMENT, 'titi'} ->
+                        [
+                            {TEXT, 'getTiti()', 'FieldString'}
+                        ],
+                        {CHILD_ELEMENT, 'tata'} ->
+                        [
+                            {ATTRIBUTE, 'value',  'getTata()', 'FieldString'}
+                            {CHILD_ELEMENT, 'child'} ->
+                            [
+                                {BOM, 'getChild()', 'com.thoratou.example.ChildBom'}
+                            ]
+                        ]
+                    ]
+                 ]
+            }
+         */
     }
 
     private void writeSources(HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap)
