@@ -1,22 +1,41 @@
-
-class : $class
 ##
 ##main macro
 ##
-#macro( display $steps )
+#macro( writeAll $steps )
+    #header()
+    #write($steps)
+    #footer()
+#end
+
+#macro( header )
+package ${package};
+import org.jdom.Element;
+
+public class ${simpleclass}XmlReader{
+#end
+
+#macro( footer )
+}
+#end
+
+
+##
+##main recursion
+##
+#macro( write $steps )
     #foreach( $step in $steps )
         #set( $kind = $step.getStepKind() )
         #set( $value = $step.getStepValue() )
         #set( $method = $step.getMethodName() )
         #set( $return = $step.getReturnType() )
-{$kind, $value, $method, $return}
-#display( $step.getChildSteps() )
+        #write( $step.getChildSteps() )
     #end
 #end
+
 ##
 ##main call
 ##
-$indentutil.trim("#display($steps)")
+$indentutil.javaCode("#writeAll($steps)")
 
 ##if($kind == $kindmap.child)
 ##    {$kind, }

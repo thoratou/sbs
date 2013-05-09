@@ -171,17 +171,16 @@ public class PathStep {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         PathStep pathStep = (PathStep) o;
 
-        if (stepKind != pathStep.stepKind)
-            return false;
-        if (stepValue != null ? !stepValue.equals(pathStep.stepValue) : pathStep.stepValue != null)
-            return false;
+        if (methodName != null ? !methodName.equals(pathStep.methodName) : pathStep.methodName != null) return false;
+        if (returnType != null ? !returnType.equals(pathStep.returnType) : pathStep.returnType != null) return false;
+        if (startKind != pathStep.startKind) return false;
+        if (stepKind != pathStep.stepKind) return false;
+        if (stepValue != null ? !stepValue.equals(pathStep.stepValue) : pathStep.stepValue != null) return false;
 
         return true;
     }
@@ -189,7 +188,10 @@ public class PathStep {
     @Override
     public int hashCode() {
         int result = stepKind.hashCode();
+        result = 31 * result + startKind.hashCode();
         result = 31 * result + (stepValue != null ? stepValue.hashCode() : 0);
+        result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
+        result = 31 * result + (returnType != null ? returnType.hashCode() : 0);
         return result;
     }
 }

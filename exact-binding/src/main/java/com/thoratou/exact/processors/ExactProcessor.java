@@ -254,7 +254,7 @@ public class ExactProcessor extends AbstractProcessor{
         engine.init();
 
         //read file into JAR
-        InputStream configStream = getClass().getResourceAsStream("/display.vm");
+        InputStream configStream = getClass().getResourceAsStream("/xmlreader.vm");
         BufferedReader configReader = new BufferedReader(new InputStreamReader(configStream, "UTF-8"));
 
         //Template template = engine.getTemplate("display.vm");
@@ -266,9 +266,21 @@ public class ExactProcessor extends AbstractProcessor{
 
             VelocityContext context = new VelocityContext();
             context.put("class", className);
+
+            try {
+                Class<?> clazz = Class.forName(className);
+                String packageName = clazz.getPackage().getName();
+                context.put("package", packageName);
+                String simpleName = clazz.getSimpleName();
+                context.put("simpleclass", simpleName);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
             context.put("steps",steps);
             context.put("kindmap", PathStep.ReverseKindMap);
             context.put("startmap", PathStep.ReverseStartMap);
+            context.put("indentutil", new IndentUtil());
 
             logger.info("input velocity data : "+className+ " , "+steps.toString());
 
