@@ -26,6 +26,7 @@ import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
 import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
+import com.thoratou.exact.xpath.ast.XPathStep;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -38,10 +39,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SupportedAnnotationTypes("com.thoratou.exact.annotations.ExactNode")
@@ -58,8 +56,8 @@ public class ExactProcessor extends AbstractProcessor{
                 HashMap<String, ArrayList<Item> > itemMap = new HashMap<String, ArrayList<Item>>();
                 readAnnotations(roundEnv, itemMap);
 
-                HashMap<String, HashMap<PathStep, ? extends StepImplementation> > mergedMap
-                        = new HashMap<String, HashMap<PathStep, ? extends StepImplementation>>();
+                HashMap<String, List<PathStep> > mergedMap
+                        = new HashMap<String, List<PathStep>>();
                 mergeClassPaths(itemMap,mergedMap);
 
                 writeSources(mergedMap);
@@ -111,7 +109,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
-                                 HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap) {
+                                 HashMap<String,List<PathStep>> mergedMap) {
         /*
         convert Xpath path map into step-by-step merged representation
         example :
@@ -146,9 +144,111 @@ public class ExactProcessor extends AbstractProcessor{
                  ]
             }
          */
+        
+        for(Map.Entry<String, ArrayList<Item>> itemEntry : itemMap.entrySet()){
+            //retrieve bom basic data
+            String baseClassName = itemEntry.getKey();
+            ArrayList<Item> itemList = itemEntry.getValue();
+
+            //initialize new representation for this bom
+            List<PathStep> newPathStepList = new ArrayList<PathStep>();
+            mergedMap.put(baseClassName, newPathStepList);
+            for(Item item : itemList){
+                XPathPathExpr xPathPathExpr = item.getxPathPathExpr();
+                String methodName = item.getMethodName();
+                String returnType = item.getReturnType();
+                convertXPathExpr(xPathPathExpr, methodName, returnType, newPathStepList);
+            }
+        }
     }
 
-    private void writeSources(HashMap<String,HashMap<PathStep, ? extends StepImplementation>> mergedMap)
+    private void convertXPathExpr(XPathPathExpr xPathPathExpr,
+                                  String methodName,
+                                  String returnType,
+                                  List<PathStep> newPathStepList) {
+        PathStep rootStep = new PathStep();
+        rootStep.setStepKind(PathStep.Kind.START);
+        switch (xPathPathExpr.context) {
+            case ABS:
+                rootStep.setStartKind(PathStep.StartKind.ABSOLUTE);
+                break;
+            case REL:
+                rootStep.setStartKind(PathStep.StartKind.RELATIVE);
+                break;
+        }
+        newPathStepList.add(rootStep);
+        convertXPathSteps(xPathPathExpr.steps, methodName, returnType, rootStep.getChildSteps());
+    }
+
+    private void convertXPathSteps(XPathStep[] steps,
+                                   String methodName,
+                                   String returnType,
+                                   List<PathStep> newPathStepList) {
+        List<PathStep> currentList = newPathStepList;
+        for(XPathStep step : steps){
+            PathStep pathStep = new PathStep();
+            switch (step.axis) {
+                case CHILD:
+                    switch (step.test) {
+                        case NAME:
+                            pathStep.setStepKind(PathStep.Kind.CHILD_ELEMENT);
+                            pathStep.setStepValue(step.testStr());
+                            break;
+                        case NAME_WILDCARD:
+                            break;
+                        case NAMESPACE_WILDCARD:
+                            break;
+                        case TYPE_NODE:
+                            break;
+                        case TYPE_TEXT:
+                            pathStep.setStepKind(PathStep.Kind.TEXT);
+                            pathStep.setMethodName(methodName);
+                            pathStep.setReturnType(returnType);
+                            break;
+                        case TYPE_COMMENT:
+                            break;
+                        case TYPE_PROCESSING_INSTRUCTION:
+                            break;
+                    }
+                    break;
+                case DESCENDANT:
+                    break;
+                case PARENT:
+                    break;
+                case ANCESTOR:
+                    break;
+                case FOLLOWING_SIBLING:
+                    break;
+                case PRECEDING_SIBLING:
+                    break;
+                case FOLLOWING:
+                    break;
+                case PRECEDING:
+                    break;
+                case ATTRIBUTE:
+                    PathStep attrStep = new PathStep();
+                    attrStep.setStepKind(PathStep.Kind.ATTRIBUTE);
+                    attrStep.setStepValue(step.testStr());
+                    attrStep.setMethodName(methodName);
+                    attrStep.setReturnType(returnType);
+                    break;
+                case NAMESPACE:
+                    break;
+                case SELF:
+                    break;
+                case DESCENDANT_OR_SELF:
+                    break;
+                case ANCESTOR_OR_SELF:
+                    break;
+            }
+            //TODO : optimisation, find existing step to merge them
+            currentList.add(pathStep);
+            //move to sub list
+            currentList = pathStep.getChildSteps();
+        }
+    }
+
+    private void writeSources(HashMap<String, List<PathStep>> mergedMap)
             throws UnsupportedEncodingException {
         VelocityEngine engine = new VelocityEngine();
         engine.init();
@@ -160,16 +260,22 @@ public class ExactProcessor extends AbstractProcessor{
         //Template template = engine.getTemplate("display.vm");
 
         //use all annotation data to generate parsing files
-        for(Map.Entry<String, HashMap<PathStep, ? extends StepImplementation>> entryList : mergedMap.entrySet()) {
+        for(Map.Entry<String, List<PathStep>> entryList : mergedMap.entrySet()) {
             String className = entryList.getKey();
-            HashMap<PathStep, ? extends StepImplementation> steps = entryList.getValue();
+            List<PathStep> steps = entryList.getValue();
 
             VelocityContext context = new VelocityContext();
             context.put("class", className);
+            context.put("steps",steps);
+            context.put("kindmap", PathStep.ReverseKindMap);
+            context.put("startmap", PathStep.ReverseStartMap);
+
+            logger.info("input velocity data : "+className+ " , "+steps.toString());
 
             StringWriter writer = new StringWriter();
             engine.evaluate(context, writer, "", configReader);
-            //TODO
+
+            logger.info("final velocity data : "+writer.getBuffer().toString());
         }
     }
 }
