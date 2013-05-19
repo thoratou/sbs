@@ -105,6 +105,18 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-test-sources/exact-binding</source>
+                            </sources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -179,6 +191,7 @@
                             <processors>
                                 <processor>com.thoratou.exact.processors.ExactProcessor</processor>
                             </processors>
+                            <outputDirectory>target/generated-test-sources/exact-binding</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

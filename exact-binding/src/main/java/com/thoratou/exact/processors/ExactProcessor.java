@@ -30,14 +30,12 @@ import com.thoratou.exact.xpath.ast.XPathStep;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.JavaFileObject;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
@@ -47,8 +45,15 @@ import java.util.logging.Logger;
 public class ExactProcessor extends AbstractProcessor{
 	
 	private static Logger logger = CustomLogger.getLogger();
+    private ProcessingEnvironment processingEnv;
 
-	@Override
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        this.processingEnv = processingEnv;
+        super.init(processingEnv);
+    }
+
+    @Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		if(!roundEnv.processingOver()){
 
@@ -249,7 +254,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void writeSources(HashMap<String, List<PathStep>> mergedMap)
-            throws UnsupportedEncodingException {
+            throws IOException {
         VelocityEngine engine = new VelocityEngine();
         engine.init();
 
@@ -267,11 +272,13 @@ public class ExactProcessor extends AbstractProcessor{
             VelocityContext context = new VelocityContext();
             context.put("class", className);
 
+            String packageName = null;
+            String simpleName = null;
             try {
                 Class<?> clazz = Class.forName(className);
-                String packageName = clazz.getPackage().getName();
+                packageName = clazz.getPackage().getName();
                 context.put("package", packageName);
-                String simpleName = clazz.getSimpleName();
+                simpleName = clazz.getSimpleName();
                 context.put("simpleclass", simpleName);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -281,13 +288,24 @@ public class ExactProcessor extends AbstractProcessor{
             context.put("kindmap", PathStep.ReverseKindMap);
             context.put("startmap", PathStep.ReverseStartMap);
             context.put("indentutil", new IndentUtil());
+            context.put("processingutil", new ProcessingUtil());
 
             logger.info("input velocity data : "+className+ " , "+steps.toString());
 
-            StringWriter writer = new StringWriter();
-            engine.evaluate(context, writer, "", configReader);
+            //StringWriter writer = new StringWriter();
+            //String packagePath = packageName.replace(".","/");
+            //String fullFile = packagePath+"/"+simpleName+"XmlReader.java";
+            //logger.info(fullFile);
 
-            logger.info("final velocity data : "+writer.getBuffer().toString());
+            Filer filer = processingEnv.getFiler();
+            JavaFileObject sourceFile = filer.createSourceFile(className+"XmlReader");
+            Writer sourceWriter = sourceFile.openWriter();
+
+            engine.evaluate(context, sourceWriter, "", configReader);
+
+            sourceWriter.close();
+
+            //logger.info("final velocity data : "+writer.getBuffer().toString());
         }
     }
 }

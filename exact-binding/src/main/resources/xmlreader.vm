@@ -3,32 +3,57 @@
 ##
 #macro( writeAll $steps )
     #header()
-    #write($steps)
+    #foreach( $step in $steps )
+        #set( $kind = $step.getStepKind() )
+        #set( $start = $step.getStartKind() )
+        #if($kind == $kindmap.start)
+            #if($start == $startmap.relative)
+                #write( $step.getChildSteps(), "rootElement" )
+            #else
+                //Unsupported absolute start type
+            #end
+        #else
+            //Unknown start type
+        #end
+    #end
     #footer()
 #end
 
 #macro( header )
 package ${package};
-import org.jdom.Element;
 
 public class ${simpleclass}XmlReader{
+    public void read(${class} bom, org.jdom.Element rootElement){
 #end
 
 #macro( footer )
+    }
 }
 #end
 
+#set( $fieldPackage = "com.thoratou.exact.fields" )
 
 ##
 ##main recursion
 ##
-#macro( write $steps )
+#macro( write $steps , $parentElement )
     #foreach( $step in $steps )
         #set( $kind = $step.getStepKind() )
         #set( $value = $step.getStepValue() )
         #set( $method = $step.getMethodName() )
         #set( $return = $step.getReturnType() )
-        #write( $step.getChildSteps() )
+        #if($kind == $kindmap.child)
+            #set( $childList = $processingutil.generateNewChildListName() )
+            #set( $element = $processingutil.generateNewElementName() )
+            java.util.List<org.jdom.Element> $childList = $parentElement .getChildren("$value");
+            for(org.jdom.Element $element : $childList){
+                #write( $step.getChildSteps(), $element )
+            }
+        #elseif($kind == $kindmap.text)
+            #set( $text = $processingutil.generateNewTextName() )
+            String $text = $parentElement .getTextTrim();
+            bom.${method}().set($text);
+        #end
     #end
 #end
 
@@ -37,10 +62,5 @@ public class ${simpleclass}XmlReader{
 ##
 $indentutil.javaCode("#writeAll($steps)")
 
-##if($kind == $kindmap.child)
-##    {$kind, }
-##elseif($kind == $kindmap.text)
-##    {$kind, ,}
-##end
 
 
