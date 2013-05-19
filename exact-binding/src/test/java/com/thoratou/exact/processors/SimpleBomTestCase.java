@@ -38,10 +38,10 @@ import java.io.StringReader;
 public class SimpleBomTestCase extends TestCase{
 	
 	@Test
-	public void testBasic() throws FieldException, JDOMException, IOException {
-		
-		//clean up global env for contextless test
-		FieldBase.getCurrentEnvironmentVariables().clear();
+         public void testBasic() throws FieldException, JDOMException, IOException {
+
+        //clean up global env for contextless test
+        FieldBase.getCurrentEnvironmentVariables().clear();
 
         SimpleBom bom = new SimpleBom();
 
@@ -54,5 +54,45 @@ public class SimpleBomTestCase extends TestCase{
         bomReader.read(bom, rootElement);
 
         assertEquals("toto", bom.getDummy().get());
+    }
+
+    @Test
+    public void testAttribute() throws FieldException, JDOMException, IOException {
+
+        //clean up global env for contextless test
+        FieldBase.getCurrentEnvironmentVariables().clear();
+
+        SimpleBom bom = new SimpleBom();
+
+        SAXBuilder builder = new SAXBuilder();
+        Reader inputXml = new StringReader("<root><dummy value=\"titi\">toto</dummy></root>");
+        Document document = builder.build(inputXml);
+        Element rootElement = document.getRootElement();
+
+        SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
+        bomReader.read(bom, rootElement);
+
+        assertEquals("toto", bom.getDummy().get());
+        assertEquals("titi", bom.getValue().get());
+    }
+
+    @Test
+    public void testDefaultAttributeValue() throws FieldException, JDOMException, IOException {
+
+        //clean up global env for contextless test
+        FieldBase.getCurrentEnvironmentVariables().clear();
+
+        SimpleBom bom = new SimpleBom();
+
+        SAXBuilder builder = new SAXBuilder();
+        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
+        Document document = builder.build(inputXml);
+        Element rootElement = document.getRootElement();
+
+        SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
+        bomReader.read(bom, rootElement);
+
+        assertEquals("toto", bom.getDummy().get());
+        assertEquals("novalue", bom.getValue().get());
     }
 }

@@ -52,6 +52,10 @@ public class ${simpleclass}XmlReader{
             #set( $text = $processingutil.generateNewTextName() )
             String $text = $parentElement .getTextTrim();
             bom.${method}().set($text);
+        #elseif($kind == $kindmap.attribute)
+            #set( $attr = $processingutil.generateNewAttributeName() )
+            String $attr = $parentElement .getAttributeValue("$value");
+            bom.${method}().set($attr);
         #end
     #end
 #end

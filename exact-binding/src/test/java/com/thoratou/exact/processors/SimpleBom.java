@@ -31,13 +31,20 @@ import com.thoratou.exact.fields.FieldString;
 public class SimpleBom {
 
 	private FieldString dummy;
+    private FieldString value;
 
     public SimpleBom() {
         dummy = FieldFactory.createMandatoryFieldString();
+        value = FieldFactory.createOptionalFieldString("novalue");
     }
 
     @ExactPath("dummy/text()")
 	public FieldString getDummy(){
 		return dummy;
 	}
+
+    @ExactPath("dummy/@value")
+    public FieldString getValue(){
+        return value;
+    }
 }

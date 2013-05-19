@@ -27,11 +27,13 @@ public class ProcessingUtil {
     private int elementID;
     private int childListID;
     private int textID;
+    private int attributeID;
 
     public ProcessingUtil() {
         elementID = 0;
         childListID = 0;
         textID = 0;
+        attributeID = 0;
     }
 
     public String generateNewElementName(){
@@ -44,5 +46,9 @@ public class ProcessingUtil {
 
     public String generateNewTextName(){
         return "text"+textID++;
+    }
+
+    public String generateNewAttributeName(){
+        return "attribute"+attributeID++;
     }
 }

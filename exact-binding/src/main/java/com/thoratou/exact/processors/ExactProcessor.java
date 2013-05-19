@@ -94,6 +94,8 @@ public class ExactProcessor extends AbstractProcessor{
                     XPathParser parser = new XPathParser(xPathString);
                     XPathPathExpr xPathPathExpr = parser.parse();
 
+                    logger.info("XPath value = "+xPathPathExpr.toString());
+
                     Item item = new Item();
                     item.setxPathPathExpr(xPathPathExpr);
                     item.setMethodName(methodName);
@@ -198,6 +200,7 @@ public class ExactProcessor extends AbstractProcessor{
                         case NAME:
                             pathStep.setStepKind(PathStep.Kind.CHILD_ELEMENT);
                             pathStep.setStepValue(step.testStr());
+                            //logger.info("step : child, "+pathStep.getStepValue());
                             break;
                         case NAME_WILDCARD:
                             break;
@@ -209,6 +212,7 @@ public class ExactProcessor extends AbstractProcessor{
                             pathStep.setStepKind(PathStep.Kind.TEXT);
                             pathStep.setMethodName(methodName);
                             pathStep.setReturnType(returnType);
+                            //logger.info("step : text, "+pathStep.getStepValue());
                             break;
                         case TYPE_COMMENT:
                             break;
@@ -231,11 +235,11 @@ public class ExactProcessor extends AbstractProcessor{
                 case PRECEDING:
                     break;
                 case ATTRIBUTE:
-                    PathStep attrStep = new PathStep();
-                    attrStep.setStepKind(PathStep.Kind.ATTRIBUTE);
-                    attrStep.setStepValue(step.testStr());
-                    attrStep.setMethodName(methodName);
-                    attrStep.setReturnType(returnType);
+                    pathStep.setStepKind(PathStep.Kind.ATTRIBUTE);
+                    pathStep.setStepValue(step.testStr());
+                    pathStep.setMethodName(methodName);
+                    pathStep.setReturnType(returnType);
+                    //logger.info("step : attribute, "+pathStep.getStepValue());
                     break;
                 case NAMESPACE:
                     break;
