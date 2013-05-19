@@ -27,6 +27,9 @@ import com.thoratou.exact.annotations.ExactPath;
 import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
 import com.thoratou.exact.xpath.ast.XPathStep;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.EqualPredicate;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -38,6 +41,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.tools.JavaFileObject;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SupportedAnnotationTypes("com.thoratou.exact.annotations.ExactNode")
@@ -183,8 +187,8 @@ public class ExactProcessor extends AbstractProcessor{
                 rootStep.setStartKind(PathStep.StartKind.RELATIVE);
                 break;
         }
-        newPathStepList.add(rootStep);
-        convertXPathSteps(xPathPathExpr.steps, methodName, returnType, rootStep.getChildSteps());
+        PathStep targetStep = addOrMergePathStep(rootStep, newPathStepList);
+        convertXPathSteps(xPathPathExpr.steps, methodName, returnType, targetStep.getChildSteps());
     }
 
     private void convertXPathSteps(XPathStep[] steps,
@@ -250,11 +254,44 @@ public class ExactProcessor extends AbstractProcessor{
                 case ANCESTOR_OR_SELF:
                     break;
             }
-            //TODO : optimisation, find existing step to merge them
-            currentList.add(pathStep);
+
+            PathStep targetStep = addOrMergePathStep(pathStep, currentList);
+
             //move to sub list
-            currentList = pathStep.getChildSteps();
+            currentList = targetStep.getChildSteps();
         }
+    }
+
+    private PathStep addOrMergePathStep(PathStep pathStep, Collection currentList){
+        PathStep returnStep = null;
+        /*final PathStep finalPathStep = pathStep;
+        @SuppressWarnings("unchecked")
+        Collection<PathStep> select = CollectionUtils.select(currentList, new Predicate(){
+            @Override
+            public boolean evaluate(Object o) {
+                PathStep ps = (PathStep) o;
+                logger.info("compare : "+ps+" * "+finalPathStep);
+                return finalPathStep.equals(ps);  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });*/
+        @SuppressWarnings("unchecked")
+        Collection<PathStep> select = CollectionUtils.select(currentList, new EqualPredicate(pathStep));
+        if(select.isEmpty()){
+            //logger.info("new path step : "+pathStep);
+            //new step => add new one in tree
+            currentList.add(pathStep);
+            returnStep = pathStep;
+        }
+        else if(select.size() == 1){
+            //existing step => merge with existing one
+            returnStep = select.iterator().next();
+            //logger.info("existing path step : "+pathStep);
+        }
+        else{
+            logger.log(Level.SEVERE, "internal error, more than one data for the same path step");
+            //TODO : exception handling
+        }
+        return returnStep;
     }
 
     private void writeSources(HashMap<String, List<PathStep>> mergedMap)
