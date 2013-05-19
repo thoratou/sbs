@@ -18,21 +18,19 @@
     #end
     #footer()
 #end
-
 #macro( header )
 package ${package};
 
 public class ${simpleclass}XmlReader{
-    public void read(${class} bom, org.jdom.Element rootElement){
+    @SuppressWarnings("unchecked")
+    public void read(${class} bom, org.jdom.Element rootElement)
+    {
 #end
-
 #macro( footer )
     }
 }
 #end
-
 #set( $fieldPackage = "com.thoratou.exact.fields" )
-
 ##
 ##main recursion
 ##
@@ -46,7 +44,8 @@ public class ${simpleclass}XmlReader{
             #set( $childList = $processingutil.generateNewChildListName() )
             #set( $element = $processingutil.generateNewElementName() )
             java.util.List<org.jdom.Element> $childList = $parentElement .getChildren("$value");
-            for(org.jdom.Element $element : $childList){
+            for(org.jdom.Element $element : $childList)
+            {
                 #write( $step.getChildSteps(), $element )
             }
         #elseif($kind == $kindmap.text)
@@ -56,11 +55,7 @@ public class ${simpleclass}XmlReader{
         #end
     #end
 #end
-
 ##
 ##main call
 ##
 $indentutil.javaCode("#writeAll($steps)")
-
-
-

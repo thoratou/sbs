@@ -22,24 +22,76 @@
 
 package com.thoratou.exact.processors;
 
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
+import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
+import java.util.Map;
+import java.util.logging.Logger;
+
 public class IndentUtil {
+    private static Logger logger = CustomLogger.getLogger();
+
     public String trim(String input){
         return input.trim();
     }
 
     public String javaCode(String input){
-        CodeFormatter cf = new DefaultCodeFormatter();
+        //Remove all unneeded spaces and lines
+        /*String[] lines = input.split(System.getProperty("line.separator"));
+        StringBuffer buffer = new StringBuffer();
+        for(String line : lines){
+            buffer.append(line.trim());
+            buffer.append("\n");
+        }*/
 
-        TextEdit te = cf.format(CodeFormatter.K_UNKNOWN, input, 0,input.length(),0,null);
+        // take default Eclipse formatting options
+        Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+
+        options.put(
+                DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR,
+                JavaCore.SPACE);
+
+        // change the option to wrap each enum constant on a new line
+        options.put(
+                DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ENUM_CONSTANTS,
+                DefaultCodeFormatterConstants.createAlignmentValue(
+                        true,
+                        DefaultCodeFormatterConstants.WRAP_ONE_PER_LINE,
+                        DefaultCodeFormatterConstants.INDENT_ON_COLUMN));
+
+        // change the option to wrap each enum constant on a new line
+        options.put(
+                DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ASSIGNMENT,
+                DefaultCodeFormatterConstants.createAlignmentValue(
+                        false,
+                        DefaultCodeFormatterConstants.WRAP_NO_SPLIT,
+                        DefaultCodeFormatterConstants.INDENT_ON_COLUMN));
+
+        // change the option to wrap each enum constant on a new line
+        options.put(
+                DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTOR_IN_METHOD_INVOCATION,
+                DefaultCodeFormatterConstants.createAlignmentValue(
+                        false,
+                        DefaultCodeFormatterConstants.WRAP_NO_SPLIT,
+                        DefaultCodeFormatterConstants.INDENT_ON_COLUMN));
+
+        CodeFormatter cf = ToolFactory.createCodeFormatter(options);
+
         IDocument dc = new Document(input);
+        TextEdit te = cf.format(CodeFormatter.K_COMPILATION_UNIT, dc.get(), 0,dc.get().length(),0,null);
+
         try {
             te.apply(dc);
         } catch (MalformedTreeException e) {
