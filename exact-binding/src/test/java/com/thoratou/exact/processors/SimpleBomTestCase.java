@@ -22,22 +22,37 @@
 
 package com.thoratou.exact.processors;
 
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.fields.FieldFactory;
-import com.thoratou.exact.fields.FieldString;
+import com.thoratou.exact.fields.FieldBase;
+import com.thoratou.exact.fields.FieldException;
+import junit.framework.TestCase;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.junit.Test;
 
-@ExactNode
-public class SimpleBom {
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 
-	private FieldString dummy;
+public class SimpleBomTestCase extends TestCase{
+	
+	@Test
+	public void testBasic() throws FieldException, JDOMException, IOException {
+		
+		//clean up global env for contextless test
+		FieldBase.getCurrentEnvironmentVariables().clear();
 
-    public SimpleBom() {
-        dummy = FieldFactory.createMandatoryFieldString();
+        SimpleBom bom = new SimpleBom();
+
+        SAXBuilder builder = new SAXBuilder();
+        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
+        Document document = builder.build(inputXml);
+        Element rootElement = document.getRootElement();
+
+        SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
+        bomReader.read(bom, rootElement);
+
+        assertEquals("toto", bom.getDummy().get());
     }
-
-    @ExactPath("dummy/text()")
-	public FieldString getDummy(){
-		return dummy;
-	}
 }
