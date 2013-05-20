@@ -49,13 +49,25 @@ public class ${simpleclass}XmlReader{
                 #write( $step.getChildSteps(), $element )
             }
         #elseif($kind == $kindmap.text)
-            #set( $text = $processingutil.generateNewTextName() )
-            String $text = $parentElement .getTextTrim();
-            bom.${method}().set($text);
+            #if($step.getReturnTypeKind() == $typemap.field)
+                #set( $text = $processingutil.generateNewTextName() )
+                String $text = $parentElement .getTextTrim();
+                bom.${method}().set($text);
+            #elseif($step.getReturnTypeKind() == $typemap.list)
+                #set( $text = $processingutil.generateNewTextName() )
+                String $text = $parentElement .getTextTrim();
+                bom.${method}().allocate().set($text);
+            #end
         #elseif($kind == $kindmap.attribute)
-            #set( $attr = $processingutil.generateNewAttributeName() )
-            String $attr = $parentElement .getAttributeValue("$value");
-            bom.${method}().set($attr);
+            #if($step.getReturnTypeKind() == $typemap.field)
+                #set( $attr = $processingutil.generateNewAttributeName() )
+                String $attr = $parentElement .getAttributeValue("$value");
+                bom.${method}().set($attr);
+            #elseif($step.getReturnTypeKind() == $typemap.list)
+                #set( $attr = $processingutil.generateNewAttributeName() )
+                String $attr = $parentElement .getAttributeValue("$value");
+                bom.${method}().allocate().set($attr);
+            #end
         #end
     #end
 #end

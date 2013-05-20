@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 public class FieldList <T extends Entry<T> > implements Entry<FieldList<T> >{
 	private ArrayList<T> array;
-	final T prototype;
+	private final T prototype;
 	
 	public FieldList(final T prototype) {
 		array = new ArrayList<T>();

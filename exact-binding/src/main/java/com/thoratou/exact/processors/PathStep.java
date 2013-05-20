@@ -22,6 +22,10 @@
 
 package com.thoratou.exact.processors;
 
+import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.fields.FieldBase;
+import com.thoratou.exact.fields.FieldList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +44,23 @@ public class PathStep {
     public enum StartKind{
         UNKNOWN,
         RELATIVE,
-        ABSOLUTE
+        ABSOLUTE,
     }
 
-    static final Map<Kind, String> KindMap = new HashMap<Kind, String>();
+    public enum TypeKind{
+        UNKNOWN,
+        FIELD,
+        LIST,
+        BOM,
+    }
+
+    public enum ListTypeKind{
+        UNKNOWN,
+        FIELD,
+        BOM,
+    }
+
+    public static final Map<Kind, String> KindMap = new HashMap<Kind, String>();
     static{
         KindMap.put(Kind.UNKNOWN, "unknown");
         KindMap.put(Kind.CHILD_ELEMENT, "child");
@@ -53,7 +70,7 @@ public class PathStep {
         KindMap.put(Kind.START, "start");
     }
 
-    static final Map<String, Kind> ReverseKindMap = new HashMap<String, Kind>();
+    public static final Map<String, Kind> ReverseKindMap = new HashMap<String, Kind>();
     static{
         ReverseKindMap.put("unknown", Kind.UNKNOWN);
         ReverseKindMap.put("child", Kind.CHILD_ELEMENT);
@@ -63,18 +80,48 @@ public class PathStep {
         ReverseKindMap.put("start", Kind.START);
     }
 
-    static final Map<StartKind, String> StartMap = new HashMap<StartKind, String>();
+    public static final Map<StartKind, String> StartMap = new HashMap<StartKind, String>();
     static{
         StartMap.put(StartKind.UNKNOWN, "unknown");
         StartMap.put(StartKind.RELATIVE, "relative");
         StartMap.put(StartKind.ABSOLUTE, "absolute");
     }
 
-    static final Map<String, StartKind> ReverseStartMap = new HashMap<String, StartKind>();
+    public static final Map<String, StartKind> ReverseStartMap = new HashMap<String, StartKind>();
     static{
         ReverseStartMap.put("unknown", StartKind.UNKNOWN);
         ReverseStartMap.put("relative", StartKind.RELATIVE);
         ReverseStartMap.put("absolute", StartKind.ABSOLUTE);
+    }
+
+    public static final Map<TypeKind, String> TypeMap = new HashMap<TypeKind, String>();
+    static{
+        TypeMap.put(TypeKind.UNKNOWN, "unknown");
+        TypeMap.put(TypeKind.FIELD, "field");
+        TypeMap.put(TypeKind.LIST, "list");
+        TypeMap.put(TypeKind.BOM, "bom");
+    }
+
+    public static final Map<String, TypeKind> ReverseTypeMap = new HashMap<String, TypeKind>();
+    static{
+        ReverseTypeMap.put("unknown", TypeKind.UNKNOWN);
+        ReverseTypeMap.put("field", TypeKind.FIELD);
+        ReverseTypeMap.put("list", TypeKind.LIST);
+        ReverseTypeMap.put("bom", TypeKind.BOM);
+    }
+
+    public static final Map<ListTypeKind, String> ListTypeMap = new HashMap<ListTypeKind, String>();
+    static{
+        ListTypeMap.put(ListTypeKind.UNKNOWN, "unknown");
+        ListTypeMap.put(ListTypeKind.FIELD, "field");
+        ListTypeMap.put(ListTypeKind.BOM, "bom");
+    }
+
+    public static final Map<String, ListTypeKind> ReverseListTypeMap = new HashMap<String, ListTypeKind>();
+    static{
+        ReverseListTypeMap.put("unknown", ListTypeKind.UNKNOWN);
+        ReverseListTypeMap.put("field", ListTypeKind.FIELD);
+        ReverseListTypeMap.put("bom", ListTypeKind.BOM);
     }
 
     private Kind stepKind;
@@ -82,6 +129,7 @@ public class PathStep {
     private String stepValue;
     private String methodName;
     private String returnType;
+    private String returnTemplateType;
     private List<PathStep> childSteps;
 
     public PathStep() {
@@ -133,8 +181,73 @@ public class PathStep {
         this.returnType = returnType;
     }
 
+    public String getReturnTemplateType() {
+        return returnTemplateType;
+    }
+
+    public void setReturnTemplateType(String returnTemplateType) {
+        this.returnTemplateType = returnTemplateType;
+    }
+
     public List<PathStep> getChildSteps() {
         return childSteps;
+    }
+
+    public TypeKind getReturnTypeKind() throws ClassNotFoundException {
+        TypeKind kind = TypeKind.UNKNOWN;
+
+        if(ExactProcessor.classMap.containsKey(returnType)){
+            //not compiled bom class, so mustn't create a Class<T> instance
+            kind = TypeKind.BOM;
+        }
+        else{
+            Class<?> clazz = Class.forName(getTypeWithoutParameters(returnType));
+
+            if(FieldBase.class.isAssignableFrom(clazz)){
+                kind = TypeKind.FIELD;
+            }
+            else if(FieldList.class.isAssignableFrom(clazz)){
+                kind = TypeKind.LIST;
+            }
+            else if(Entry.class.isAssignableFrom(clazz)){
+                //existing bom class (i.e external compilation)
+                kind = TypeKind.BOM;
+            }
+        }
+
+        return kind;
+    }
+
+    public ListTypeKind getReturnListTypeKind() throws ClassNotFoundException {
+        ListTypeKind kind = ListTypeKind.UNKNOWN;
+
+        if(ExactProcessor.classMap.containsKey(returnTemplateType)){
+            //not compiled bom class, so mustn't create a Class<T> instance
+            kind = ListTypeKind.BOM;
+        }
+        else{
+            Class<?> clazz = Class.forName(getTypeWithoutParameters(returnTemplateType));
+
+            if(FieldBase.class.isAssignableFrom(clazz)){
+                kind = ListTypeKind.FIELD;
+            }
+            else if(Entry.class.isAssignableFrom(clazz)){
+                //existing bom class (i.e external compilation)
+                kind = ListTypeKind.BOM;
+            }
+        }
+
+        return kind;
+    }
+
+    public static String getTypeWithoutParameters(String type){
+        String[] split = type.split("<");
+        if(split.length == 1){
+            return type;
+        }
+        else{
+            return split[0];
+        }
     }
 
     @Override

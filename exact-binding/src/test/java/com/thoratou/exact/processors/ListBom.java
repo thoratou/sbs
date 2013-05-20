@@ -20,10 +20,25 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.interfaces;
+package com.thoratou.exact.processors;
 
-public class ReadException extends Exception{
-   public ReadException(String message){
-       super(message);
-   }
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldList;
+import com.thoratou.exact.fields.FieldString;
+
+@ExactNode
+public class ListBom {
+
+	private FieldList<FieldString> list;
+
+    public ListBom() {
+        list = new FieldList<FieldString>(FieldFactory.createMandatoryFieldString());
+    }
+
+    @ExactPath("list/item/@value")
+	public FieldList<FieldString> getList(){
+		return list;
+	}
 }

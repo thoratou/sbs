@@ -28,14 +28,15 @@ import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
 import com.thoratou.exact.xpath.ast.XPathStep;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.EqualPredicate;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.JavaFileObject;
@@ -50,6 +51,8 @@ public class ExactProcessor extends AbstractProcessor{
 	
 	private static Logger logger = CustomLogger.getLogger();
     private ProcessingEnvironment processingEnv;
+    public static HashMap<String, TypeElement> classMap = new HashMap<String, TypeElement>();
+    public static HashMap<Pair<String,String>, ExecutableElement> methodMap = new HashMap<Pair<String, String>, ExecutableElement>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -82,9 +85,10 @@ public class ExactProcessor extends AbstractProcessor{
             throws Exception {
         //retrieve all classes with @ExactNode annotation
         for(TypeElement typeElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ExactNode.class))){
-            Class<?> clazz = Class.forName(typeElement.getQualifiedName().toString());
-            String className = clazz.getName();
-            logger.info("Exact class : "+clazz.getName());
+            Name qualifiedName = typeElement.getQualifiedName();
+            String className = qualifiedName.toString();
+            logger.info("Exact class : "+className);
+            classMap.put(className, typeElement);
 
             for(ExecutableElement methodElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())){
                 ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
@@ -114,6 +118,8 @@ public class ExactProcessor extends AbstractProcessor{
                         items.add(item);
                         itemMap.put(className,items);
                     }
+
+                    methodMap.put(new Pair<String, String>(className, methodName), methodElement);
                 }
             }
         }
@@ -296,38 +302,45 @@ public class ExactProcessor extends AbstractProcessor{
 
     private void writeSources(HashMap<String, List<PathStep>> mergedMap)
             throws IOException {
-        VelocityEngine engine = new VelocityEngine();
-        engine.init();
-
-        //read file into JAR
-        InputStream configStream = getClass().getResourceAsStream("/xmlreader.vm");
-        BufferedReader configReader = new BufferedReader(new InputStreamReader(configStream, "UTF-8"));
-
-        //Template template = engine.getTemplate("display.vm");
-
         //use all annotation data to generate parsing files
         for(Map.Entry<String, List<PathStep>> entryList : mergedMap.entrySet()) {
+            VelocityEngine engine = new VelocityEngine();
+            //needed it avoid global instead of local variable modification
+            engine.setProperty(RuntimeConstants.VM_CONTEXT_LOCALSCOPE, true);
+
+            //read file into JAR
+            InputStream configStream = getClass().getResourceAsStream("/xmlreader.vm");
+            BufferedReader configReader = new BufferedReader(new InputStreamReader(configStream, "UTF-8"));
+
             String className = entryList.getKey();
             List<PathStep> steps = entryList.getValue();
 
             VelocityContext context = new VelocityContext();
             context.put("class", className);
+            //logger.info("class : "+className);
 
-            String packageName = null;
-            String simpleName = null;
-            try {
-                Class<?> clazz = Class.forName(className);
-                packageName = clazz.getPackage().getName();
-                context.put("package", packageName);
-                simpleName = clazz.getSimpleName();
-                context.put("simpleclass", simpleName);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            //ugly temp code
+            String[] split = className.split("\\.");
+            StringBuffer packageBuffer = new StringBuffer();
+            for(int i = 0; i<split.length -1; i++){
+                packageBuffer.append(split[i]);
+                if(i != split.length - 2){
+                    packageBuffer.append(".");
+                }
             }
+            String packageName = packageBuffer.toString();
+            //logger.info("package : "+packageName);
+            context.put("package", packageName);
+            String simpleName = split[split.length-1];
+            //logger.info("simpleclass : "+simpleName);
+            context.put("simpleclass", simpleName);
+
 
             context.put("steps",steps);
             context.put("kindmap", PathStep.ReverseKindMap);
             context.put("startmap", PathStep.ReverseStartMap);
+            context.put("typemap", PathStep.ReverseTypeMap);
+            context.put("listtypemap", PathStep.ReverseListTypeMap);
             context.put("indentutil", new IndentUtil());
             context.put("processingutil", new ProcessingUtil());
 
@@ -345,6 +358,7 @@ public class ExactProcessor extends AbstractProcessor{
             engine.evaluate(context, sourceWriter, "", configReader);
 
             sourceWriter.close();
+            sourceFile.delete();
 
             //logger.info("final velocity data : "+writer.getBuffer().toString());
         }

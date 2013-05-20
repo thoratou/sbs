@@ -25,8 +25,8 @@ package com.thoratou.exact.fields;
 import java.util.*;
 
 public class FieldMap<Key extends Entry<Key>, Value extends Entry<Value>> implements Entry< FieldMap<Key, Value> > {
-	Hashtable<Key, Value> table;
-	Value prototype;
+	private Hashtable<Key, Value> table;
+	private Value prototype;
 	
 	public FieldMap(Value prototype) {
 		table = new Hashtable<Key, Value>();
