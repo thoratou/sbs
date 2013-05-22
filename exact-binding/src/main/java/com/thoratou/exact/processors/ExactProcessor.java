@@ -24,6 +24,7 @@ package com.thoratou.exact.processors;
 
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.exception.ExactXPathNotSupportedException;
 import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
 import com.thoratou.exact.xpath.ast.XPathStep;
@@ -126,7 +127,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
-                                 HashMap<String,List<PathStep>> mergedMap) {
+                                 HashMap<String,List<PathStep>> mergedMap) throws ExactXPathNotSupportedException {
         /*
         convert Xpath path map into step-by-step merged representation
         example :
@@ -182,7 +183,7 @@ public class ExactProcessor extends AbstractProcessor{
     private void convertXPathExpr(XPathPathExpr xPathPathExpr,
                                   String methodName,
                                   String returnType,
-                                  List<PathStep> newPathStepList) {
+                                  List<PathStep> newPathStepList) throws ExactXPathNotSupportedException {
         PathStep rootStep = new PathStep();
         rootStep.setStepKind(PathStep.Kind.START);
         switch (xPathPathExpr.context) {
@@ -200,7 +201,7 @@ public class ExactProcessor extends AbstractProcessor{
     private void convertXPathSteps(XPathStep[] steps,
                                    String methodName,
                                    String returnType,
-                                   List<PathStep> newPathStepList) {
+                                   List<PathStep> newPathStepList) throws ExactXPathNotSupportedException {
         List<PathStep> currentList = newPathStepList;
         for(XPathStep step : steps){
             PathStep pathStep = new PathStep();
@@ -212,37 +213,19 @@ public class ExactProcessor extends AbstractProcessor{
                             pathStep.setStepValue(step.testStr());
                             //logger.info("step : child, "+pathStep.getStepValue());
                             break;
-                        case NAME_WILDCARD:
-                            break;
-                        case NAMESPACE_WILDCARD:
-                            break;
-                        case TYPE_NODE:
-                            break;
                         case TYPE_TEXT:
                             pathStep.setStepKind(PathStep.Kind.TEXT);
                             pathStep.setMethodName(methodName);
                             pathStep.setReturnType(returnType);
                             //logger.info("step : text, "+pathStep.getStepValue());
                             break;
+                        case NAME_WILDCARD:
+                        case NAMESPACE_WILDCARD:
+                        case TYPE_NODE:
                         case TYPE_COMMENT:
-                            break;
                         case TYPE_PROCESSING_INSTRUCTION:
-                            break;
+                            throw new ExactXPathNotSupportedException(step);
                     }
-                    break;
-                case DESCENDANT:
-                    break;
-                case PARENT:
-                    break;
-                case ANCESTOR:
-                    break;
-                case FOLLOWING_SIBLING:
-                    break;
-                case PRECEDING_SIBLING:
-                    break;
-                case FOLLOWING:
-                    break;
-                case PRECEDING:
                     break;
                 case ATTRIBUTE:
                     pathStep.setStepKind(PathStep.Kind.ATTRIBUTE);
@@ -251,14 +234,18 @@ public class ExactProcessor extends AbstractProcessor{
                     pathStep.setReturnType(returnType);
                     //logger.info("step : attribute, "+pathStep.getStepValue());
                     break;
+                case DESCENDANT:
+                case PARENT:
+                case ANCESTOR:
+                case FOLLOWING_SIBLING:
+                case PRECEDING_SIBLING:
+                case FOLLOWING:
+                case PRECEDING:
                 case NAMESPACE:
-                    break;
                 case SELF:
-                    break;
                 case DESCENDANT_OR_SELF:
-                    break;
                 case ANCESTOR_OR_SELF:
-                    break;
+                    throw new ExactXPathNotSupportedException(step);
             }
 
             PathStep targetStep = addOrMergePathStep(pathStep, currentList);
