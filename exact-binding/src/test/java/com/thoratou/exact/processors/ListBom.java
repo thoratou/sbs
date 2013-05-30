@@ -24,12 +24,13 @@ package com.thoratou.exact.processors;
 
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldFactory;
 import com.thoratou.exact.fields.FieldList;
 import com.thoratou.exact.fields.FieldString;
 
 @ExactNode
-public class ListBom {
+public class ListBom implements Entry<ListBom>{
 
 	private FieldList<FieldString> list;
 
@@ -37,8 +38,22 @@ public class ListBom {
         list = new FieldList<FieldString>(FieldFactory.createMandatoryFieldString());
     }
 
+    public ListBom(ListBom bom) {
+        list = bom.list.copy();
+    }
+
     @ExactPath("list/item/@value")
 	public FieldList<FieldString> getList(){
 		return list;
 	}
+
+    @Override
+    public void merge(ListBom entry) {
+        list.merge(entry.list);
+    }
+
+    @Override
+    public ListBom copy() {
+        return new ListBom(this);
+    }
 }

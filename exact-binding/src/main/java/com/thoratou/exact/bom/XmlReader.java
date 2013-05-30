@@ -20,50 +20,19 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.processors;
+package com.thoratou.exact.bom;
 
 import com.thoratou.exact.exception.ExactReadException;
+import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldBase;
-import com.thoratou.exact.fields.FieldException;
-import junit.framework.TestCase;
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.junit.Test;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+public abstract class XmlReader<T extends Entry<T>>{
+    public abstract void read(T bom, Element rootElement) throws ExactReadException;
 
-public class ListBomTestCase extends TestCase{
-	
-	@Test
-        public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
-
-        //clean up global env for contextless test
-        FieldBase.getCurrentEnvironmentVariables().clear();
-
-        ListBom bom = new ListBom();
-
-        SAXBuilder builder = new SAXBuilder();
-        Reader inputXml = new StringReader(
-                "<root>" +
-                    "<list>" +
-                        "<item value=\"tata\"/>" +
-                        "<item value=\"titi\"/>" +
-                        "<item value=\"toto\"/>" +
-                    "</list>" +
-                "</root>"
-        );
-        Document document = builder.build(inputXml);
-        Element rootElement = document.getRootElement();
-
-        ListBomXmlReader bomReader = new ListBomXmlReader();
-        bomReader.read(bom, rootElement);
-
-        assertEquals("tata", bom.getList().get(0).get());
-        assertEquals("titi", bom.getList().get(1).get());
-        assertEquals("toto", bom.getList().get(2).get());
+    protected void checkBasicField(FieldBase field, String value) throws ExactReadException {
+        if(!field.isEmpty()){
+            throw new ExactReadException("Field already set, cannot set with value \""+value+"\"");
+        }
     }
 }

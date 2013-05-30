@@ -22,6 +22,7 @@
 
 package com.thoratou.exact.processors;
 
+import com.thoratou.exact.exception.ExactReadException;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldException;
 import junit.framework.TestCase;
@@ -38,7 +39,7 @@ import java.io.StringReader;
 public class SimpleBomTestCase extends TestCase{
 	
 	@Test
-         public void testBasic() throws FieldException, JDOMException, IOException {
+         public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
 
         //clean up global env for contextless test
         FieldBase.getCurrentEnvironmentVariables().clear();
@@ -57,7 +58,7 @@ public class SimpleBomTestCase extends TestCase{
     }
 
     @Test
-    public void testAttribute() throws FieldException, JDOMException, IOException {
+    public void testAttribute() throws FieldException, JDOMException, IOException, ExactReadException {
 
         //clean up global env for contextless test
         FieldBase.getCurrentEnvironmentVariables().clear();
@@ -77,7 +78,7 @@ public class SimpleBomTestCase extends TestCase{
     }
 
     @Test
-    public void testDefaultAttributeValue() throws FieldException, JDOMException, IOException {
+    public void testDefaultAttributeValue() throws FieldException, JDOMException, IOException, ExactReadException {
 
         //clean up global env for contextless test
         FieldBase.getCurrentEnvironmentVariables().clear();

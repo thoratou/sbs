@@ -24,11 +24,12 @@ package com.thoratou.exact.processors;
 
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldFactory;
 import com.thoratou.exact.fields.FieldString;
 
 @ExactNode
-public class SimpleBom {
+public class SimpleBom implements Entry<SimpleBom> {
 
 	private FieldString dummy;
     private FieldString value;
@@ -36,6 +37,11 @@ public class SimpleBom {
     public SimpleBom() {
         dummy = FieldFactory.createMandatoryFieldString();
         value = FieldFactory.createOptionalFieldString("novalue");
+    }
+
+    public SimpleBom(SimpleBom bom) {
+        dummy = bom.dummy.copy();
+        value = bom.value.copy();
     }
 
     @ExactPath("dummy/text()")
@@ -46,5 +52,16 @@ public class SimpleBom {
     @ExactPath("dummy/@value")
     public FieldString getValue(){
         return value;
+    }
+
+    @Override
+    public void merge(SimpleBom entry) {
+        dummy.merge(entry.dummy);
+        value.merge(entry.value);
+    }
+
+    @Override
+    public SimpleBom copy() {
+        return new SimpleBom(this);
     }
 }

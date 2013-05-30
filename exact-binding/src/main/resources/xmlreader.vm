@@ -21,9 +21,10 @@
 #macro( header )
 package ${package};
 
-public class ${simpleclass}XmlReader{
+public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${simpleclass}> {
     @SuppressWarnings("unchecked")
     public void read(${class} bom, org.jdom.Element rootElement)
+        throws com.thoratou.exact.exception.ExactReadException
     {
 #end
 #macro( footer )
@@ -52,6 +53,7 @@ public class ${simpleclass}XmlReader{
             #if($step.getReturnTypeKind() == $typemap.field)
                 #set( $text = $processingutil.generateNewTextName() )
                 String $text = $parentElement .getTextTrim();
+                checkBasicField( bom.${method}(), $text );
                 bom.${method}().set($text);
             #elseif($step.getReturnTypeKind() == $typemap.list)
                 #set( $text = $processingutil.generateNewTextName() )
