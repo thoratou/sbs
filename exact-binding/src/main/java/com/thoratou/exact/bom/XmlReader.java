@@ -25,10 +25,31 @@ package com.thoratou.exact.bom;
 import com.thoratou.exact.exception.ExactReadException;
 import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldBase;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 
 public abstract class XmlReader<T extends Entry<T>>{
     public abstract void read(T bom, Element rootElement) throws ExactReadException;
+
+    public void read(T bom, File file) throws JDOMException, IOException, ExactReadException {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = builder.build(file);
+        Element rootElement = document.getRootElement();
+        read(bom, rootElement);
+    }
+
+    public void read(T bom, Reader reader) throws JDOMException, IOException, ExactReadException {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = builder.build(reader);
+        Element rootElement = document.getRootElement();
+        read(bom, rootElement);
+    }
 
     protected void checkBasicField(FieldBase field, String value) throws ExactReadException {
         if(!field.isEmpty()){

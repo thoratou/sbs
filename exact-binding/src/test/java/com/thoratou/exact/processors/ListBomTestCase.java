@@ -37,16 +37,16 @@ import java.io.Reader;
 import java.io.StringReader;
 
 public class ListBomTestCase extends TestCase{
-	
-	@Test
-        public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
+
+    @Test
+    public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
 
         //clean up global env for contextless test
         FieldBase.getCurrentEnvironmentVariables().clear();
 
         ListBom bom = new ListBom();
 
-        SAXBuilder builder = new SAXBuilder();
+        ListBomXmlReader bomReader = new ListBomXmlReader();
         Reader inputXml = new StringReader(
                 "<root>" +
                     "<list>" +
@@ -56,11 +56,7 @@ public class ListBomTestCase extends TestCase{
                     "</list>" +
                 "</root>"
         );
-        Document document = builder.build(inputXml);
-        Element rootElement = document.getRootElement();
-
-        ListBomXmlReader bomReader = new ListBomXmlReader();
-        bomReader.read(bom, rootElement);
+        bomReader.read(bom, inputXml);
 
         assertEquals("tata", bom.getList().get(0).get());
         assertEquals("titi", bom.getList().get(1).get());

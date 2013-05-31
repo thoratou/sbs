@@ -39,20 +39,16 @@ import java.io.StringReader;
 public class SimpleBomTestCase extends TestCase{
 	
 	@Test
-         public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
+    public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
 
         //clean up global env for contextless test
         FieldBase.getCurrentEnvironmentVariables().clear();
 
         SimpleBom bom = new SimpleBom();
 
-        SAXBuilder builder = new SAXBuilder();
-        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
-        Document document = builder.build(inputXml);
-        Element rootElement = document.getRootElement();
-
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
-        bomReader.read(bom, rootElement);
+        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
+        bomReader.read(bom, inputXml);
 
         assertEquals("toto", bom.getDummy().get());
     }
@@ -65,13 +61,9 @@ public class SimpleBomTestCase extends TestCase{
 
         SimpleBom bom = new SimpleBom();
 
-        SAXBuilder builder = new SAXBuilder();
-        Reader inputXml = new StringReader("<root><dummy value=\"titi\">toto</dummy></root>");
-        Document document = builder.build(inputXml);
-        Element rootElement = document.getRootElement();
-
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
-        bomReader.read(bom, rootElement);
+        Reader inputXml = new StringReader("<root><dummy value=\"titi\">toto</dummy></root>");
+        bomReader.read(bom, inputXml);
 
         assertEquals("toto", bom.getDummy().get());
         assertEquals("titi", bom.getValue().get());
@@ -85,13 +77,9 @@ public class SimpleBomTestCase extends TestCase{
 
         SimpleBom bom = new SimpleBom();
 
-        SAXBuilder builder = new SAXBuilder();
-        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
-        Document document = builder.build(inputXml);
-        Element rootElement = document.getRootElement();
-
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
-        bomReader.read(bom, rootElement);
+        Reader inputXml = new StringReader("<root><dummy>toto</dummy></root>");
+        bomReader.read(bom, inputXml);
 
         assertEquals("toto", bom.getDummy().get());
         assertEquals("novalue", bom.getValue().get());
