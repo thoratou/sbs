@@ -61,8 +61,8 @@ public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
 	}
 	
 	@Override
-	public String get(EnvironmentVariables additionalVars) throws FieldException {
-		String ret = fieldString.get(additionalVars);
+	public String get() throws FieldException {
+		String ret = fieldString.get();
 		if(ret == null)
 			return null;
 		ret = ret.replaceAll("\\\\ ", " ");
@@ -72,17 +72,8 @@ public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
 		return ret;
 	}
 
-	@Override
-	public String get() throws FieldException{
-		return get(null);
-	}
-	
-	public String getCMakeString(EnvironmentVariables additionalVars) throws FieldException{
-		return get(additionalVars).replaceAll(" ", "\\\\ ");
-	}
-	
 	public String getCMakeString() throws FieldException{
-		return getCMakeString(null);
+		return get().replaceAll(" ", "\\\\ ");
 	}
 
 	@Override

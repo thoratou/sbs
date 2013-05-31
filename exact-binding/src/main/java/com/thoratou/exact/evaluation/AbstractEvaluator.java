@@ -20,39 +20,21 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.processors;
+package com.thoratou.exact.evaluation;
 
-import com.thoratou.exact.exception.ExactReadException;
+import com.thoratou.exact.fields.EnvironmentVariables;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldException;
-import junit.framework.TestCase;
-import org.jdom.JDOMException;
-import org.junit.Test;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+public abstract class AbstractEvaluator<T> {
+	protected EnvironmentVariables environmentVariables;
 
-public class ListBomTestCase extends TestCase{
-
-    @Test
-    public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
-        ListBom bom = new ListBom();
-
-        ListBomXmlReader bomReader = new ListBomXmlReader();
-        Reader inputXml = new StringReader(
-                "<root>" +
-                    "<list>" +
-                        "<item value=\"tata\"/>" +
-                        "<item value=\"titi\"/>" +
-                        "<item value=\"toto\"/>" +
-                    "</list>" +
-                "</root>"
-        );
-        bomReader.read(bom, inputXml);
-
-        assertEquals("tata", bom.getList().get(0).get());
-        assertEquals("titi", bom.getList().get(1).get());
-        assertEquals("toto", bom.getList().get(2).get());
+    public AbstractEvaluator(EnvironmentVariables environmentVariables) {
+        this.environmentVariables = environmentVariables;
     }
+
+    public abstract T eval(FieldBase<String> field) throws FieldException;
+    public abstract T eval(FieldBase<String> field, EnvironmentVariables additionalEnvironment) throws FieldException;
+    public abstract boolean isValid(FieldBase<String> field) throws FieldException;
+    public abstract boolean isValid(FieldBase<String> field, EnvironmentVariables additionalVars) throws FieldException;
 }

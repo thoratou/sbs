@@ -42,8 +42,7 @@ public class EnvironmentVariables {
 		try{
 			properties.load(new FileInputStream(path));
 		}catch(IOException e){
-			//Logger.debug(e.getMessage());
-			//Logger.warning("file "+path.getAbsolutePath()+" not found => no environment variable");
+			e.printStackTrace();
 		}
 		
 		Enumeration<Object> en = properties.keys();
@@ -57,9 +56,6 @@ public class EnvironmentVariables {
 	}
 	
 	public void put(String variable, String value) {
-		//Logger.debug("add var");
-		//Logger.debug("   key : "+variable);
-		//Logger.debug("   value : "+value);
 		FieldString fieldValue = new FieldString();
 		fieldValue.set(value);
 		variableTable.put(variable, fieldValue);

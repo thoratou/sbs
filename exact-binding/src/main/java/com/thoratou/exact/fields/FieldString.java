@@ -78,17 +78,17 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 	public String getOriginal() {
 		return originalString;
 	}
-	
+
 	@Override
-	public String get(EnvironmentVariables additionalVars) throws FieldException {
+	public String get() throws FieldException {
 		String ret = null;
 		if(!isEmpty()){
-			ret = convertFromOriginalToFinal(originalString,additionalVars);
+			ret = originalString;
 		}
-		
+
 		if(ret == null){
 			if(defaultValue != null){
-				ret = convertFromOriginalToFinal(defaultValue,additionalVars);	
+				ret = defaultValue;
 				if(ret == null){
 					throw new FieldException(defaultValue);
 				}
@@ -102,11 +102,6 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 		return ret;
 	}
 
-	@Override
-	public String get() throws FieldException{
-		return get(null);
-	}
-	
 	@Override
 	public boolean equals(Object arg0) {
 		FieldString fieldString = (FieldString) arg0;
@@ -137,77 +132,5 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 	@Override
 	public FieldString copy() {
 		return new FieldString(this);
-	}
-	
-	public static String convertFromOriginalToFinal(String originalString, EnvironmentVariables additionalVars){
-		if(additionalVars == null)
-			additionalVars = new EnvironmentVariables();
-		
-		String finalString = "";
-		//Logger.debug("originalString : "+originalString);
-		//Logger.debug("finalString : "+finalString);
-		boolean isValid = true;
-		int currentIndex = 0;
-		int returnedIndex = 0;
-		EnvironmentVariables env = getCurrentEnvironmentVariables();
-		
-		while((returnedIndex = originalString.indexOf("${", currentIndex)) != -1){
-			//Logger.debug("originalString : "+originalString);
-			//Logger.debug("finalString : "+finalString);
-			finalString = finalString.concat(originalString.substring(currentIndex, returnedIndex));
-			int endVarIndex = 0;
-			if((endVarIndex = originalString.indexOf("}", returnedIndex)) == -1){
-				//ErrorList.instance.addError("variable never ended by } caracter : "
-				//			  + originalString.substring(returnedIndex, endVarIndex));
-				isValid = false;
-			}
-			else{
-				String var = originalString.substring(returnedIndex+2, endVarIndex);
-				//Logger.debug("var : "+var);
-				boolean stringOK = false;
-				if(!stringOK)
-				{
-					FieldString fieldString = additionalVars.getFieldString(var);
-					if(fieldString.isValid(additionalVars)){
-						//String value = fieldString.getString(additionalVars);
-						String value = convertFromOriginalToFinal(
-								fieldString.getOriginal(),
-								additionalVars);
-						//Logger.debug("var value : "+value);
-						finalString = finalString.concat(value);
-						stringOK = true;
-					}
-				}
-				if(!stringOK)
-				{
-					FieldString fieldString = env.getFieldString(var);
-					if(fieldString.isValid(additionalVars)){
-						//String value = fieldString.getString(additionalVars);
-						String value = convertFromOriginalToFinal(
-								fieldString.getOriginal(),
-								additionalVars);
-						//Logger.debug("var value : "+value);
-						finalString = finalString.concat(value);
-						stringOK = true;
-					}
-				}
-				if(!stringOK){
-					//ErrorList.instance.addError("undefined variable : "+var);
-					isValid = false;
-				}
-				currentIndex = endVarIndex + 1;
-			}
-		}
-		finalString = finalString.concat(originalString.substring(currentIndex));
-		//Logger.debug("originalString : "+originalString);
-		//Logger.debug("finalString : "+finalString);
-		if(isValid)
-			return finalString;
-		else
-			return null;
-	}
-	
-	private boolean isValid(EnvironmentVariables additionalVars){
-		return !isEmpty() && (convertFromOriginalToFinal(originalString,additionalVars)!=null);
 	}
 }

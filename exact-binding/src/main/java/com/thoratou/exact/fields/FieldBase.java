@@ -48,24 +48,9 @@ public abstract class FieldBase<T> {
 	
 	public abstract T getDefault() throws FieldException;
 	public abstract T get() throws FieldException;
-	public abstract T get(EnvironmentVariables additionalVars) throws FieldException;
 	public abstract T getOriginal();
 	
 	public abstract void set(T value);
 
 	public abstract boolean isEmpty();
-	
-	// environment variables //
-	
-	private static EnvironmentVariables currentEnvironmentVariables = new EnvironmentVariables();
-
-	public static void setCurrentEnvironmentVariables(
-			EnvironmentVariables currentEnvironmentVariables) {
-		FieldBase.currentEnvironmentVariables = currentEnvironmentVariables;
-	}
-	
-	public static EnvironmentVariables getCurrentEnvironmentVariables() {
-		return FieldBase.currentEnvironmentVariables;
-	}
-
 }

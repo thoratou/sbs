@@ -26,10 +26,7 @@ import com.thoratou.exact.exception.ExactReadException;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldException;
 import junit.framework.TestCase;
-import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,10 +37,6 @@ public class SimpleBomTestCase extends TestCase{
 	
 	@Test
     public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
-
-        //clean up global env for contextless test
-        FieldBase.getCurrentEnvironmentVariables().clear();
-
         SimpleBom bom = new SimpleBom();
 
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
@@ -55,10 +48,6 @@ public class SimpleBomTestCase extends TestCase{
 
     @Test
     public void testAttribute() throws FieldException, JDOMException, IOException, ExactReadException {
-
-        //clean up global env for contextless test
-        FieldBase.getCurrentEnvironmentVariables().clear();
-
         SimpleBom bom = new SimpleBom();
 
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();
@@ -71,10 +60,6 @@ public class SimpleBomTestCase extends TestCase{
 
     @Test
     public void testDefaultAttributeValue() throws FieldException, JDOMException, IOException, ExactReadException {
-
-        //clean up global env for contextless test
-        FieldBase.getCurrentEnvironmentVariables().clear();
-
         SimpleBom bom = new SimpleBom();
 
         SimpleBomXmlReader bomReader = new SimpleBomXmlReader();

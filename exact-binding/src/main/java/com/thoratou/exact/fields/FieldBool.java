@@ -61,25 +61,16 @@ public class FieldBool extends FieldBase<String> implements Entry<FieldBool>{
 	}
 	
 	@Override
-	public String get(EnvironmentVariables additionalVars) throws FieldException {
-		String ret = fieldString.get(additionalVars);
+	public String get() throws FieldException {
+		String ret = fieldString.get();
 		if(!isValid(ret)){
 			throw new FieldException(fieldString.getOriginal());
 		}
 		return ret;
 	}
-	
-	@Override
-	public String get() throws FieldException{
-		return get(null);
-	}
-	
-	public boolean getBool(EnvironmentVariables additionalVars) throws FieldException {
-		return get(additionalVars).equals("true");
-	}
-	
-	public boolean getBool() throws FieldException{
-		return getBool(null);
+
+	public boolean getBool() throws FieldException {
+		return get().equals("true");
 	}
 
 	@Override
