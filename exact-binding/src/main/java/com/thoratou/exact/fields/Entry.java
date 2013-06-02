@@ -23,6 +23,6 @@
 package com.thoratou.exact.fields;
 
 public interface Entry <T>{
-	void merge(T entry);
-	T copy();
+    void merge(T entry);
+    T copy();
 }

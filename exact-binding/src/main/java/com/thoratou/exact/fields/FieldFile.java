@@ -23,66 +23,66 @@
 package com.thoratou.exact.fields;
 
 public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
-	FieldString fieldString;
-	
-	public FieldFile() {
-		super(Type.MANDATORY);
-		fieldString = new FieldString();
-	}
-	
-	public FieldFile(FieldFile fieldFile) {
-		super(fieldFile.getType());
-		fieldString = fieldFile.fieldString.copy();
-	}
-	
-	public FieldFile(Type type, String defaultValue) {
-		super(type);
-		fieldString = new FieldString(type, defaultValue);
-	}
+    FieldString fieldString;
 
-	@Override
-	public boolean isEmpty(){
-		return fieldString.isEmpty();
-	}
+    public FieldFile() {
+        super(Type.MANDATORY);
+        fieldString = new FieldString();
+    }
 
-	@Override
-	public void set(String path) {
-		fieldString.set(path);
-	}
+    public FieldFile(FieldFile fieldFile) {
+        super(fieldFile.getType());
+        fieldString = fieldFile.fieldString.copy();
+    }
 
-	@Override
-	public String getOriginal() {
-		return fieldString.getOriginal();
-	}
-	
-	@Override
-	public String getDefault() throws FieldException {
-		return fieldString.getDefault();
-	}
-	
-	@Override
-	public String get() throws FieldException {
-		String ret = fieldString.get();
-		if(ret == null)
-			return null;
-		ret = ret.replaceAll("\\\\ ", " ");
-		ret = ret.replaceAll("\\\\", "/");
-		if(!ret.endsWith("/"))
-			ret += "/";
-		return ret;
-	}
+    public FieldFile(Type type, String defaultValue) {
+        super(type);
+        fieldString = new FieldString(type, defaultValue);
+    }
 
-	public String getCMakeString() throws FieldException{
-		return get().replaceAll(" ", "\\\\ ");
-	}
+    @Override
+    public boolean isEmpty(){
+        return fieldString.isEmpty();
+    }
 
-	@Override
-	public void merge(FieldFile fieldPath) {
-		fieldString.merge(fieldPath.fieldString);
-	}
+    @Override
+    public void set(String path) {
+        fieldString.set(path);
+    }
 
-	@Override
-	public FieldFile copy() {
-		return new FieldFile(this);
-	}
+    @Override
+    public String getOriginal() {
+        return fieldString.getOriginal();
+    }
+
+    @Override
+    public String getDefault() throws FieldException {
+        return fieldString.getDefault();
+    }
+
+    @Override
+    public String get() throws FieldException {
+        String ret = fieldString.get();
+        if(ret == null)
+            return null;
+        ret = ret.replaceAll("\\\\ ", " ");
+        ret = ret.replaceAll("\\\\", "/");
+        if(!ret.endsWith("/"))
+            ret += "/";
+        return ret;
+    }
+
+    public String getCMakeString() throws FieldException{
+        return get().replaceAll(" ", "\\\\ ");
+    }
+
+    @Override
+    public void merge(FieldFile fieldPath) {
+        fieldString.merge(fieldPath.fieldString);
+    }
+
+    @Override
+    public FieldFile copy() {
+        return new FieldFile(this);
+    }
 }

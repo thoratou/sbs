@@ -28,21 +28,21 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class CustomLogger {
-	private static Logger logger = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
-	
-	static {
-		for(Handler handler: logger.getParent().getHandlers())
+    private static Logger logger = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    static {
+        for(Handler handler: logger.getParent().getHandlers())
         {
-			logger.getParent().removeHandler(handler);
+            logger.getParent().removeHandler(handler);
         }
-		
+
         CustomFormatter formatter = new CustomFormatter();
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(formatter);
         logger.addHandler(consoleHandler);
     }
-	
-	public static Logger getLogger(){
-		return logger;
-	}
+
+    public static Logger getLogger(){
+        return logger;
+    }
 }

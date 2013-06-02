@@ -27,7 +27,7 @@ import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldException;
 
 public abstract class AbstractEvaluator<T> {
-	protected EnvironmentVariables environmentVariables;
+    protected EnvironmentVariables environmentVariables;
 
     public AbstractEvaluator(EnvironmentVariables environmentVariables) {
         this.environmentVariables = environmentVariables;

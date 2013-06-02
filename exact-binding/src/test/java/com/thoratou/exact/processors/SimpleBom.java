@@ -31,7 +31,7 @@ import com.thoratou.exact.fields.FieldString;
 @ExactNode
 public class SimpleBom implements Entry<SimpleBom> {
 
-	private FieldString dummy;
+    private FieldString dummy;
     private FieldString value;
 
     public SimpleBom() {
@@ -45,9 +45,9 @@ public class SimpleBom implements Entry<SimpleBom> {
     }
 
     @ExactPath("dummy/text()")
-	public FieldString getDummy(){
-		return dummy;
-	}
+    public FieldString getDummy(){
+        return dummy;
+    }
 
     @ExactPath("dummy/@value")
     public FieldString getValue(){

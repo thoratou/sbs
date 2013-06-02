@@ -49,8 +49,8 @@ import java.util.logging.Logger;
 @SupportedAnnotationTypes("com.thoratou.exact.annotations.ExactNode")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ExactProcessor extends AbstractProcessor{
-	
-	private static Logger logger = CustomLogger.getLogger();
+
+    private static Logger logger = CustomLogger.getLogger();
     private ProcessingEnvironment processingEnv;
     public static HashMap<String, TypeElement> classMap = new HashMap<String, TypeElement>();
     public static HashMap<Pair<String,String>, ExecutableElement> methodMap = new HashMap<Pair<String, String>, ExecutableElement>();
@@ -62,8 +62,8 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     @Override
-	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-		if(!roundEnv.processingOver()){
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if(!roundEnv.processingOver()){
 
             try {
                 HashMap<String, ArrayList<Item> > itemMap = new HashMap<String, ArrayList<Item>>();
@@ -78,9 +78,9 @@ public class ExactProcessor extends AbstractProcessor{
                 logger.severe(e.getMessage());
                 e.printStackTrace();
             }
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
     private void readAnnotations(RoundEnvironment roundEnv, HashMap<String, ArrayList<Item> > itemMap)
             throws Exception {
@@ -162,7 +162,7 @@ public class ExactProcessor extends AbstractProcessor{
                  ]
             }
          */
-        
+
         for(Map.Entry<String, ArrayList<Item>> itemEntry : itemMap.entrySet()){
             //retrieve bom basic data
             String baseClassName = itemEntry.getKey();

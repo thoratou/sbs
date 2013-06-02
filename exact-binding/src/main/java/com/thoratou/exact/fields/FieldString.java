@@ -23,114 +23,110 @@
 package com.thoratou.exact.fields;
 
 public class FieldString extends FieldBase<String> implements Entry<FieldString> {
-	private String originalString;
-	private String defaultValue;
+    private String originalString;
+    private String defaultValue;
 
-	public FieldString() {
-		super(Type.MANDATORY);
-		originalString = null;
-		defaultValue = null;
-	}
-	
-	public FieldString(FieldString fieldString) {
-		super(fieldString.getType());
-		
-		if(originalString != null){
-			originalString = new String(fieldString.originalString);
-		}
-		else{
-			originalString = null;
-		}
-		
-		if(defaultValue != null){
-			defaultValue = new String(fieldString.defaultValue);
-		}
-		else{
-			defaultValue = null;
-		}
-	}
+    public FieldString() {
+        super(Type.MANDATORY);
+        originalString = null;
+        defaultValue = null;
+    }
 
-	public FieldString(Type type, String defaultValue) {
-		super(type);
-		originalString = null;
-		this.defaultValue = defaultValue;
-	}
+    public FieldString(FieldString fieldString) {
+        super(fieldString.getType());
 
-	@Override
-	public boolean isEmpty(){
-			return originalString == null;
-	}
-	
-	@Override
-	public void set(String originalString) {
-		if(originalString == null)
-			this.originalString = null;
-		else
-			this.originalString = new String(originalString);
-	}
-	
-	@Override
-	public String getDefault() {
-		return defaultValue;
-	}
+        if(originalString != null){
+            originalString = new String(fieldString.originalString);
+        }
+        else{
+            originalString = null;
+        }
 
-	@Override
-	public String getOriginal() {
-		return originalString;
-	}
+        if(defaultValue != null){
+            defaultValue = new String(fieldString.defaultValue);
+        }
+        else{
+            defaultValue = null;
+        }
+    }
 
-	@Override
-	public String get() throws FieldException {
-		String ret = null;
-		if(!isEmpty()){
-			ret = originalString;
-		}
+    public FieldString(Type type, String defaultValue) {
+        super(type);
+        originalString = null;
+        this.defaultValue = defaultValue;
+    }
 
-		if(ret == null){
-			if(defaultValue != null){
-				ret = defaultValue;
-				if(ret == null){
-					throw new FieldException(defaultValue);
-				}
-			}
-		}
+    @Override
+    public boolean isEmpty(){
+        return originalString == null;
+    }
 
-		if(ret == null){
-			throw new FieldException(originalString);
-		}
+    @Override
+    public void set(String originalString) {
+        if(originalString == null)
+            this.originalString = null;
+        else
+            this.originalString = new String(originalString);
+    }
 
-		return ret;
-	}
+    @Override
+    public String getDefault() {
+        return defaultValue;
+    }
 
-	@Override
-	public boolean equals(Object arg0) {
-		FieldString fieldString = (FieldString) arg0;
-		if(arg0==null)
-			return false;
-		try {
-			return get().equals(fieldString.get());
-		} catch (FieldException e) {
-			return false;
-		}
-	}
-		
-	@Override
-	public int hashCode() {
-		return getOriginal().hashCode();
-	}
-	
-	@Override
-	public void merge(FieldString fieldString) {
-		if(fieldString.originalString != null)
-			originalString = new String(fieldString.originalString);
-		else
-			originalString = null;
-		
-		//do not merge type and default value
-	}
+    @Override
+    public String getOriginal() {
+        return originalString;
+    }
 
-	@Override
-	public FieldString copy() {
-		return new FieldString(this);
-	}
+    @Override
+    public String get() throws FieldException {
+        String ret = null;
+        if(!isEmpty()){
+            ret = originalString;
+        }
+
+        if(ret == null){
+            if(defaultValue != null){
+                ret = defaultValue;
+            }
+            else{
+                throw new FieldException(originalString);
+            }
+        }
+
+        return ret;
+    }
+
+    @Override
+    public boolean equals(Object arg0) {
+        FieldString fieldString = (FieldString) arg0;
+        if(arg0==null)
+            return false;
+        try {
+            return get().equals(fieldString.get());
+        } catch (FieldException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return getOriginal().hashCode();
+    }
+
+    @Override
+    public void merge(FieldString fieldString) {
+        if(fieldString.originalString != null)
+            originalString = new String(fieldString.originalString);
+        else
+            originalString = null;
+
+        //do not merge type and default value
+    }
+
+    @Override
+    public FieldString copy() {
+        return new FieldString(this);
+    }
 }

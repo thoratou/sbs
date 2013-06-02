@@ -23,69 +23,69 @@
 package com.thoratou.exact.fields;
 
 public class FieldBool extends FieldBase<String> implements Entry<FieldBool>{
-	FieldString fieldString;
-	
-	public FieldBool() {
-		super(Type.MANDATORY);
-		fieldString = new FieldString();
-	}
-	
-	public FieldBool(FieldBool fieldBool) {
-		super(fieldBool.getType());
-		fieldString = fieldBool.fieldString.copy();
-	}
+    FieldString fieldString;
 
-	public FieldBool(Type type, String defaultValue) {
-		super(type);
-		fieldString = new FieldString(type, defaultValue);
-	}
+    public FieldBool() {
+        super(Type.MANDATORY);
+        fieldString = new FieldString();
+    }
 
-	@Override
-	public boolean isEmpty(){
-		return fieldString.isEmpty();
-	}
-	
-	@Override
-	public void set(String bool) {
-		fieldString.set(bool);
-	}
+    public FieldBool(FieldBool fieldBool) {
+        super(fieldBool.getType());
+        fieldString = fieldBool.fieldString.copy();
+    }
 
-	@Override
-	public String getOriginal() {
-		return fieldString.getOriginal();
-	}
-	
-	@Override
-	public String getDefault() throws FieldException {
-		return fieldString.getDefault();
-	}
-	
-	@Override
-	public String get() throws FieldException {
-		String ret = fieldString.get();
-		if(!isValid(ret)){
-			throw new FieldException(fieldString.getOriginal());
-		}
-		return ret;
-	}
+    public FieldBool(Type type, String defaultValue) {
+        super(type);
+        fieldString = new FieldString(type, defaultValue);
+    }
 
-	public boolean getBool() throws FieldException {
-		return get().equals("true");
-	}
+    @Override
+    public boolean isEmpty(){
+        return fieldString.isEmpty();
+    }
 
-	@Override
-	public void merge(FieldBool fieldBool) {
-		fieldString.merge(fieldBool.fieldString);
-	}
+    @Override
+    public void set(String bool) {
+        fieldString.set(bool);
+    }
 
-	@Override
-	public FieldBool copy() {
-		return new FieldBool(this);
-	}
-	
-	private boolean isValid(String value){
-		return ("true".equals(value) || "false".equals(value));
-	}
+    @Override
+    public String getOriginal() {
+        return fieldString.getOriginal();
+    }
 
-	
+    @Override
+    public String getDefault() throws FieldException {
+        return fieldString.getDefault();
+    }
+
+    @Override
+    public String get() throws FieldException {
+        String ret = fieldString.get();
+        if(!isValid(ret)){
+            throw new FieldException(fieldString.getOriginal());
+        }
+        return ret;
+    }
+
+    public boolean getBool() throws FieldException {
+        return get().equals("true");
+    }
+
+    @Override
+    public void merge(FieldBool fieldBool) {
+        fieldString.merge(fieldBool.fieldString);
+    }
+
+    @Override
+    public FieldBool copy() {
+        return new FieldBool(this);
+    }
+
+    private boolean isValid(String value){
+        return ("true".equals(value) || "false".equals(value));
+    }
+
+
 }

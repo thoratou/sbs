@@ -30,7 +30,7 @@ public class XPathParser{
     XPathLexer lexer;
     XPath parser;
 
-	public XPathParser(String xPathString){
+    public XPathParser(String xPathString){
         lexer = new XPathLexer(new StringReader(xPathString));
         parser = new XPath(lexer);
     }

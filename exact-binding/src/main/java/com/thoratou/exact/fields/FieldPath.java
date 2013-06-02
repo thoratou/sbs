@@ -22,70 +22,67 @@
 
 package com.thoratou.exact.fields;
 
-import com.thoratou.exact.fields.Entry;
-import com.thoratou.exact.fields.EnvironmentVariables;
-
 public class FieldPath extends FieldBase<String> implements Entry<FieldPath> {
-	FieldString fieldString;
-	
-	public FieldPath() {
-		super(Type.MANDATORY);
-		fieldString = new FieldString();
-	}
-	
-	public FieldPath(FieldPath fieldFile) {
-		super(fieldFile.getType());
-		fieldString = fieldFile.fieldString.copy();
-	}
-	
-	public FieldPath(Type type, String defaultValue) {
-		super(type);
-		fieldString = new FieldString(type, defaultValue);
-	}
+    FieldString fieldString;
 
-	@Override
-	public boolean isEmpty(){
-		return fieldString.isEmpty();
-	}
+    public FieldPath() {
+        super(Type.MANDATORY);
+        fieldString = new FieldString();
+    }
 
-	@Override
-	public void set(String path) {
-		fieldString.set(path);
-	}
+    public FieldPath(FieldPath fieldFile) {
+        super(fieldFile.getType());
+        fieldString = fieldFile.fieldString.copy();
+    }
 
-	@Override
-	public String getOriginal() {
-		return fieldString.getOriginal();
-	}
-	
-	@Override
-	public String getDefault() throws FieldException {
-		return fieldString.getDefault();
-	}
-	
-	@Override
-	public String get() throws FieldException {
-		String ret = fieldString.get();
-		if(ret == null)
-			return null;
-		ret = ret.replaceAll("\\\\ ", " ");
-		ret = ret.replaceAll("\\\\", "/");
-		if(!ret.endsWith("/"))
-			ret += "/";
-		return ret;
-	}
+    public FieldPath(Type type, String defaultValue) {
+        super(type);
+        fieldString = new FieldString(type, defaultValue);
+    }
 
-	public String getCMakeString() throws FieldException{
-		return get().replaceAll(" ", "\\\\ ");
-	}
+    @Override
+    public boolean isEmpty(){
+        return fieldString.isEmpty();
+    }
 
-	@Override
-	public void merge(FieldPath fieldPath) {
-		fieldString.merge(fieldPath.fieldString);
-	}
+    @Override
+    public void set(String path) {
+        fieldString.set(path);
+    }
 
-	@Override
-	public FieldPath copy() {
-		return new FieldPath(this);
-	}
+    @Override
+    public String getOriginal() {
+        return fieldString.getOriginal();
+    }
+
+    @Override
+    public String getDefault() throws FieldException {
+        return fieldString.getDefault();
+    }
+
+    @Override
+    public String get() throws FieldException {
+        String ret = fieldString.get();
+        if(ret == null)
+            return null;
+        ret = ret.replaceAll("\\\\ ", " ");
+        ret = ret.replaceAll("\\\\", "/");
+        if(!ret.endsWith("/"))
+            ret += "/";
+        return ret;
+    }
+
+    public String getCMakeString() throws FieldException{
+        return get().replaceAll(" ", "\\\\ ");
+    }
+
+    @Override
+    public void merge(FieldPath fieldPath) {
+        fieldString.merge(fieldPath.fieldString);
+    }
+
+    @Override
+    public FieldPath copy() {
+        return new FieldPath(this);
+    }
 }

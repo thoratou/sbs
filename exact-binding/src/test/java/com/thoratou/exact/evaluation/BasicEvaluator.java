@@ -54,8 +54,6 @@ public class BasicEvaluator extends AbstractEvaluator<String> {
         if(additionalVars == null)
             additionalVars = new EnvironmentVariables();
 
-        System.out.println(originalString);
-
         String finalString = "";
         int currentIndex = 0;
         int returnedIndex = 0;

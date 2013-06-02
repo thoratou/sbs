@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface ExactPath {
-	String value();
+    String value();
 }

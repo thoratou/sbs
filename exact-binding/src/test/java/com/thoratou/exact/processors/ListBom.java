@@ -32,7 +32,7 @@ import com.thoratou.exact.fields.FieldString;
 @ExactNode
 public class ListBom implements Entry<ListBom>{
 
-	private FieldList<FieldString> list;
+    private FieldList<FieldString> list;
 
     public ListBom() {
         list = new FieldList<FieldString>(FieldFactory.createMandatoryFieldString());
@@ -43,9 +43,9 @@ public class ListBom implements Entry<ListBom>{
     }
 
     @ExactPath("list/item/@value")
-	public FieldList<FieldString> getList(){
-		return list;
-	}
+    public FieldList<FieldString> getList(){
+        return list;
+    }
 
     @Override
     public void merge(ListBom entry) {

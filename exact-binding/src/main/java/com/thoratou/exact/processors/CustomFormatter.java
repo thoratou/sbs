@@ -28,19 +28,19 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 class CustomFormatter extends Formatter {
-	
-	public CustomFormatter() {
-		super();
-	}
-	
+
+    public CustomFormatter() {
+        super();
+    }
+
     @Override
     public String format(final LogRecord r) {
         StringBuilder sb = new StringBuilder();
         sb	.append("[")
-        	.append(r.getLevel().getName())
-        	.append("] ")
-        	.append(formatMessage(r))
-        	.append(System.getProperty("line.separator"));
+            .append(r.getLevel().getName())
+            .append("] ")
+            .append(formatMessage(r))
+            .append(System.getProperty("line.separator"));
         if (null != r.getThrown()) {
             sb.append("Throwable occurred: "); //$NON-NLS-1$
             Throwable t = r.getThrown();

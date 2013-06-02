@@ -19,38 +19,38 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA, or go to   *
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
- 
+
 package com.thoratou.exact.fields;
 
 public abstract class FieldBase<T> {
-	public enum Type{
-		MANDATORY,
-		OPTIONAL
-	}
-	
-	private Type type;
-	
-	public FieldBase(Type type) {
-		this.type = type;
-	}
-	
-	public Type getType() {
-		return type;
-	}
-	
-	public boolean isMandatory(){
-		return type == Type.MANDATORY;
-	}
-	
-	public boolean isOptional(){
-		return type == Type.OPTIONAL;
-	}	
-	
-	public abstract T getDefault() throws FieldException;
-	public abstract T get() throws FieldException;
-	public abstract T getOriginal();
-	
-	public abstract void set(T value);
+    public enum Type{
+        MANDATORY,
+        OPTIONAL
+    }
 
-	public abstract boolean isEmpty();
+    private Type type;
+
+    public FieldBase(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public boolean isMandatory(){
+        return type == Type.MANDATORY;
+    }
+
+    public boolean isOptional(){
+        return type == Type.OPTIONAL;
+    }
+
+    public abstract T getDefault() throws FieldException;
+    public abstract T get() throws FieldException;
+    public abstract T getOriginal();
+
+    public abstract void set(T value);
+
+    public abstract boolean isEmpty();
 }

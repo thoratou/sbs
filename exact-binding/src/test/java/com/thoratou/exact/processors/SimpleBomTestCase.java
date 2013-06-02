@@ -34,8 +34,8 @@ import java.io.Reader;
 import java.io.StringReader;
 
 public class SimpleBomTestCase extends TestCase{
-	
-	@Test
+
+    @Test
     public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
         SimpleBom bom = new SimpleBom();
 

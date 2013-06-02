@@ -19,25 +19,25 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA, or go to   *
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
- 
- package com.thoratou.exact.fields;
+
+package com.thoratou.exact.fields;
 
 public class FieldException extends Exception{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -760543069990600753L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -760543069990600753L;
 
-	public FieldException(String toParse) {
-		super(
-			(toParse == null) ?
-				"Unable to parse a null field string"
-			:
-				"Can't parse field string : "+toParse
-		);
-	}
-	
-	public FieldException() {
-		super("Unable to parse field string");
-	}	
+    public FieldException(String toParse) {
+        super(
+                (toParse == null) ?
+                        "Unable to parse a null field string"
+                        :
+                        "Can't parse field string : "+toParse
+        );
+    }
+
+    public FieldException() {
+        super("Unable to parse field string");
+    }
 }
