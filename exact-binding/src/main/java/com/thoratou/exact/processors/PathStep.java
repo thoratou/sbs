@@ -26,10 +26,7 @@ import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PathStep {
     public enum Kind{
@@ -129,7 +126,6 @@ public class PathStep {
     private String stepValue;
     private String methodName;
     private String returnType;
-    private String returnTemplateType;
     private List<PathStep> childSteps;
 
     public PathStep() {
@@ -181,14 +177,6 @@ public class PathStep {
         this.returnType = returnType;
     }
 
-    public String getReturnTemplateType() {
-        return returnTemplateType;
-    }
-
-    public void setReturnTemplateType(String returnTemplateType) {
-        this.returnTemplateType = returnTemplateType;
-    }
-
     public List<PathStep> getChildSteps() {
         return childSteps;
     }
@@ -221,23 +209,31 @@ public class PathStep {
     public ListTypeKind getReturnListTypeKind() throws ClassNotFoundException {
         ListTypeKind kind = ListTypeKind.UNKNOWN;
 
-        if(ExactProcessor.classMap.containsKey(returnTemplateType)){
-            //not compiled bom class, so mustn't create a Class<T> instance
-            kind = ListTypeKind.BOM;
-        }
-        else{
-            Class<?> clazz = Class.forName(getTypeWithoutParameters(returnTemplateType));
-
-            if(FieldBase.class.isAssignableFrom(clazz)){
-                kind = ListTypeKind.FIELD;
-            }
-            else if(Entry.class.isAssignableFrom(clazz)){
-                //existing bom class (i.e external compilation)
+        List<String> typeParameterList = getTypeParameterList(returnType);
+        if(typeParameterList.size() == 1){
+            if(ExactProcessor.classMap.containsKey(typeParameterList.get(0))){
+                //not compiled bom class, so mustn't create a Class<T> instance
                 kind = ListTypeKind.BOM;
+            }
+            else{
+                Class<?> clazz = Class.forName(getTypeWithoutParameters(typeParameterList.get(0)));
+
+                if(FieldBase.class.isAssignableFrom(clazz)){
+                    kind = ListTypeKind.FIELD;
+                }
+                else if(Entry.class.isAssignableFrom(clazz)){
+                    //existing bom class (i.e external compilation)
+                    kind = ListTypeKind.BOM;
+                }
             }
         }
 
         return kind;
+    }
+
+    public String getReturnListType() {
+        List<String> typeParameterList = getTypeParameterList(returnType);
+        return typeParameterList.get(0);
     }
 
     public static String getTypeWithoutParameters(String type){
@@ -248,6 +244,20 @@ public class PathStep {
         else{
             return split[0];
         }
+    }
+
+    public static List<String> getTypeParameterList(String type){
+        List<String> ret =  new ArrayList<String>();
+        int leftBraceIndex = type.indexOf('<');
+        if(leftBraceIndex != -1){
+            int rightBraceIndex = type.lastIndexOf('>');
+            if(rightBraceIndex != -1){
+                String parameters = type.substring(leftBraceIndex+1, rightBraceIndex);
+                String[] split = parameters.split(",");
+                ret = Arrays.asList(split);
+            }
+        }
+        return ret;
     }
 
     @Override

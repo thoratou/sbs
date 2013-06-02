@@ -262,10 +262,30 @@ public class ExactProcessor extends AbstractProcessor{
         bomStep.setMethodName(methodName);
         bomStep.setReturnType(returnType);
         PathStep.TypeKind returnTypeKind = bomStep.getReturnTypeKind();
-        if(returnTypeKind == PathStep.TypeKind.BOM){
-            //add a specific bom step
-            bomStep.setStepKind(PathStep.Kind.BOM);
-            lastPathStep.getChildSteps().add(bomStep);
+        switch (returnTypeKind) {
+            case UNKNOWN:
+                break;
+            case FIELD:
+                break;
+            case LIST:
+                PathStep.ListTypeKind returnListTypeKind = bomStep.getReturnListTypeKind();
+                switch (returnListTypeKind) {
+                    case UNKNOWN:
+                        break;
+                    case FIELD:
+                        break;
+                    case BOM:
+                        //add a specific bom step
+                        bomStep.setStepKind(PathStep.Kind.BOM);
+                        lastPathStep.getChildSteps().add(bomStep);
+                        break;
+                }
+                break;
+            case BOM:
+                //add a specific bom step
+                bomStep.setStepKind(PathStep.Kind.BOM);
+                lastPathStep.getChildSteps().add(bomStep);
+                break;
         }
     }
 
@@ -302,7 +322,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void writeSources(HashMap<String, List<PathStep>> mergedMap)
-            throws IOException {
+            throws IOException, ClassNotFoundException {
         //use all annotation data to generate parsing files
         for(Map.Entry<String, List<PathStep>> entryList : mergedMap.entrySet()) {
             VelocityEngine engine = new VelocityEngine();
@@ -369,12 +389,37 @@ public class ExactProcessor extends AbstractProcessor{
         }
     }
 
-    private void registerBomListFromSteps(List<PathStep> steps, Set<String> bomList) {
+    private void registerBomListFromSteps(List<PathStep> steps, Set<String> bomList) throws ClassNotFoundException {
         for(PathStep step : steps){
             if(step.getStepKind() == PathStep.Kind.BOM){
-                String bomName = step.getReturnType();
-                bomList.add(bomName);
+                PathStep.TypeKind returnTypeKind = step.getReturnTypeKind();
+                switch (returnTypeKind) {
+                    case UNKNOWN:
+                        break;
+                    case FIELD:
+                        break;
+                    case LIST:
+                        PathStep.ListTypeKind returnListTypeKind = step.getReturnListTypeKind();
+                        switch (returnListTypeKind) {
+                            case UNKNOWN:
+                                break;
+                            case FIELD:
+                                break;
+                            case BOM:
+                                String returnType = step.getReturnType();
+                                List<String> typeParameterList = PathStep.getTypeParameterList(returnType);
+                                String bomName = typeParameterList.get(0);
+                                bomList.add(bomName);
+                                break;
+                        }
+                        break;
+                    case BOM:
+                        String bomName = step.getReturnType();
+                        bomList.add(bomName);
+                        break;
+                }
             }
+
             registerBomListFromSteps(step.getChildSteps(), bomList);
         }
     }

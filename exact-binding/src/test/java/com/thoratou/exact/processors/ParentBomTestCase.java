@@ -46,4 +46,27 @@ public class ParentBomTestCase extends TestCase{
         assertEquals("parent", parentBom.getValue().get());
         assertEquals("child", childBom.getValue().get());
     }
+
+    @Test
+    public void testBomList() throws FieldException, JDOMException, IOException, ExactReadException {
+        ParentBom parentBom = new ParentBom();
+
+        ParentBomXmlReader bomReader = new ParentBomXmlReader();
+        Reader inputXml = new StringReader(
+                "<root value=\"parent\">" +
+                    "<child value=\"child\" />" +
+                    "<children>" +
+                        "<child value=\"first\" />" +
+                        "<child value=\"second\" />" +
+                        "<child value=\"third\" />" +
+                    "</children>" +
+                "</root>");
+        bomReader.read(parentBom, inputXml);
+
+        assertEquals("parent", parentBom.getValue().get());
+        assertEquals("child", parentBom.getChildBom().getValue().get());
+        assertEquals("first", parentBom.getOtherChildren().get(0).getValue().get());
+        assertEquals("second", parentBom.getOtherChildren().get(1).getValue().get());
+        assertEquals("third", parentBom.getOtherChildren().get(2).getValue().get());
+    }
 }

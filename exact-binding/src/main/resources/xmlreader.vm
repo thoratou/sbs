@@ -76,6 +76,12 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
             #if($step.getReturnTypeKind() == $typemap.bom)
                 #set( $bomName = $processingutil.generateVariableNameFromClassName($return) )
                 ${bomName}XmlReader .read(bom.${method}(), $parentElement);
+            #elseif($step.getReturnTypeKind() == $typemap.list)
+                #if($step.getReturnListTypeKind() == $listtypemap.bom)
+                    #set( $return = $step.getReturnListType() )
+                    #set( $bomName = $processingutil.generateVariableNameFromClassName($return) )
+                    ${bomName}XmlReader .read(bom.${method}().allocate(), $parentElement);
+                #end
             #end
         #end
     #end

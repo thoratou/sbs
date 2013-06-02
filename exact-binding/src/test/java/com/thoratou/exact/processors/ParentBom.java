@@ -26,21 +26,25 @@ import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
 import com.thoratou.exact.fields.Entry;
 import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldList;
 import com.thoratou.exact.fields.FieldString;
 
 @ExactNode
 public class ParentBom implements Entry<ParentBom> {
 
     private ChildBom childBom;
+    private FieldList<ChildBom> childBomList;
     private FieldString value;
 
     public ParentBom() {
         childBom = new ChildBom();
+        childBomList = new FieldList<ChildBom>(new ChildBom());
         value = FieldFactory.createMandatoryFieldString();
     }
 
     public ParentBom(ParentBom bom) {
         childBom = bom.childBom.copy();
+        childBomList = bom.childBomList.copy();
         value = bom.value.copy();
     }
 
@@ -54,9 +58,15 @@ public class ParentBom implements Entry<ParentBom> {
         return childBom;
     }
 
+    @ExactPath("children/child")
+    public FieldList<ChildBom> getOtherChildren(){
+        return childBomList;
+    }
+
     @Override
     public void merge(ParentBom entry) {
         childBom.merge(entry.childBom);
+        childBomList.merge(entry.childBomList);
         value.merge(entry.value);
     }
 

@@ -45,14 +45,6 @@ public class IndentUtil {
     }
 
     public String javaCode(String input){
-        //Remove all unneeded spaces and lines
-        /*String[] lines = input.split(System.getProperty("line.separator"));
-        StringBuffer buffer = new StringBuffer();
-        for(String line : lines){
-            buffer.append(line.trim());
-            buffer.append("\n");
-        }*/
-
         // take default Eclipse formatting options
         Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
         options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
