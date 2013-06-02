@@ -20,17 +20,48 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.exception;
+package com.thoratou.exact.processors;
 
-import com.thoratou.exact.xpath.ast.XPathPathExpr;
-import com.thoratou.exact.xpath.ast.XPathStep;
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldString;
 
-public class ExactXPathNotSupportedException extends ExactException{
-    public ExactXPathNotSupportedException(XPathStep step) {
-        super("Unsupported XPath step [axis:"+XPathStep.axisStr(step.axis)+", step:"+step.testStr()+"] on "+step);
+@ExactNode
+public class ParentBom implements Entry<ParentBom> {
+
+    private ChildBom childBom;
+    private FieldString value;
+
+    public ParentBom() {
+        childBom = new ChildBom();
+        value = FieldFactory.createMandatoryFieldString();
     }
 
-    public ExactXPathNotSupportedException(XPathPathExpr expr) {
-        super("Unsupported XPath expression :"+expr);
+    public ParentBom(ParentBom bom) {
+        childBom = bom.childBom.copy();
+        value = bom.value.copy();
+    }
+
+    @ExactPath("@value")
+    public FieldString getValue(){
+        return value;
+    }
+
+    @ExactPath("child")
+    public ChildBom getChildBom(){
+        return childBom;
+    }
+
+    @Override
+    public void merge(ParentBom entry) {
+        childBom.merge(entry.childBom);
+        value.merge(entry.value);
+    }
+
+    @Override
+    public ParentBom copy() {
+        return new ParentBom(this);
     }
 }

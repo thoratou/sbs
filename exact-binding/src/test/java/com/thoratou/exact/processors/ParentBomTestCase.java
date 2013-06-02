@@ -20,17 +20,30 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.exception;
+package com.thoratou.exact.processors;
 
-import com.thoratou.exact.xpath.ast.XPathPathExpr;
-import com.thoratou.exact.xpath.ast.XPathStep;
+import com.thoratou.exact.exception.ExactReadException;
+import com.thoratou.exact.fields.FieldException;
+import junit.framework.TestCase;
+import org.jdom.JDOMException;
+import org.junit.Test;
 
-public class ExactXPathNotSupportedException extends ExactException{
-    public ExactXPathNotSupportedException(XPathStep step) {
-        super("Unsupported XPath step [axis:"+XPathStep.axisStr(step.axis)+", step:"+step.testStr()+"] on "+step);
-    }
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 
-    public ExactXPathNotSupportedException(XPathPathExpr expr) {
-        super("Unsupported XPath expression :"+expr);
+public class ParentBomTestCase extends TestCase{
+
+    @Test
+    public void testBasic() throws FieldException, JDOMException, IOException, ExactReadException {
+        ParentBom parentBom = new ParentBom();
+        ChildBom childBom = parentBom.getChildBom();
+
+        ParentBomXmlReader bomReader = new ParentBomXmlReader();
+        Reader inputXml = new StringReader("<root value=\"parent\"><child value=\"child\" /></root>");
+        bomReader.read(parentBom, inputXml);
+
+        assertEquals("parent", parentBom.getValue().get());
+        assertEquals("child", childBom.getValue().get());
     }
 }

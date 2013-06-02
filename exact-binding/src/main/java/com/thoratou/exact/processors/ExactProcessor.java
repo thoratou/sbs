@@ -127,7 +127,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
-                                 HashMap<String,List<PathStep>> mergedMap) throws ExactXPathNotSupportedException {
+                                 HashMap<String,List<PathStep>> mergedMap) throws ExactXPathNotSupportedException, ClassNotFoundException {
         /*
         convert Xpath path map into step-by-step merged representation
         example :
@@ -183,13 +183,13 @@ public class ExactProcessor extends AbstractProcessor{
     private void convertXPathExpr(XPathPathExpr xPathPathExpr,
                                   String methodName,
                                   String returnType,
-                                  List<PathStep> newPathStepList) throws ExactXPathNotSupportedException {
+                                  List<PathStep> newPathStepList) throws ExactXPathNotSupportedException, ClassNotFoundException {
         PathStep rootStep = new PathStep();
         rootStep.setStepKind(PathStep.Kind.START);
         switch (xPathPathExpr.context) {
             case ABS:
-                rootStep.setStartKind(PathStep.StartKind.ABSOLUTE);
-                break;
+                //rootStep.setStartKind(PathStep.StartKind.ABSOLUTE);
+                throw new ExactXPathNotSupportedException(xPathPathExpr);
             case REL:
                 rootStep.setStartKind(PathStep.StartKind.RELATIVE);
                 break;
@@ -201,8 +201,9 @@ public class ExactProcessor extends AbstractProcessor{
     private void convertXPathSteps(XPathStep[] steps,
                                    String methodName,
                                    String returnType,
-                                   List<PathStep> newPathStepList) throws ExactXPathNotSupportedException {
+                                   List<PathStep> newPathStepList) throws ExactXPathNotSupportedException, ClassNotFoundException {
         List<PathStep> currentList = newPathStepList;
+        PathStep lastPathStep = null;
         for(XPathStep step : steps){
             PathStep pathStep = new PathStep();
             switch (step.axis) {
@@ -250,8 +251,21 @@ public class ExactProcessor extends AbstractProcessor{
 
             PathStep targetStep = addOrMergePathStep(pathStep, currentList);
 
+            //save last target step
+            lastPathStep = targetStep;
+
             //move to sub list
             currentList = targetStep.getChildSteps();
+        }
+
+        PathStep bomStep = new PathStep();
+        bomStep.setMethodName(methodName);
+        bomStep.setReturnType(returnType);
+        PathStep.TypeKind returnTypeKind = bomStep.getReturnTypeKind();
+        if(returnTypeKind == PathStep.TypeKind.BOM){
+            //add a specific bom step
+            bomStep.setStepKind(PathStep.Kind.BOM);
+            lastPathStep.getChildSteps().add(bomStep);
         }
     }
 
@@ -331,6 +345,10 @@ public class ExactProcessor extends AbstractProcessor{
             context.put("indentutil", new IndentUtil());
             context.put("processingutil", new ProcessingUtil());
 
+            Set<String> bomList = new HashSet<String>();
+            registerBomListFromSteps(steps, bomList);
+            context.put("bomlist", bomList);
+
             logger.info("input velocity data : "+className+ " , "+steps.toString());
 
             //StringWriter writer = new StringWriter();
@@ -348,6 +366,16 @@ public class ExactProcessor extends AbstractProcessor{
             sourceFile.delete();
 
             //logger.info("final velocity data : "+writer.getBuffer().toString());
+        }
+    }
+
+    private void registerBomListFromSteps(List<PathStep> steps, Set<String> bomList) {
+        for(PathStep step : steps){
+            if(step.getStepKind() == PathStep.Kind.BOM){
+                String bomName = step.getReturnType();
+                bomList.add(bomName);
+            }
+            registerBomListFromSteps(step.getChildSteps(), bomList);
         }
     }
 }

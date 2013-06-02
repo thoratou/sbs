@@ -20,17 +20,38 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.exception;
+package com.thoratou.exact.processors;
 
-import com.thoratou.exact.xpath.ast.XPathPathExpr;
-import com.thoratou.exact.xpath.ast.XPathStep;
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldString;
 
-public class ExactXPathNotSupportedException extends ExactException{
-    public ExactXPathNotSupportedException(XPathStep step) {
-        super("Unsupported XPath step [axis:"+XPathStep.axisStr(step.axis)+", step:"+step.testStr()+"] on "+step);
+@ExactNode
+public class ChildBom implements Entry<ChildBom> {
+    private FieldString value;
+
+    public ChildBom() {
+        value = FieldFactory.createMandatoryFieldString();
     }
 
-    public ExactXPathNotSupportedException(XPathPathExpr expr) {
-        super("Unsupported XPath expression :"+expr);
+    public ChildBom(ChildBom bom) {
+        value = bom.value.copy();
+    }
+
+    @ExactPath("@value")
+    public FieldString getValue(){
+        return value;
+    }
+
+    @Override
+    public void merge(ChildBom entry) {
+        value.merge(entry.value);
+    }
+
+    @Override
+    public ChildBom copy() {
+        return new ChildBom(this);
     }
 }

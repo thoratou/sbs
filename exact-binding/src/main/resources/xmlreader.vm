@@ -22,6 +22,8 @@
 package ${package};
 
 public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${simpleclass}> {
+    #writeBomReaders()
+
     @SuppressWarnings("unchecked")
     public void read(${class} bom, org.jdom.Element rootElement)
         throws com.thoratou.exact.exception.ExactReadException
@@ -70,7 +72,19 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
                 String $attr = $parentElement .getAttributeValue("$value");
                 bom.${method}().allocate().set($attr);
             #end
+        #elseif($kind == $kindmap.bom)
+            #if($step.getReturnTypeKind() == $typemap.bom)
+                #set( $bomName = $processingutil.generateVariableNameFromClassName($return) )
+                ${bomName}XmlReader .read(bom.${method}(), $parentElement);
+            #end
         #end
+    #end
+#end
+##
+#macro( writeBomReaders )
+    #foreach( $bom in $bomlist )
+        #set( $bomName = $processingutil.generateVariableNameFromClassName($bom) )
+        ${bom}XmlReader ${bomName}XmlReader = new ${bom}XmlReader();
     #end
 #end
 ##

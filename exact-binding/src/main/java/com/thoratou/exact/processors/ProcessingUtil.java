@@ -51,4 +51,8 @@ public class ProcessingUtil {
     public String generateNewAttributeName(){
         return "attribute"+attributeID++;
     }
+
+    public String generateVariableNameFromClassName(String className){
+        return className.replace(".","_");
+    }
 }
