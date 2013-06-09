@@ -90,8 +90,17 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
 #macro( writeBomReaders )
     #foreach( $bom in $bomlist )
         #set( $bomName = $processingutil.generateVariableNameFromClassName($bom) )
-        ${bom}XmlReader ${bomName}XmlReader = new ${bom}XmlReader();
+        private ${bom}XmlReader ${bomName}XmlReader = new ${bom}XmlReader();
     #end
+
+    public ${simpleclass}XmlReader(){
+        super();
+        #foreach( $bom in $bomlist )
+            #set( $bomName = $processingutil.generateVariableNameFromClassName($bom) )
+            registerStreamer("${bom}", ${bomName}XmlReader);
+        #end
+    }
+
 #end
 ##
 ##main call

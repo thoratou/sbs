@@ -33,12 +33,15 @@ public class BasicEvaluator extends AbstractEvaluator<String> {
 
     @Override
     public String eval(FieldBase<String> field) throws FieldException {
-        return convertFromOriginalToFinal(field.get(), null);
+        return eval(field, null);
     }
 
     @Override
     public String eval(FieldBase<String> field, EnvironmentVariables additionalEnvironment) throws FieldException {
-        return convertFromOriginalToFinal(field.get(), additionalEnvironment);
+        if(!field.isEmpty())
+            return convertFromOriginalToFinal(field.getOriginal(), additionalEnvironment);
+        else
+            return convertFromOriginalToFinal(field.getDefault(), additionalEnvironment);
     }
 
     public boolean isValid(FieldBase<String> field) throws FieldException {
@@ -46,10 +49,13 @@ public class BasicEvaluator extends AbstractEvaluator<String> {
     }
 
     public boolean isValid(FieldBase<String> field, EnvironmentVariables additionalVars) throws FieldException {
-        return !field.isEmpty() && (convertFromOriginalToFinal(field.get(),additionalVars)!=null);
+        return !field.isEmpty() && (convertFromOriginalToFinal(field.getOriginal(),additionalVars)!=null);
     }
 
     private String convertFromOriginalToFinal(String originalString, EnvironmentVariables additionalVars) throws FieldException {
+        if(originalString == null)
+            throw new FieldException(null);
+
         if(additionalVars == null)
             additionalVars = new EnvironmentVariables();
 

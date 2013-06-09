@@ -33,9 +33,24 @@ import org.jdom.input.SAXBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 
 public abstract class XmlReader<T extends Entry<T>>{
     public abstract void read(T bom, Element rootElement) throws ExactReadException;
+
+    HashMap<String, XmlReader> registeredStreamer;
+
+    protected XmlReader() {
+        registeredStreamer = new HashMap<String, XmlReader>();
+    }
+
+    protected void registerStreamer(String className, XmlReader instance){
+        registeredStreamer.put(className, instance);
+    }
+
+    public XmlReader getStreamer(String className){
+        return registeredStreamer.get(className);
+    }
 
     public void read(T bom, File file) throws JDOMException, IOException, ExactReadException {
         SAXBuilder builder = new SAXBuilder();
