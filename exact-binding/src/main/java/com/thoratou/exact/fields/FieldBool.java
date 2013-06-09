@@ -22,7 +22,9 @@
 
 package com.thoratou.exact.fields;
 
-public class FieldBool extends FieldBase<String> implements Entry<FieldBool>{
+import com.thoratou.exact.Entry;
+
+public class FieldBool extends FieldBase<String> implements Entry<FieldBool> {
     FieldString fieldString;
 
     public FieldBool() {

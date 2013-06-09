@@ -20,9 +20,58 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.fields;
+package com.thoratou.exact.evaluation;
 
-public interface Entry <T>{
-    void merge(T entry);
-    T copy();
+import com.thoratou.exact.fields.FieldString;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+
+public class EnvironmentVariables {
+    private Hashtable<String, FieldString> variableTable;
+
+    public EnvironmentVariables() {
+        variableTable = new Hashtable<String, FieldString>();
+    }
+
+    public void putFromFile(String filePath){
+        File path = new File(filePath);
+        Properties properties = new Properties();
+        try{
+            properties.load(new FileInputStream(path));
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+        Enumeration<Object> en = properties.keys();
+        while(en.hasMoreElements()){
+            String key = (String) en.nextElement();
+            String value = properties.getProperty(key);
+            FieldString fieldValue = new FieldString();
+            fieldValue.set(value);
+            variableTable.put(key, fieldValue);
+        }
+    }
+
+    public void put(String variable, String value) {
+        FieldString fieldValue = new FieldString();
+        fieldValue.set(value);
+        variableTable.put(variable, fieldValue);
+    }
+
+    public FieldString getFieldString(String variable){
+        FieldString fieldString = variableTable.get(variable);
+        if(fieldString == null){
+            fieldString = new FieldString();
+        }
+        return fieldString;
+    }
+
+    public void clear(){
+        variableTable.clear();
+    }
 }

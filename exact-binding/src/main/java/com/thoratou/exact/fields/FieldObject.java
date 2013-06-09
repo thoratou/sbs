@@ -22,7 +22,9 @@
 
 package com.thoratou.exact.fields;
 
-public class FieldObject implements Entry<FieldObject>{
+import com.thoratou.exact.Entry;
+
+public class FieldObject implements Entry<FieldObject> {
 	Object object;
 
 	public FieldObject() {

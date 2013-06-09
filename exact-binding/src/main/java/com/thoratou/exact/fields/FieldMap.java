@@ -22,6 +22,8 @@
 
 package com.thoratou.exact.fields;
 
+import com.thoratou.exact.Entry;
+
 import java.util.*;
 
 public class FieldMap<Key extends Entry<Key>, Value extends Entry<Value>> implements Entry< FieldMap<Key, Value> > {

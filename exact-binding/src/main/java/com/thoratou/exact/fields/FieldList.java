@@ -22,10 +22,12 @@
 
 package com.thoratou.exact.fields;
 
+import com.thoratou.exact.Entry;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class FieldList <T extends Entry<T> > implements Entry<FieldList<T> >{
+public class FieldList <T extends Entry<T>> implements Entry<FieldList<T> >{
     private ArrayList<T> array;
     private final T prototype;
 

@@ -22,7 +22,6 @@
 
 package com.thoratou.exact.evaluation;
 
-import com.thoratou.exact.fields.EnvironmentVariables;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldException;
 

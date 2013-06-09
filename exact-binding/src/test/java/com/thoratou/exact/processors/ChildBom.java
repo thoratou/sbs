@@ -24,7 +24,7 @@ package com.thoratou.exact.processors;
 
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.Entry;
 import com.thoratou.exact.fields.FieldFactory;
 import com.thoratou.exact.fields.FieldString;
 

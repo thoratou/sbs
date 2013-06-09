@@ -23,7 +23,7 @@
 package com.thoratou.exact.bom;
 
 import com.thoratou.exact.exception.ExactReadException;
-import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.Entry;
 import com.thoratou.exact.fields.FieldBase;
 import org.jdom.Document;
 import org.jdom.Element;

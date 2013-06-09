@@ -22,6 +22,8 @@
 
 package com.thoratou.exact.fields;
 
+import com.thoratou.exact.Entry;
+
 public class FieldString extends FieldBase<String> implements Entry<FieldString> {
     private String originalString;
     private String defaultValue;

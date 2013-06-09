@@ -23,6 +23,7 @@
 package com.thoratou.exact.fields;
 
 import com.thoratou.exact.evaluation.BasicEvaluator;
+import com.thoratou.exact.evaluation.EnvironmentVariables;
 import junit.framework.TestCase;
 
 import org.junit.Test;

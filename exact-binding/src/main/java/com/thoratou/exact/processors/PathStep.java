@@ -22,7 +22,7 @@
 
 package com.thoratou.exact.processors;
 
-import com.thoratou.exact.fields.Entry;
+import com.thoratou.exact.Entry;
 import com.thoratou.exact.fields.FieldBase;
 import com.thoratou.exact.fields.FieldList;
 
