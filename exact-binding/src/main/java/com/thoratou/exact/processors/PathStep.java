@@ -65,6 +65,7 @@ public class PathStep {
         KindMap.put(Kind.TEXT, "text");
         KindMap.put(Kind.ATTRIBUTE, "attribute");
         KindMap.put(Kind.BOM, "bom");
+        KindMap.put(Kind.EXTENSION, "extension");
         KindMap.put(Kind.START, "start");
     }
 
@@ -75,6 +76,7 @@ public class PathStep {
         ReverseKindMap.put("text", Kind.TEXT);
         ReverseKindMap.put("attribute", Kind.ATTRIBUTE);
         ReverseKindMap.put("bom", Kind.BOM);
+        ReverseKindMap.put("extension", Kind.EXTENSION);
         ReverseKindMap.put("start", Kind.START);
     }
 
@@ -127,6 +129,7 @@ public class PathStep {
     private String stepValue;
     private String methodName;
     private String returnType;
+    private String extensionName;
     private List<PathStep> childSteps;
 
     public PathStep() {
@@ -135,6 +138,7 @@ public class PathStep {
         stepValue = "";
         methodName = "";
         returnType = "";
+        extensionName = "";
         childSteps = new ArrayList<PathStep>();
     }
 
@@ -176,6 +180,14 @@ public class PathStep {
 
     public void setReturnType(String returnType) {
         this.returnType = returnType;
+    }
+
+    public String getExtensionName() {
+        return extensionName;
+    }
+
+    public void setExtensionName(String extensionName) {
+        this.extensionName = extensionName;
     }
 
     public List<PathStep> getChildSteps() {
@@ -277,6 +289,8 @@ public class PathStep {
         stringBuffer.append(methodName);
         stringBuffer.append(",");
         stringBuffer.append(returnType);
+        stringBuffer.append(",");
+        stringBuffer.append(extensionName);
         stringBuffer.append(",[");
         boolean isFirstChild = true;
         for(PathStep childStep : childSteps){
@@ -300,6 +314,8 @@ public class PathStep {
 
         PathStep pathStep = (PathStep) o;
 
+        if (extensionName != null ? !extensionName.equals(pathStep.extensionName) : pathStep.extensionName != null)
+            return false;
         if (methodName != null ? !methodName.equals(pathStep.methodName) : pathStep.methodName != null) return false;
         if (returnType != null ? !returnType.equals(pathStep.returnType) : pathStep.returnType != null) return false;
         if (startKind != pathStep.startKind) return false;
@@ -316,6 +332,7 @@ public class PathStep {
         result = 31 * result + (stepValue != null ? stepValue.hashCode() : 0);
         result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
         result = 31 * result + (returnType != null ? returnType.hashCode() : 0);
+        result = 31 * result + (extensionName != null ? extensionName.hashCode() : 0);
         return result;
     }
 }

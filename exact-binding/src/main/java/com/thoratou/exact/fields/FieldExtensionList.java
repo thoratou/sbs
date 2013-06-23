@@ -111,8 +111,10 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
         Iterator<Extension<T>> iterator = listEntry.array.iterator();
         while (iterator.hasNext()) {
             Extension<T> item = iterator.next();
-            Extension<T> copy = item.copy();
-            this.array.add(copy);
+            //TODO
+            //Extension<T> copy = item.copy();
+            //this.array.add(copy);
+            this.array.add(item);
         }
     }
 

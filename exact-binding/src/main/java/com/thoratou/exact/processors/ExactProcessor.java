@@ -77,7 +77,6 @@ public class ExactProcessor extends AbstractProcessor{
 
                 writeSources(mergedMap);
             } catch (Exception e) {
-                logger.severe(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -153,7 +152,7 @@ public class ExactProcessor extends AbstractProcessor{
                         item.setMethodName(methodName);
                         item.setReturnType(returnType);
 
-                        if(itemMap.containsKey(className)){
+                        if(extItemMap.containsKey(className)){
                             ArrayList<ExtensionItem> items = extItemMap.get(className);
                             items.add(item);
                         }
@@ -232,15 +231,47 @@ public class ExactProcessor extends AbstractProcessor{
                 XPathPathExpr xPathPathExpr = item.getxPathPathExpr();
                 String methodName = item.getMethodName();
                 String returnType = item.getReturnType();
-                convertXPathExpr(xPathPathExpr, methodName, returnType, newPathStepList);
+                convertXPathExpr(xPathPathExpr,
+                        methodName,
+                        returnType,
+                        newPathStepList,
+                        false);
+            }
+        }
+
+        for(Map.Entry<String, ArrayList<ExtensionItem>> extItemEntry : extItemMap.entrySet()){
+            //retrieve bom basic data
+            String baseClassName = extItemEntry.getKey();
+            ArrayList<ExtensionItem> extItemList = extItemEntry.getValue();
+
+            //initialize new representation for this bom
+            List<PathStep> newPathStepList = new ArrayList<PathStep>();
+            mergedMap.put(baseClassName, newPathStepList);
+            for(ExtensionItem extItem : extItemList){
+                XPathPathExpr xPathPathExpr = extItem.getElement();
+                String methodName = extItem.getMethodName();
+                String returnType = extItem.getReturnType();
+                PathStep lastPathStep = convertXPathExpr(xPathPathExpr,
+                        methodName,
+                        returnType,
+                        newPathStepList,
+                        true);
+                lastPathStep.setExtensionName(extItem.getName());
+                //add filter steps
+                convertXPathSteps(extItem.getFilter().steps,
+                        "", //mthod name (value doesn't matter for filters)
+                        "com.thoratou.exact.fields.FieldString", //TODO : add other fields and bom support
+                        lastPathStep.getChildSteps(),
+                        false);
             }
         }
     }
 
-    private void convertXPathExpr(XPathPathExpr xPathPathExpr,
-                                  String methodName,
-                                  String returnType,
-                                  List<PathStep> newPathStepList) throws ExactXPathNotSupportedException, ClassNotFoundException {
+    private PathStep convertXPathExpr(XPathPathExpr xPathPathExpr,
+                                      String methodName,
+                                      String returnType,
+                                      List<PathStep> newPathStepList,
+                                      boolean isExtension) throws ExactXPathNotSupportedException, ClassNotFoundException {
         PathStep rootStep = new PathStep();
         rootStep.setStepKind(PathStep.Kind.START);
         switch (xPathPathExpr.context) {
@@ -252,13 +283,14 @@ public class ExactProcessor extends AbstractProcessor{
                 break;
         }
         PathStep targetStep = addOrMergePathStep(rootStep, newPathStepList);
-        convertXPathSteps(xPathPathExpr.steps, methodName, returnType, targetStep.getChildSteps());
+        return convertXPathSteps(xPathPathExpr.steps, methodName, returnType, targetStep.getChildSteps(), isExtension);
     }
 
-    private void convertXPathSteps(XPathStep[] steps,
-                                   String methodName,
-                                   String returnType,
-                                   List<PathStep> newPathStepList) throws ExactXPathNotSupportedException, ClassNotFoundException {
+    private PathStep convertXPathSteps(XPathStep[] steps,
+                                       String methodName,
+                                       String returnType,
+                                       List<PathStep> newPathStepList,
+                                       boolean extension) throws ExactXPathNotSupportedException, ClassNotFoundException {
         List<PathStep> currentList = newPathStepList;
         PathStep lastPathStep = null;
         for(XPathStep step : steps){
@@ -333,17 +365,21 @@ public class ExactProcessor extends AbstractProcessor{
                         break;
                     case BOM:
                         //add a specific bom step
-                        bomStep.setStepKind(PathStep.Kind.BOM);
+                        bomStep.setStepKind(extension ? PathStep.Kind.EXTENSION : PathStep.Kind.BOM);
                         lastPathStep.getChildSteps().add(bomStep);
+                        lastPathStep = bomStep;
                         break;
                 }
                 break;
             case BOM:
                 //add a specific bom step
-                bomStep.setStepKind(PathStep.Kind.BOM);
+                bomStep.setStepKind(extension ? PathStep.Kind.EXTENSION : PathStep.Kind.BOM);
                 lastPathStep.getChildSteps().add(bomStep);
+                lastPathStep = bomStep;
                 break;
         }
+
+        return lastPathStep;
     }
 
     private PathStep addOrMergePathStep(PathStep pathStep, Collection currentList){

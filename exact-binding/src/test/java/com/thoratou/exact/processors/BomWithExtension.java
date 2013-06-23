@@ -20,9 +20,50 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.bom;
+package com.thoratou.exact.processors;
 
 import com.thoratou.exact.Entry;
+import com.thoratou.exact.annotations.ExactExtension;
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.fields.FieldExtensionList;
+import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldString;
 
-public interface Extension<Field extends Entry<Field>>{
+@ExactNode
+public class BomWithExtension implements Entry<BomWithExtension> {
+
+    private FieldExtensionList<FieldString> childExtensionList;
+    private FieldString value;
+
+    public BomWithExtension() {
+        childExtensionList = new FieldExtensionList<FieldString>();
+        value = FieldFactory.createMandatoryFieldString();
+    }
+
+    public BomWithExtension(BomWithExtension bom) {
+        childExtensionList = bom.childExtensionList.copy();
+        value = bom.value.copy();
+    }
+
+    @ExactPath("@value")
+    public FieldString getValue(){
+        return value;
+    }
+
+    @ExactExtension(name = "child", element = "children/child", filter = "@filter")
+    public FieldExtensionList<FieldString> getChildren(){
+        return childExtensionList;
+    }
+
+    @Override
+    public void merge(BomWithExtension entry) {
+        childExtensionList.merge(entry.childExtensionList);
+        value.merge(entry.value);
+    }
+
+    @Override
+    public BomWithExtension copy() {
+        return new BomWithExtension(this);
+    }
 }

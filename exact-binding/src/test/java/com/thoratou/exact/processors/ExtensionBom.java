@@ -20,9 +20,39 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.bom;
+package com.thoratou.exact.processors;
 
 import com.thoratou.exact.Entry;
+import com.thoratou.exact.annotations.ExactNode;
+import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.bom.Extension;
+import com.thoratou.exact.fields.FieldFactory;
+import com.thoratou.exact.fields.FieldString;
 
-public interface Extension<Field extends Entry<Field>>{
+@ExactNode
+public class ExtensionBom implements Extension<FieldString>, Entry<ExtensionBom> {
+    private FieldString value;
+
+    public ExtensionBom() {
+        value = FieldFactory.createMandatoryFieldString();
+    }
+
+    public ExtensionBom(ExtensionBom bom) {
+        value = bom.value.copy();
+    }
+
+    @ExactPath("@value")
+    public FieldString getValue(){
+        return value;
+    }
+
+    @Override
+    public void merge(ExtensionBom entry) {
+        value.merge(entry.value);
+    }
+
+    @Override
+    public ExtensionBom copy() {
+        return new ExtensionBom(this);
+    }
 }
