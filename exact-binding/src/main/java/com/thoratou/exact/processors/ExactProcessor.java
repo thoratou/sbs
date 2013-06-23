@@ -22,6 +22,7 @@
 
 package com.thoratou.exact.processors;
 
+import com.thoratou.exact.annotations.ExactExtension;
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
 import com.thoratou.exact.exception.ExactXPathNotSupportedException;
@@ -67,7 +68,8 @@ public class ExactProcessor extends AbstractProcessor{
 
             try {
                 HashMap<String, ArrayList<Item> > itemMap = new HashMap<String, ArrayList<Item>>();
-                readAnnotations(roundEnv, itemMap);
+                HashMap<String, ArrayList<ExtensionItem> > extItemMap = new HashMap<String, ArrayList<ExtensionItem>>();
+                readAnnotations(roundEnv, itemMap, extItemMap);
 
                 HashMap<String, List<PathStep> > mergedMap
                         = new HashMap<String, List<PathStep>>();
@@ -82,7 +84,7 @@ public class ExactProcessor extends AbstractProcessor{
         return false;
     }
 
-    private void readAnnotations(RoundEnvironment roundEnv, HashMap<String, ArrayList<Item> > itemMap)
+    private void readAnnotations(RoundEnvironment roundEnv, HashMap<String, ArrayList<Item>> itemMap, HashMap<String, ArrayList<ExtensionItem>> extItemMap)
             throws Exception {
         //retrieve all classes with @ExactNode annotation
         for(TypeElement typeElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ExactNode.class))){
@@ -92,35 +94,75 @@ public class ExactProcessor extends AbstractProcessor{
             classMap.put(className, typeElement);
 
             for(ExecutableElement methodElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())){
-                ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
-                if(annotation != null){
-                    String methodName = methodElement.getSimpleName().toString();
-                    String returnType = methodElement.getReturnType().toString();
-                    String xPathString = annotation.value();
+                {
+                    ExactPath annotation = methodElement.getAnnotation(ExactPath.class);
+                    if(annotation != null){
+                        String methodName = methodElement.getSimpleName().toString();
+                        String returnType = methodElement.getReturnType().toString();
+                        String xPathString = annotation.value();
 
-                    logger.info("Exact method : "+methodName+" , "+annotation.value()+" , "+returnType);
+                        logger.info("Exact method : "+methodName+" , "+annotation.value()+" , "+returnType);
 
-                    XPathParser parser = new XPathParser(xPathString);
-                    XPathPathExpr xPathPathExpr = parser.parse();
+                        XPathParser parser = new XPathParser(xPathString);
+                        XPathPathExpr xPathPathExpr = parser.parse();
 
-                    logger.info("XPath value = "+xPathPathExpr.toString());
+                        logger.info("XPath value = "+xPathPathExpr.toString());
 
-                    Item item = new Item();
-                    item.setxPathPathExpr(xPathPathExpr);
-                    item.setMethodName(methodName);
-                    item.setReturnType(returnType);
+                        Item item = new Item();
+                        item.setxPathPathExpr(xPathPathExpr);
+                        item.setMethodName(methodName);
+                        item.setReturnType(returnType);
 
-                    if(itemMap.containsKey(className)){
-                        ArrayList<Item> items = itemMap.get(className);
-                        items.add(item);
+                        if(itemMap.containsKey(className)){
+                            ArrayList<Item> items = itemMap.get(className);
+                            items.add(item);
+                        }
+                        else{
+                            ArrayList<Item> items = new ArrayList<Item>();
+                            items.add(item);
+                            itemMap.put(className,items);
+                        }
+
+                        methodMap.put(new Pair<String, String>(className, methodName), methodElement);
                     }
-                    else{
-                        ArrayList<Item> items = new ArrayList<Item>();
-                        items.add(item);
-                        itemMap.put(className,items);
-                    }
+                }
 
-                    methodMap.put(new Pair<String, String>(className, methodName), methodElement);
+                {
+                    ExactExtension annotation = methodElement.getAnnotation(ExactExtension.class);
+                    if(annotation!=null){
+                        String methodName = methodElement.getSimpleName().toString();
+                        String returnType = methodElement.getReturnType().toString();
+                        String name = annotation.name();
+                        String element = annotation.element();
+                        String filter = annotation.filter();
+
+                        logger.info("Exact extension : "+methodName+" , "+returnType+" , "+name+" , "+element+" , "+filter);
+
+                        XPathParser elementParser = new XPathParser(element);
+                        XPathPathExpr elementXPathPathExpr = elementParser.parse();
+                        logger.info("XPath element = "+elementXPathPathExpr.toString());
+
+                        XPathParser filterParser = new XPathParser(filter);
+                        XPathPathExpr filterXPathPathExpr = filterParser.parse();
+                        logger.info("XPath filter = "+filterXPathPathExpr.toString());
+
+                        ExtensionItem item = new ExtensionItem();
+                        item.setName(name);
+                        item.setElement(elementXPathPathExpr);
+                        item.setFilter(filterXPathPathExpr);
+                        item.setMethodName(methodName);
+                        item.setReturnType(returnType);
+
+                        if(itemMap.containsKey(className)){
+                            ArrayList<ExtensionItem> items = extItemMap.get(className);
+                            items.add(item);
+                        }
+                        else{
+                            ArrayList<ExtensionItem> items = new ArrayList<ExtensionItem>();
+                            items.add(item);
+                            extItemMap.put(className,items);
+                        }
+                    }
                 }
             }
         }
