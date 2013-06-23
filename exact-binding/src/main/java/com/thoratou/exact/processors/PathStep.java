@@ -35,6 +35,7 @@ public class PathStep {
         TEXT,
         ATTRIBUTE,
         BOM,
+        EXTENSION,
         START,
     }
 

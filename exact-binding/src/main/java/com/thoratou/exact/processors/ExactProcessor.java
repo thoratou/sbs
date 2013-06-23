@@ -73,7 +73,7 @@ public class ExactProcessor extends AbstractProcessor{
 
                 HashMap<String, List<PathStep> > mergedMap
                         = new HashMap<String, List<PathStep>>();
-                mergeClassPaths(itemMap,mergedMap);
+                mergeClassPaths(itemMap,extItemMap,mergedMap);
 
                 writeSources(mergedMap);
             } catch (Exception e) {
@@ -168,18 +168,26 @@ public class ExactProcessor extends AbstractProcessor{
         }
     }
 
-    private void mergeClassPaths(HashMap<String,ArrayList<Item>> itemMap,
-                                 HashMap<String,List<PathStep>> mergedMap) throws ExactXPathNotSupportedException, ClassNotFoundException {
+    private void mergeClassPaths(HashMap<String, ArrayList<Item>> itemMap,
+                                 HashMap<String, ArrayList<ExtensionItem>> extItemMap,
+                                 HashMap<String, List<PathStep>> mergedMap) throws ExactXPathNotSupportedException, ClassNotFoundException {
         /*
         convert Xpath path map into step-by-step merged representation
         example :
 
         input :
+            Boms :
             { 'com.thoratou.example.SimpleBom' ->
                  [
                     {'toto/titi/text()', 'getTiti()', 'FieldString'},
                     {'toto/tata/@value', 'getTata()', 'FieldString'}
                     {'toto/tata/child', 'getChild()', 'com.thoratou.example.ChildBom'}
+                 ]
+            }
+            Extensions
+            { 'com.thoratou.example.SimpleBom' ->
+                 [
+                    {'ext', 'toto/tata/ext', '@filter', 'getExtension()', 'com.thoratou.example.ExtensionBom'}
                  ]
             }
 
@@ -198,6 +206,13 @@ public class ExactProcessor extends AbstractProcessor{
                             {CHILD_ELEMENT, 'child'} ->
                             [
                                 {BOM, 'getChild()', 'com.thoratou.example.ChildBom'}
+                            ]
+                            {CHILD_ELEMENT, 'ext'} ->
+                            [
+                                {EXTENSION, 'getExtension()', 'com.thoratou.example.ExtensionBom'} ->
+                                [
+                                    {ATTRIBUTE, 'filter', '', 'FieldString'}
+                                ]
                             ]
                         ]
                     ]
