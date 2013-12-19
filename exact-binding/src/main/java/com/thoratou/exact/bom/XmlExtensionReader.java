@@ -22,53 +22,52 @@
 
 package com.thoratou.exact.bom;
 
-import com.thoratou.exact.exception.ExactReadException;
 import com.thoratou.exact.Entry;
+import com.thoratou.exact.exception.ExactReadException;
 import com.thoratou.exact.fields.FieldBase;
-import org.jdom.Document;
+import com.thoratou.exact.fields.FieldExtensionList;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 
-public abstract class XmlReader<T>{
-    public abstract void read(T bom, Element rootElement) throws ExactReadException;
+public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>> {
+    private final HashMap<T, InnerExtension<T>> extensionMap;
+    private final HashMap<T,XmlReader<InnerExtension<T>>> extensionReaderMap;
+    private FieldExtensionList<T> extensionList;
+    private T filterField;
 
-    protected HashMap<String, XmlReader> registeredStreamer;
-
-    protected XmlReader() {
-        registeredStreamer = new HashMap<String, XmlReader>();
+    protected XmlExtensionReader(FieldExtensionList<T> extensionList,
+                                 T filterField){
+        this.extensionList = extensionList;
+        this.filterField = filterField;
+        extensionMap = new HashMap<T, InnerExtension<T>>();
+        extensionReaderMap = new HashMap<T, XmlReader<InnerExtension<T>>>();
     }
 
-    protected void registerStreamer(String className, XmlReader instance){
-        registeredStreamer.put(className, instance);
+    public void registerExtension(InnerExtension<T> prototype, XmlReader<InnerExtension<T>> reader){
+        T filter = prototype.getExtensionFilter();
+        extensionMap.put(filter, prototype);
+        extensionReaderMap.put(filter, reader);
     }
 
-    public XmlReader getStreamer(String className){
-        return registeredStreamer.get(className);
+    public InnerExtension<T> allocateFromFilter(T filter){
+        InnerExtension<T> extension = extensionMap.get(filter);
+        return extensionList.allocate(extension);
     }
 
-    public void read(T bom, File file) throws JDOMException, IOException, ExactReadException {
-        SAXBuilder builder = new SAXBuilder();
-        Document document = builder.build(file);
-        Element rootElement = document.getRootElement();
-        read(bom, rootElement);
+    protected void setFilterField(String value){
+        filterField.set(value);
     }
 
-    public void read(T bom, Reader reader) throws JDOMException, IOException, ExactReadException {
-        SAXBuilder builder = new SAXBuilder();
-        Document document = builder.build(reader);
-        Element rootElement = document.getRootElement();
-        read(bom, rootElement);
-    }
+    protected abstract void readFilter(final org.jdom.Element rootElement)
+        throws com.thoratou.exact.exception.ExactReadException;
 
-    protected void checkBasicField(FieldBase field, String value) throws ExactReadException {
-        if(!field.isEmpty()){
-            throw new ExactReadException("Field already set, cannot set with value \""+value+"\"");
+    public void read(Element rootElement) throws ExactReadException {
+        if(!filterField.isEmpty()){
+            InnerExtension<T> extension = allocateFromFilter(filterField);
+            XmlReader<InnerExtension<T>> reader = extensionReaderMap.get(filterField);
+            reader.read(extension, rootElement);
+            filterField.set(null);
         }
     }
 }

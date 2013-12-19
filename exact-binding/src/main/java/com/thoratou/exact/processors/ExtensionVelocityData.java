@@ -22,56 +22,23 @@
 
 package com.thoratou.exact.processors;
 
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.bom.Extension;
-import com.thoratou.exact.bom.InnerExtension;
-import com.thoratou.exact.fields.FieldFactory;
-import com.thoratou.exact.fields.FieldString;
+class ExtensionVelocityData {
+    private PathStep extensionStep = null;
+    private PathStep.Kind  filterKind = null;
 
-@ExactNode
-public class ExtensionBom implements Extension<ExtensionBom, FieldString> {
-    private FieldString value;
-
-    public ExtensionBom() {
-        value = FieldFactory.createMandatoryFieldString();
+    PathStep getExtensionStep() {
+        return extensionStep;
     }
 
-    public ExtensionBom(ExtensionBom bom) {
-        value = bom.value.copy();
+    void setExtensionStep(PathStep extensionStep) {
+        this.extensionStep = extensionStep;
     }
 
-    @Override
-    public FieldString getExtensionFilter(){
-        FieldString filter = FieldFactory.createMandatoryFieldString();
-        filter.set("extension");
-        return filter;
+    PathStep.Kind getFilterKind() {
+        return filterKind;
     }
 
-    @ExactPath("@value")
-    public FieldString getValue(){
-        return value;
-    }
-
-    @Override
-    public void merge(ExtensionBom entry) {
-        value.merge(entry.value);
-    }
-
-    @Override
-    public void merge(InnerExtension<FieldString> entry) {
-        if(entry instanceof ExtensionBom){
-            merge((ExtensionBom) entry);
-        }
-    }
-
-    @Override
-    public ExtensionBom copy() {
-        return new ExtensionBom(this);
-    }
-
-    @Override
-    public InnerExtension<FieldString> innerCopy() {
-        return copy();
+    void setFilterKind(PathStep.Kind filterKind) {
+        this.filterKind = filterKind;
     }
 }

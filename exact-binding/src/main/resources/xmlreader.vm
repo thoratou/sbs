@@ -1,6 +1,7 @@
 ##
 ##main macro
 ##
+
 #macro( writeAll $steps )
     #header()
     #foreach( $step in $steps )
@@ -8,7 +9,7 @@
         #set( $start = $step.getStartKind() )
         #if($kind == $kindmap.start)
             #if($start == $startmap.relative)
-                #write( $step.getChildSteps(), "rootElement" )
+                #write( $step.getChildSteps(), "rootElement", false )
             #else
                 //Unsupported absolute start type
             #end
@@ -25,7 +26,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
     #writeBomReaders()
 
     @SuppressWarnings("unchecked")
-    public void read(${class} bom, org.jdom.Element rootElement)
+    public void read(${class} bom, final org.jdom.Element rootElement)
         throws com.thoratou.exact.exception.ExactReadException
     {
 #end
@@ -37,7 +38,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
 ##
 ##main recursion
 ##
-#macro( write $steps , $parentElement )
+#macro( write $steps , $parentElement , $isFilterMode )
     #foreach( $step in $steps )
         #set( $kind = $step.getStepKind() )
         #set( $value = $step.getStepValue() )
@@ -46,10 +47,10 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
         #if($kind == $kindmap.child)
             #set( $childList = $processingutil.generateNewChildListName() )
             #set( $element = $processingutil.generateNewElementName() )
-            java.util.List<org.jdom.Element> $childList = $parentElement .getChildren("$value");
-            for(org.jdom.Element $element : $childList)
+            final java.util.List<org.jdom.Element> $childList = $parentElement .getChildren("$value");
+            for(final org.jdom.Element $element : $childList)
             {
-                #write( $step.getChildSteps(), $element )
+                #write( $step.getChildSteps(), $element, $isFilterMode )
             }
         #elseif($kind == $kindmap.text)
             #if($step.getReturnTypeKind() == $typemap.field)
@@ -66,7 +67,11 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
             #if($step.getReturnTypeKind() == $typemap.field)
                 #set( $attr = $processingutil.generateNewAttributeName() )
                 String $attr = $parentElement .getAttributeValue("$value");
-                bom.${method}().set($attr);
+                #if( !$isFilterMode )
+                    bom.${method}().set($attr);
+                #else
+                    setFilterField($attr);
+                #end
             #elseif($step.getReturnTypeKind() == $typemap.list)
                 #set( $attr = $processingutil.generateNewAttributeName() )
                 String $attr = $parentElement .getAttributeValue("$value");
@@ -83,6 +88,10 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
                     ${bomName}XmlReader .read(bom.${method}().allocate(), $parentElement);
                 #end
             #end
+        #elseif($kind == $kindmap.extension)
+            #set( $extensionName = $processingutil.generateVariableNameFromClassName($step.getExtensionName()) )
+            ${extensionName}XmlReader .read($parentElement);
+            ##TODO other filter types
         #end
     #end
 #end
@@ -91,6 +100,29 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
     #foreach( $bom in $bomlist )
         #set( $bomName = $processingutil.generateVariableNameFromClassName($bom) )
         private ${bom}XmlReader ${bomName}XmlReader = new ${bom}XmlReader();
+    #end
+
+
+    #foreach( $extension in $extensionlist )
+        #set( $extensionName = $processingutil.generateVariableNameFromClassName($extension) )
+        /*$extensionmap*/
+        /*$extensionmap.get($extension)*/
+        #set( $step = $extensionmap.get($extension).getExtensionStep() )
+        private com.thoratou.exact.fields.FieldExtensionList<com.thoratou.exact.fields.FieldString>
+            ${extensionName}List =
+                new com.thoratou.exact.fields.FieldExtensionList<com.thoratou.exact.fields.FieldString>();
+        private com.thoratou.exact.bom.XmlExtensionReader<com.thoratou.exact.fields.FieldString>
+            ${extensionName}XmlReader =
+                new com.thoratou.exact.bom.XmlExtensionReader<com.thoratou.exact.fields.FieldString>(
+                    ${extensionName}List, new com.thoratou.exact.fields.FieldString()
+                )
+                {
+                    public void readFilter(final org.jdom.Element rootElement)
+                        throws com.thoratou.exact.exception.ExactReadException
+                    {
+                        #write( $step.getChildSteps(), "rootElement", true )
+                    }
+                };
     #end
 
     public ${simpleclass}XmlReader(){

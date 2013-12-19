@@ -20,58 +20,12 @@
  * http://www.gnu.org/copyleft/lesser.txt.                                   *
  *****************************************************************************/
 
-package com.thoratou.exact.processors;
+package com.thoratou.exact.bom;
 
-import com.thoratou.exact.annotations.ExactNode;
-import com.thoratou.exact.annotations.ExactPath;
-import com.thoratou.exact.bom.Extension;
-import com.thoratou.exact.bom.InnerExtension;
-import com.thoratou.exact.fields.FieldFactory;
-import com.thoratou.exact.fields.FieldString;
+import com.thoratou.exact.Entry;
 
-@ExactNode
-public class ExtensionBom implements Extension<ExtensionBom, FieldString> {
-    private FieldString value;
-
-    public ExtensionBom() {
-        value = FieldFactory.createMandatoryFieldString();
-    }
-
-    public ExtensionBom(ExtensionBom bom) {
-        value = bom.value.copy();
-    }
-
-    @Override
-    public FieldString getExtensionFilter(){
-        FieldString filter = FieldFactory.createMandatoryFieldString();
-        filter.set("extension");
-        return filter;
-    }
-
-    @ExactPath("@value")
-    public FieldString getValue(){
-        return value;
-    }
-
-    @Override
-    public void merge(ExtensionBom entry) {
-        value.merge(entry.value);
-    }
-
-    @Override
-    public void merge(InnerExtension<FieldString> entry) {
-        if(entry instanceof ExtensionBom){
-            merge((ExtensionBom) entry);
-        }
-    }
-
-    @Override
-    public ExtensionBom copy() {
-        return new ExtensionBom(this);
-    }
-
-    @Override
-    public InnerExtension<FieldString> innerCopy() {
-        return copy();
-    }
+public interface InnerExtension<Field extends Entry<Field>> {
+    public abstract Field getExtensionFilter();
+    public abstract void merge(InnerExtension<Field> entry);
+    public abstract InnerExtension<Field> innerCopy();
 }

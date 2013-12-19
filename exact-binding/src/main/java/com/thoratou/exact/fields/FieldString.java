@@ -114,7 +114,11 @@ public class FieldString extends FieldBase<String> implements Entry<FieldString>
 
     @Override
     public int hashCode() {
-        return getOriginal().hashCode();
+        try {
+            return get().hashCode();
+        } catch (FieldException e) {
+            return 0;
+        }
     }
 
     @Override

@@ -24,5 +24,6 @@ package com.thoratou.exact.bom;
 
 import com.thoratou.exact.Entry;
 
-public interface Extension<Field extends Entry<Field>>{
+public interface Extension<Base extends Entry<Base>, Field extends Entry<Field>>
+            extends Entry<Base>, InnerExtension<Field>{
 }

@@ -58,7 +58,7 @@ public class FieldBool extends FieldBase<String> implements Entry<FieldBool> {
     }
 
     @Override
-    public String getDefault() throws FieldException {
+    public String getDefault() {
         return fieldString.getDefault();
     }
 
@@ -73,6 +73,16 @@ public class FieldBool extends FieldBase<String> implements Entry<FieldBool> {
 
     public boolean getBool() throws FieldException {
         return get().equals("true");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return fieldString.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return fieldString.hashCode();
     }
 
     @Override

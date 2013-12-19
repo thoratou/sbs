@@ -25,6 +25,7 @@ package com.thoratou.exact.processors;
 import com.thoratou.exact.annotations.ExactExtension;
 import com.thoratou.exact.annotations.ExactNode;
 import com.thoratou.exact.annotations.ExactPath;
+import com.thoratou.exact.exception.ExactException;
 import com.thoratou.exact.exception.ExactXPathNotSupportedException;
 import com.thoratou.exact.xpath.XPathParser;
 import com.thoratou.exact.xpath.ast.XPathPathExpr;
@@ -415,7 +416,7 @@ public class ExactProcessor extends AbstractProcessor{
     }
 
     private void writeSources(HashMap<String, List<PathStep>> mergedMap)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, ExactException {
         //use all annotation data to generate parsing files
         for(Map.Entry<String, List<PathStep>> entryList : mergedMap.entrySet()) {
             VelocityEngine engine = new VelocityEngine();
@@ -461,6 +462,12 @@ public class ExactProcessor extends AbstractProcessor{
             Set<String> bomList = new HashSet<String>();
             registerBomListFromSteps(steps, bomList);
             context.put("bomlist", bomList);
+
+            Set<String> extensionList = new HashSet<String>();
+            Map<String, ExtensionVelocityData> extensionMap = new HashMap<String, ExtensionVelocityData>();
+            registerExtensionListFromSteps(steps, extensionList, extensionMap);
+            context.put("extensionlist", extensionList);
+            context.put("extensionmap", extensionMap);
 
             logger.info("input velocity data : "+className+ " , "+steps.toString());
 
@@ -515,5 +522,41 @@ public class ExactProcessor extends AbstractProcessor{
 
             registerBomListFromSteps(step.getChildSteps(), bomList);
         }
+    }
+
+    private void registerExtensionListFromSteps(List<PathStep> steps,
+                                                Set<String> extensionList,
+                                                Map<String, ExtensionVelocityData> extensionMap) throws ClassNotFoundException, ExactException {
+        for(PathStep step : steps){
+            if(step.getStepKind() == PathStep.Kind.EXTENSION){
+                ExtensionVelocityData extensionVelocityData = new ExtensionVelocityData();
+                extensionVelocityData.setExtensionStep(step);
+                extensionVelocityData.setFilterKind(retrieveExtensionFilterKind(step));
+                extensionMap.put(step.getExtensionName(), extensionVelocityData);
+                extensionList.add(step.getExtensionName());
+            }
+            registerExtensionListFromSteps(step.getChildSteps(), extensionList, extensionMap);
+        }
+    }
+
+    private PathStep.Kind retrieveExtensionFilterKind(PathStep step) throws ExactException {
+        for(PathStep child : step.getChildSteps()) {
+            switch (child.getStepKind()) {
+                case UNKNOWN:
+                    throw new ExactException("");
+                case CHILD_ELEMENT:
+                    return retrieveExtensionFilterKind(child);
+                case TEXT:
+                case ATTRIBUTE:
+                    return child.getStepKind();
+                case BOM:
+                    throw new ExactException("");
+                case EXTENSION:
+                    throw new ExactException("");
+                case START:
+                    throw new ExactException("");
+            }
+        }
+        return PathStep.Kind.UNKNOWN;
     }
 }

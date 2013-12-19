@@ -24,27 +24,42 @@ package com.thoratou.exact.fields;
 
 import com.thoratou.exact.Entry;
 import com.thoratou.exact.bom.Extension;
+import com.thoratou.exact.bom.InnerExtension;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtensionList<T>>{
-    private ArrayList<Extension<T>> array;
+    private ArrayList<InnerExtension<T>> array;
 
     public FieldExtensionList() {
-        array = new ArrayList<Extension<T>>();
+        array = new ArrayList<InnerExtension<T>>();
     }
 
-    public Extension<T> allocate(String clazzString) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public InnerExtension<T> allocate(String clazzString) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class<?> clazz = Class.forName(clazzString);
-        Extension<T> instance = (Extension<T>) clazz.newInstance();
+        InnerExtension<T> instance = (InnerExtension<T>) clazz.newInstance();
         array.add(instance);
         return instance;
     }
 
-    public Extension<T> allocate(String clazzString, int i) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public InnerExtension<T> allocate(String clazzString, int i) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class<?> clazz = Class.forName(clazzString);
-        Extension<T> instance = (Extension<T>) clazz.newInstance();
+        InnerExtension<T> instance = (InnerExtension<T>) clazz.newInstance();
+        array.add(i, instance);
+        return instance;
+    }
+
+    public InnerExtension<T> allocate(InnerExtension<T> prototype){
+        Entry<?> baseInstance = (Entry<?>) prototype;
+        InnerExtension<T> instance = (InnerExtension<T>)baseInstance.copy();
+        array.add(instance);
+        return instance;
+    }
+
+    public InnerExtension<T> allocate(InnerExtension<T> prototype, int i){
+        Entry<?> baseInstance = (Entry<?>) prototype;
+        InnerExtension<T> instance = (InnerExtension<T>)baseInstance.copy();
         array.add(i, instance);
         return instance;
     }
@@ -57,8 +72,8 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
         return array.contains(instance);
     }
 
-    public Extension<T> get(int i){
-        Extension<T> instance = array.get(i);
+    public InnerExtension<T> get(int i){
+        InnerExtension<T> instance = array.get(i);
         return instance;
     }
 
@@ -70,7 +85,7 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
         return array.isEmpty();
     }
 
-    public Iterator<Extension<T>> iterator() {
+    public Iterator<InnerExtension<T>> iterator() {
         return array.iterator();
     }
 
@@ -78,7 +93,7 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
         return array.lastIndexOf(instance);
     }
 
-    public Extension<T> remove(int i){
+    public InnerExtension<T> remove(int i){
         return array.remove(i);
     }
 
@@ -86,9 +101,9 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
         return array.remove(instance);
     }
 
-    public Extension<T> replace(String clazzString, int i) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public InnerExtension<T> replace(String clazzString, int i) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class<?> clazz = Class.forName(clazzString);
-        Extension<T> instance = (Extension<T>) clazz.newInstance();
+        InnerExtension<T> instance = (InnerExtension<T>) clazz.newInstance();
         array.set(i, instance);
         return instance;
     }
@@ -108,13 +123,10 @@ public class FieldExtensionList<T extends Entry<T>> implements Entry<FieldExtens
 
     @Override
     public void merge(FieldExtensionList<T> listEntry) {
-        Iterator<Extension<T>> iterator = listEntry.array.iterator();
+        Iterator<InnerExtension<T>> iterator = listEntry.array.iterator();
         while (iterator.hasNext()) {
-            Extension<T> item = iterator.next();
-            //TODO
-            //Extension<T> copy = item.copy();
-            //this.array.add(copy);
-            this.array.add(item);
+            InnerExtension<T> item = iterator.next();
+            this.array.add(item.innerCopy());
         }
     }
 

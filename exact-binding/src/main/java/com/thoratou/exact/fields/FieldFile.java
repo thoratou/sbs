@@ -58,7 +58,7 @@ public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
     }
 
     @Override
-    public String getDefault() throws FieldException {
+    public String getDefault() {
         return fieldString.getDefault();
     }
 
@@ -76,6 +76,16 @@ public class FieldFile extends FieldBase<String> implements Entry<FieldFile> {
 
     public String getCMakeString() throws FieldException{
         return get().replaceAll(" ", "\\\\ ");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return fieldString.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return fieldString.hashCode();
     }
 
     @Override

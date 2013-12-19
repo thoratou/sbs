@@ -46,11 +46,14 @@ public abstract class FieldBase<T> {
         return type == Type.OPTIONAL;
     }
 
-    public abstract T getDefault() throws FieldException;
+    public abstract T getDefault();
     public abstract T get() throws FieldException;
     public abstract T getOriginal();
 
     public abstract void set(T value);
 
     public abstract boolean isEmpty();
+
+    public abstract boolean equals(Object obj);
+    public abstract int hashCode();
 }
