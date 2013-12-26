@@ -226,8 +226,7 @@ public class ExactProcessor extends AbstractProcessor{
             ArrayList<Item> itemList = itemEntry.getValue();
 
             //initialize new representation for this bom
-            List<PathStep> newPathStepList = new ArrayList<PathStep>();
-            mergedMap.put(baseClassName, newPathStepList);
+            List<PathStep> newPathStepList = getPathStepList(mergedMap, baseClassName);
             for(Item item : itemList){
                 XPathPathExpr xPathPathExpr = item.getxPathPathExpr();
                 String methodName = item.getMethodName();
@@ -246,8 +245,7 @@ public class ExactProcessor extends AbstractProcessor{
             ArrayList<ExtensionItem> extItemList = extItemEntry.getValue();
 
             //initialize new representation for this bom
-            List<PathStep> newPathStepList = new ArrayList<PathStep>();
-            mergedMap.put(baseClassName, newPathStepList);
+            List<PathStep> newPathStepList = getPathStepList(mergedMap, baseClassName);
             for(ExtensionItem extItem : extItemList){
                 XPathPathExpr xPathPathExpr = extItem.getElement();
                 String methodName = extItem.getMethodName();
@@ -260,12 +258,25 @@ public class ExactProcessor extends AbstractProcessor{
                 lastPathStep.setExtensionName(extItem.getName());
                 //add filter steps
                 convertXPathSteps(extItem.getFilter().steps,
-                        "", //mthod name (value doesn't matter for filters)
+                        "", //method name (value doesn't matter for filters)
                         "com.thoratou.exact.fields.FieldString", //TODO : add other fields and bom support
                         lastPathStep.getChildSteps(),
                         false);
             }
         }
+    }
+
+    private List<PathStep> getPathStepList(HashMap<String, List<PathStep>> mergedMap,
+                                           String baseClassName){
+        if(mergedMap.containsKey(baseClassName)){
+            return mergedMap.get(baseClassName);
+        }
+        else{
+            List<PathStep> newPathStepList = new ArrayList<PathStep>();
+            mergedMap.put(baseClassName, newPathStepList);
+            return newPathStepList;
+        }
+
     }
 
     private PathStep convertXPathExpr(XPathPathExpr xPathPathExpr,
