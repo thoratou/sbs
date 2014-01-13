@@ -40,6 +40,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
 ##
 #macro( write $steps , $parentElement , $isFilterMode )
     #foreach( $step in $steps )
+        /*$step*/
         #set( $kind = $step.getStepKind() )
         #set( $value = $step.getStepValue() )
         #set( $method = $step.getMethodName() )
@@ -105,8 +106,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
 
     #foreach( $extension in $extensionlist )
         #set( $extensionName = $processingutil.generateVariableNameFromClassName($extension) )
-        /*$extensionmap*/
-        /*$extensionmap.get($extension)*/
+        /*$extension => $extensionmap.get($extension)*/
         #set( $step = $extensionmap.get($extension).getExtensionStep() )
         private com.thoratou.exact.fields.FieldExtensionList<com.thoratou.exact.fields.FieldString>
             ${extensionName}List =
@@ -117,6 +117,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
                     ${extensionName}List, new com.thoratou.exact.fields.FieldString()
                 )
                 {
+                    /*$step*/
                     public void readFilter(final org.jdom.Element rootElement)
                         throws com.thoratou.exact.exception.ExactReadException
                     {

@@ -22,23 +22,34 @@
 
 package com.thoratou.exact.processors;
 
-class ExtensionVelocityData {
+public class ExtensionVelocityData {
     private PathStep extensionStep = null;
     private PathStep.Kind  filterKind = null;
 
-    PathStep getExtensionStep() {
+    public PathStep getExtensionStep() {
         return extensionStep;
     }
 
-    void setExtensionStep(PathStep extensionStep) {
+    public void setExtensionStep(PathStep extensionStep) {
         this.extensionStep = extensionStep;
     }
 
-    PathStep.Kind getFilterKind() {
+    public PathStep.Kind getFilterKind() {
         return filterKind;
     }
 
-    void setFilterKind(PathStep.Kind filterKind) {
+    public void setFilterKind(PathStep.Kind filterKind) {
         this.filterKind = filterKind;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("{extension,");
+        stringBuffer.append(filterKind.name());
+        stringBuffer.append(",");
+        stringBuffer.append(extensionStep);
+        stringBuffer.append("}");
+        return stringBuffer.toString();
     }
 }
