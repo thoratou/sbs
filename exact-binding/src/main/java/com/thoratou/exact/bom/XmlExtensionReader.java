@@ -63,7 +63,7 @@ public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>>
     protected abstract void readFilter(final org.jdom.Element rootElement)
         throws com.thoratou.exact.exception.ExactReadException;
 
-    public void read(Element rootElement, FieldExtensionList<T> extensionList) throws ExactReadException {
+    public void read(FieldExtensionList<T> extensionList, Element rootElement) throws ExactReadException {
         readFilter(rootElement);
         if(!filterField.isEmpty()){
             InnerExtension<T> extension = allocateFromFilter(extensionList, filterField);

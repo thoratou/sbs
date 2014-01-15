@@ -91,7 +91,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
             #end
         #elseif($kind == $kindmap.extension)
             #set( $extensionName = $processingutil.generateVariableNameFromClassName($step.getExtensionName()) )
-            ${extensionName}XmlReader .read($parentElement, bom.${method}());
+            ${extensionName}XmlReader .read(bom.${method}(), $parentElement);
             ##TODO other filter types
         #end
     #end
