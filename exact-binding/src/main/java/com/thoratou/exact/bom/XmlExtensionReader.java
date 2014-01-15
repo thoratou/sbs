@@ -32,27 +32,28 @@ import java.util.HashMap;
 
 public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>> {
     private final HashMap<T, InnerExtension<T>> extensionMap;
-    private final HashMap<T,XmlReader<InnerExtension<T>>> extensionReaderMap;
-    private FieldExtensionList<T> extensionList;
+    private final HashMap<T,XmlReader> extensionReaderMap;
     private T filterField;
 
-    protected XmlExtensionReader(FieldExtensionList<T> extensionList,
-                                 T filterField){
-        this.extensionList = extensionList;
+    protected XmlExtensionReader(T filterField){
         this.filterField = filterField;
         extensionMap = new HashMap<T, InnerExtension<T>>();
-        extensionReaderMap = new HashMap<T, XmlReader<InnerExtension<T>>>();
+        extensionReaderMap = new HashMap<T, XmlReader>();
     }
 
-    public void registerExtension(InnerExtension<T> prototype, XmlReader<InnerExtension<T>> reader){
+    public void registerExtension(InnerExtension<T> prototype, XmlReader reader){
         T filter = prototype.getExtensionFilter();
         extensionMap.put(filter, prototype);
         extensionReaderMap.put(filter, reader);
     }
 
-    public InnerExtension<T> allocateFromFilter(T filter){
-        InnerExtension<T> extension = extensionMap.get(filter);
-        return extensionList.allocate(extension);
+    public InnerExtension<T> allocateFromFilter(FieldExtensionList<T> extensionList, T filter){
+        if(extensionMap.containsKey(filter))
+        {
+            InnerExtension<T> extension = extensionMap.get(filter);
+            return extensionList.allocate(extension);
+        }
+        return null;
     }
 
     protected void setFilterField(String value){
@@ -62,11 +63,18 @@ public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>>
     protected abstract void readFilter(final org.jdom.Element rootElement)
         throws com.thoratou.exact.exception.ExactReadException;
 
-    public void read(Element rootElement) throws ExactReadException {
+    public void read(Element rootElement, FieldExtensionList<T> extensionList) throws ExactReadException {
+        readFilter(rootElement);
         if(!filterField.isEmpty()){
-            InnerExtension<T> extension = allocateFromFilter(filterField);
-            XmlReader<InnerExtension<T>> reader = extensionReaderMap.get(filterField);
-            reader.read(extension, rootElement);
+            InnerExtension<T> extension = allocateFromFilter(extensionList, filterField);
+            if(extension != null)
+            {
+                if(extensionReaderMap.containsKey(filterField))
+                {
+                    XmlReader<InnerExtension<T>> reader = extensionReaderMap.get(filterField);
+                    reader.read(extension, rootElement);
+                }
+            }
             filterField.set(null);
         }
     }

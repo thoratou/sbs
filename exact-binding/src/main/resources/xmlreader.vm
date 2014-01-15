@@ -91,7 +91,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
             #end
         #elseif($kind == $kindmap.extension)
             #set( $extensionName = $processingutil.generateVariableNameFromClassName($step.getExtensionName()) )
-            ${extensionName}XmlReader .read($parentElement);
+            ${extensionName}XmlReader .read($parentElement, bom.${method}());
             ##TODO other filter types
         #end
     #end
@@ -108,13 +108,10 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
         #set( $extensionName = $processingutil.generateVariableNameFromClassName($extension) )
         /*$extension => $extensionmap.get($extension)*/
         #set( $step = $extensionmap.get($extension).getExtensionStep() )
-        private com.thoratou.exact.fields.FieldExtensionList<com.thoratou.exact.fields.FieldString>
-            ${extensionName}List =
-                new com.thoratou.exact.fields.FieldExtensionList<com.thoratou.exact.fields.FieldString>();
-        private com.thoratou.exact.bom.XmlExtensionReader<com.thoratou.exact.fields.FieldString>
+        public com.thoratou.exact.bom.XmlExtensionReader<com.thoratou.exact.fields.FieldString>
             ${extensionName}XmlReader =
                 new com.thoratou.exact.bom.XmlExtensionReader<com.thoratou.exact.fields.FieldString>(
-                    ${extensionName}List, new com.thoratou.exact.fields.FieldString()
+                    new com.thoratou.exact.fields.FieldString()
                 )
                 {
                     /*$step*/
