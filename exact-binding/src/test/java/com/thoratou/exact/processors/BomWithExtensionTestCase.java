@@ -63,4 +63,42 @@ public class BomWithExtensionTestCase extends TestCase{
         assertEquals("toto", ((ExtensionBom) bom.getChildren().get(1)).getValue().get());
         assertEquals("titi", ((ExtensionBom) bom.getChildren().get(2)).getValue().get());
     }
+
+    @Test
+    public void test2Extensions() throws FieldException, JDOMException, IOException, ExactReadException {
+        BomWithExtension bom = new BomWithExtension();
+
+        BomWithExtensionXmlReader bomWithExtensionXmlReader = new BomWithExtensionXmlReader();
+        bomWithExtensionXmlReader.childXmlReader.registerExtension(new ExtensionBom(), new ExtensionBomXmlReader());
+        bomWithExtensionXmlReader.childXmlReader.registerExtension(new OtherExtensionBom(), new OtherExtensionBomXmlReader());
+
+        Reader inputXml = new StringReader(
+                "<root value=\"not in extension\">" +
+                        "<children>" +
+                        "<child filter=\"extension\" value=\"tata\"/>" +
+                        "<child filter=\"other\">" +
+                            "some text" +
+                            "<bom value=\"some data\" />" +
+                        "</child>" +
+                        "<child filter=\"extension\" value=\"titi\"/>" +
+                        "</children>" +
+                        "</root>"
+        );
+
+
+        bomWithExtensionXmlReader.read(bom, inputXml);
+
+        assertEquals("not in extension", bom.getValue().get());
+        assertEquals(3, bom.getChildren().size());
+        assertEquals("extension", bom.getChildren().get(0).getExtensionFilter().get());
+        assertEquals("other", bom.getChildren().get(1).getExtensionFilter().get());
+        assertEquals("extension", bom.getChildren().get(2).getExtensionFilter().get());
+        assertEquals("tata", ((ExtensionBom) bom.getChildren().get(0)).getValue().get());
+
+        OtherExtensionBom otherExtensionBom = (OtherExtensionBom) bom.getChildren().get(1);
+        assertEquals("some text", otherExtensionBom.getText().get());
+        assertEquals("some data", otherExtensionBom.getBom().getValue().get());
+
+        assertEquals("titi", ((ExtensionBom) bom.getChildren().get(2)).getValue().get());
+    }
 }
