@@ -170,7 +170,7 @@ public class ExactProcessor extends AbstractProcessor{
 
     private void mergeClassPaths(HashMap<String, ArrayList<Item>> itemMap,
                                  HashMap<String, ArrayList<ExtensionItem>> extItemMap,
-                                 HashMap<String, List<PathStep>> mergedMap) throws ExactXPathNotSupportedException, ClassNotFoundException {
+                                 HashMap<String, List<PathStep>> mergedMap) throws ExactException, ClassNotFoundException {
         /*
         convert Xpath path map into step-by-step merged representation
         example :
@@ -283,7 +283,7 @@ public class ExactProcessor extends AbstractProcessor{
                                       String methodName,
                                       String returnType,
                                       List<PathStep> newPathStepList,
-                                      boolean isExtension) throws ExactXPathNotSupportedException, ClassNotFoundException {
+                                      boolean isExtension) throws ExactException, ClassNotFoundException {
         PathStep rootStep = new PathStep();
         rootStep.setStepKind(PathStep.Kind.START);
         switch (xPathPathExpr.context) {
@@ -302,7 +302,7 @@ public class ExactProcessor extends AbstractProcessor{
                                        String methodName,
                                        String returnType,
                                        List<PathStep> newPathStepList,
-                                       boolean extension) throws ExactXPathNotSupportedException, ClassNotFoundException {
+                                       boolean isExtension) throws ExactException, ClassNotFoundException {
         List<PathStep> currentList = newPathStepList;
         PathStep lastPathStep = null;
         for(XPathStep step : steps){
@@ -374,18 +374,31 @@ public class ExactProcessor extends AbstractProcessor{
                     case UNKNOWN:
                         break;
                     case FIELD:
+                        if(isExtension)
+                        {
+                            //extension list with field filter
+                            bomStep.setStepKind(PathStep.Kind.EXTENSION);
+                            lastPathStep.getChildSteps().add(bomStep);
+                            lastPathStep = bomStep;
+                        }
                         break;
                     case BOM:
                         //add a specific bom step
-                        bomStep.setStepKind(extension ? PathStep.Kind.EXTENSION : PathStep.Kind.BOM);
+                        //if extension, extension list with bom filter
+                        bomStep.setStepKind(isExtension ? PathStep.Kind.EXTENSION : PathStep.Kind.BOM);
                         lastPathStep.getChildSteps().add(bomStep);
                         lastPathStep = bomStep;
                         break;
                 }
                 break;
             case BOM:
+                if(isExtension)
+                {
+                    throw new ExactException("not supported standalone extension, step"+bomStep);
+                }
+
                 //add a specific bom step
-                bomStep.setStepKind(extension ? PathStep.Kind.EXTENSION : PathStep.Kind.BOM);
+                bomStep.setStepKind(PathStep.Kind.BOM);
                 lastPathStep.getChildSteps().add(bomStep);
                 lastPathStep = bomStep;
                 break;

@@ -24,6 +24,7 @@ package com.thoratou.exact.processors;
 
 import com.thoratou.exact.Entry;
 import com.thoratou.exact.fields.FieldBase;
+import com.thoratou.exact.fields.FieldExtensionList;
 import com.thoratou.exact.fields.FieldList;
 
 import java.util.*;
@@ -208,6 +209,9 @@ public class PathStep {
                 kind = TypeKind.FIELD;
             }
             else if(FieldList.class.isAssignableFrom(clazz)){
+                kind = TypeKind.LIST;
+            }
+            else if(FieldExtensionList.class.isAssignableFrom(clazz)){
                 kind = TypeKind.LIST;
             }
             else if(Entry.class.isAssignableFrom(clazz)){

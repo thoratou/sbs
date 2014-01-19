@@ -108,7 +108,10 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
         #set( $extensionName = $processingutil.generateVariableNameFromClassName($extension) )
         /*$extension => $extensionmap.get($extension)*/
         #set( $step = $extensionmap.get($extension).getExtensionStep() )
-        #set( $return = $step.getReturnListType() )
+        #set( $return = $step.getReturnType() )
+        #if($step.getReturnTypeKind() == $typemap.list)
+            #set( $return = $step.getReturnListType() )
+        #end
         public com.thoratou.exact.bom.XmlExtensionReader<$return>
             ${extensionName}XmlReader =
                 new com.thoratou.exact.bom.XmlExtensionReader<$return>(
