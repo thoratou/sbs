@@ -71,7 +71,9 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
                 #if( !$isFilterMode )
                     bom.${method}().set($attr);
                 #else
-                    setFilterField($attr);
+                    $return filter = new $return();
+                    filter.set($attr);
+                    setFilter(filter);
                 #end
             #elseif($step.getReturnTypeKind() == $typemap.list)
                 #set( $attr = $processingutil.generateNewAttributeName() )
@@ -114,9 +116,7 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
         #end
         public com.thoratou.exact.bom.XmlExtensionReader<$return>
             ${extensionName}XmlReader =
-                new com.thoratou.exact.bom.XmlExtensionReader<$return>(
-                    new $return()
-                )
+                new com.thoratou.exact.bom.XmlExtensionReader<$return>()
                 {
                     /*$step*/
                     public void readFilter(final org.jdom.Element rootElement)

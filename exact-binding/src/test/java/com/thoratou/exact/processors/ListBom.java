@@ -56,4 +56,24 @@ public class ListBom implements Entry<ListBom>{
     public ListBom copy() {
         return new ListBom(this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ListBom listBom = (ListBom) o;
+
+        if (list != null ? !list.equals(listBom.list) : listBom.list != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return list != null ? list.hashCode() : 0;
+    }
 }

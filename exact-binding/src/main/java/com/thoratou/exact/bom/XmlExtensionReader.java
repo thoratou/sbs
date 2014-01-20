@@ -30,13 +30,13 @@ import org.jdom.Element;
 
 import java.util.HashMap;
 
-public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>> {
+public abstract class XmlExtensionReader<T extends Entry<T>> {
     private final HashMap<T, InnerExtension<T>> extensionMap;
     private final HashMap<T,XmlReader> extensionReaderMap;
-    private T filterField;
+    private T filter;
 
-    protected XmlExtensionReader(T filterField){
-        this.filterField = filterField;
+    protected XmlExtensionReader(){
+        this.filter = null;
         extensionMap = new HashMap<T, InnerExtension<T>>();
         extensionReaderMap = new HashMap<T, XmlReader>();
     }
@@ -56,8 +56,8 @@ public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>>
         return null;
     }
 
-    protected void setFilterField(String value){
-        filterField.set(value);
+    protected void setFilter(T filter){
+        this.filter = filter;
     }
 
     protected abstract void readFilter(final org.jdom.Element rootElement)
@@ -65,17 +65,17 @@ public abstract class XmlExtensionReader<T extends FieldBase<String> & Entry<T>>
 
     public void read(FieldExtensionList<T> extensionList, Element rootElement) throws ExactReadException {
         readFilter(rootElement);
-        if(!filterField.isEmpty()){
-            InnerExtension<T> extension = allocateFromFilter(extensionList, filterField);
+        if(filter != null){
+            InnerExtension<T> extension = allocateFromFilter(extensionList, filter);
             if(extension != null)
             {
-                if(extensionReaderMap.containsKey(filterField))
+                if(extensionReaderMap.containsKey(filter))
                 {
-                    XmlReader<InnerExtension<T>> reader = extensionReaderMap.get(filterField);
+                    XmlReader<InnerExtension<T>> reader = extensionReaderMap.get(filter);
                     reader.read(extension, rootElement);
                 }
             }
-            filterField.set(null);
+            filter = null;
         }
     }
 }

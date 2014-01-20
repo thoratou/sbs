@@ -25,4 +25,6 @@ package com.thoratou.exact;
 public interface Entry <T>{
     void merge(T entry);
     T copy();
+    boolean equals(Object object);
+    int hashCode();
 }

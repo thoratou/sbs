@@ -64,4 +64,28 @@ public class SimpleBom implements Entry<SimpleBom> {
     public SimpleBom copy() {
         return new SimpleBom(this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        SimpleBom simpleBom = (SimpleBom) o;
+
+        if (dummy != null ? !dummy.equals(simpleBom.dummy) : simpleBom.dummy != null)
+            return false;
+        if (value != null ? !value.equals(simpleBom.value) : simpleBom.value != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = dummy != null ? dummy.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

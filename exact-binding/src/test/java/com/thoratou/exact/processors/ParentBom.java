@@ -74,4 +74,31 @@ public class ParentBom implements Entry<ParentBom> {
     public ParentBom copy() {
         return new ParentBom(this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ParentBom parentBom = (ParentBom) o;
+
+        if (value != null ? !value.equals(parentBom.value) : parentBom.value != null)
+            return false;
+        if (childBom != null ? !childBom.equals(parentBom.childBom) : parentBom.childBom != null)
+            return false;
+        if (childBomList != null ? !childBomList.equals(parentBom.childBomList) : parentBom.childBomList != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = childBom != null ? childBom.hashCode() : 0;
+        result = 31 * result + (childBomList != null ? childBomList.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

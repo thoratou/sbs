@@ -66,4 +66,28 @@ public class BomWithExtension implements Entry<BomWithExtension> {
     public BomWithExtension copy() {
         return new BomWithExtension(this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        BomWithExtension that = (BomWithExtension) o;
+
+        if (value != null ? !value.equals(that.value) : that.value != null)
+            return false;
+        if (childExtensionList != null ? !childExtensionList.equals(that.childExtensionList) : that.childExtensionList != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = childExtensionList != null ? childExtensionList.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

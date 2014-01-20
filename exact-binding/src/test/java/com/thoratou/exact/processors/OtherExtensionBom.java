@@ -83,4 +83,28 @@ public class OtherExtensionBom implements Extension<OtherExtensionBom, FieldStri
     public InnerExtension<FieldString> innerCopy() {
         return copy();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        OtherExtensionBom that = (OtherExtensionBom) o;
+
+        if (text != null ? !text.equals(that.text) : that.text != null)
+            return false;
+        if (childBom != null ? !childBom.equals(that.childBom) : that.childBom != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = text != null ? text.hashCode() : 0;
+        result = 31 * result + (childBom != null ? childBom.hashCode() : 0);
+        return result;
+    }
 }
