@@ -259,7 +259,7 @@ public class ExactProcessor extends AbstractProcessor{
                 //add filter steps
                 convertXPathSteps(extItem.getFilter().steps,
                         "", //method name (value doesn't matter for filters)
-                        "com.thoratou.exact.fields.FieldString", //TODO : add other fields and bom support
+                        PathStep.getTypeParameterList(extItem.getReturnType()).get(0),
                         lastPathStep.getChildSteps(),
                         false);
             }
@@ -574,7 +574,7 @@ public class ExactProcessor extends AbstractProcessor{
                 case ATTRIBUTE:
                     return child.getStepKind();
                 case BOM:
-                    throw new ExactException("");
+                    return child.getStepKind();
                 case EXTENSION:
                     throw new ExactException("");
                 case START:

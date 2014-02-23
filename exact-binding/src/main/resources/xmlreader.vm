@@ -83,7 +83,13 @@ public class ${simpleclass}XmlReader extends com.thoratou.exact.bom.XmlReader<${
         #elseif($kind == $kindmap.bom)
             #if($step.getReturnTypeKind() == $typemap.bom)
                 #set( $bomName = $processingutil.generateVariableNameFromClassName($return) )
-                ${bomName}XmlReader .read(bom.${method}(), $parentElement);
+                #if( !$isFilterMode )
+                    ${bomName}XmlReader .read(bom.${method}(), $parentElement);
+                #else
+                    $return filter = new $return();
+                    ${bomName}XmlReader .read(filter, $parentElement);
+                    setFilter(filter);
+                #end
             #elseif($step.getReturnTypeKind() == $typemap.list)
                 #if($step.getReturnListTypeKind() == $listtypemap.bom)
                     #set( $return = $step.getReturnListType() )

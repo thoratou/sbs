@@ -1,0 +1,6 @@
+#maven
+**/target
+
+#intettij idea
+**/.idea
+**/*.iml
